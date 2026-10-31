@@ -38,7 +38,7 @@ function openImageLightbox(url, title) {
   overlay.setAttribute("aria-hidden", "false");
 }
 
-export function renderAccounts(accounts, container, onDetails, preferences, rates, fieldDefinitions = [], language = "ar") {
+export function renderAccounts(accounts, container, onDetails, preferences, rates, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {
   container.innerHTML = "";
   const labels = language === "ar"
     ? { details: "عرض التفاصيل ←", available: "متاح", unavailable: "غير متاح", username: "اسم المستخدم", account: "حساب رقمي" }
@@ -52,7 +52,7 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
     const avatar = image
       ? `<button type="button" class="image-preview-button" aria-label="${language === "ar" ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="lazy"></button>`
       : `<div class="card-avatar">${escapeHtml(title.slice(0, 2).toUpperCase())}</div>`;
-    const stats = activeStats(account, fieldDefinitions, language).slice(0, 3);
+    const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates).slice(0, 3);
     const ref = preferences.showReference === false ? "" : `<span class="ref-id">${escapeHtml(account.reference || account.id || "")}</span>`;
     card.innerHTML = `
       <div class="card-cover">${avatar}</div>
@@ -70,7 +70,7 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
   }
 }
 
-export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar") {
+export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {
   const ar = language === "ar";
   const title = account.title || account.name || (ar ? "حساب بدون اسم" : "Untitled account");
   dialog.querySelector("#detailCategory").textContent = account.category || (ar ? "حساب رقمي" : "Digital account");
@@ -83,7 +83,7 @@ export function showAccountDetails(account, dialog, preferences, rates, settings
     ? `<button type="button" class="detail-image-preview" aria-label="${ar ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}"></button>`
     : `<span>7S</span>`;
   image.querySelector("button")?.addEventListener("click", () => openImageLightbox(imageUrl, title));
-  const stats = activeStats(account, fieldDefinitions, language);
+  const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates);
   dialog.querySelector("#detailStats").innerHTML = stats.map(s =>
     `<div class="modal-stat"><b>${escapeHtml(s.value)}</b><span>${escapeHtml(s.label)}</span></div>`
   ).join("");
