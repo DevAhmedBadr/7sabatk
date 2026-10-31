@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0d16"><meta name="description" content="7sabatk — كتالوج رقمي منظم.">
+  <title>7sabatk | وجهتك الرقمية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/commerce.css">
+</head>
+<body>
+<header class="site-header"><div class="container nav">
+  <a class="brand" href="#home"><span class="brand-mark">7S</span><span>7SABATK</span></a>
+  <nav class="nav-links"><a href="#home">الرئيسية</a><a href="#marketplace">الكتالوج</a><a href="#about">من نحن</a><a href="#contact">تواصل معنا</a></nav>
+  <div class="nav-actions"><button class="icon-button" id="settingsOpen" aria-label="الإعدادات" title="الإعدادات">⚙</button><button class="button button-small" id="authOpen">تسجيل الدخول</button><button class="button button-small button-ghost" id="accountOpen" hidden>حسابي</button></div>
+</div></header>
+<div id="announcement" class="announcement" hidden></div>
+<main id="home">
+<section class="hero"><div class="container hero-grid"><div class="hero-copy">
+  <span class="eyebrow"><span class="pulse"></span> كتالوج رقمي منظم</span><h1>كل ما تبحث عنه<br><span>في مكان واحد.</span></h1>
+  <p>استكشف العروض المعروضة، وتعرّف على تفاصيلها وإحصائياتها العامة من خلال تجربة تصفح سهلة وواضحة.</p>
+  <div class="hero-actions"><a class="button" href="#marketplace">استكشف الكتالوج <span>←</span></a><a class="button button-ghost" href="#about">اعرف المزيد</a></div>
+  <div class="hero-note"><span class="note-icon">✦</span> وضوح في التفاصيل، وسهولة في التصفح.</div>
+</div><div class="hero-art" aria-hidden="true"><div class="glow"></div><div class="hero-card"><div class="hero-card-top"><span>7sabatk</span><span class="live-dot">● تجربة احترافية</span></div><div class="hero-avatar">7S</div><h3>ملفات مميزة</h3><p>تفاصيل منظمة وأسعار واضحة</p><div class="hero-metrics"><div><b>01</b><small>تفاصيل</small></div><div><b>02</b><small>إحصائيات</small></div><div><b>03</b><small>تصنيفات</small></div></div></div><div class="floating-chip">✦ 7sabatk</div></div></div></section>
+<section class="section features-section"><div class="container"><div class="section-heading"><span class="section-kicker">لماذا 7SABATK؟</span><h2>تجربة أبسط وأكثر تنظيمًا</h2><p>كل المعلومات المهمة في واجهة واحدة، بدون تعقيد.</p></div><div class="feature-grid"><article class="feature-card"><span class="feature-icon">◈</span><h3>تفاصيل واضحة</h3><p>اعرف المعلومات والإحصائيات العامة لكل عرض بسهولة.</p></article><article class="feature-card"><span class="feature-icon">⌕</span><h3>بحث سريع</h3><p>ابحث بالاسم أو التصنيف للوصول إلى ما تريده.</p></article><article class="feature-card"><span class="feature-icon">✧</span><h3>حساب شخصي</h3><p>أنشئ حسابًا لمتابعة ملفك وتفضيلات التصفح.</p></article></div></div></section>
+<section class="section marketplace-section" id="marketplace"><div class="container"><div class="section-heading heading-row"><div><span class="section-kicker">الكتالوج</span><h2>العروض المتاحة</h2><p>تصفح العناصر المتاحة واستخدم البحث للوصول بسرعة.</p></div><span class="results-count" id="resultsCount">جارٍ تحميل البيانات...</span></div>
+<div class="toolbar"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="ابحث عن عنصر أو تصنيف..." autocomplete="off"></label><select id="categoryFilter" aria-label="التصنيف"><option value="all">كل التصنيفات</option></select><select id="sortFilter" aria-label="الترتيب"><option value="newest">الأحدث أولًا</option><option value="priceAsc">السعر: الأقل أولًا</option><option value="priceDesc">السعر: الأعلى أولًا</option><option value="followers">الأكثر متابعين</option></select></div>
+<div class="account-grid" id="accountGrid" aria-live="polite"></div><div class="empty-state" id="emptyState" hidden><div class="empty-icon">⌕</div><h3>لا توجد نتائج</h3><p>جرّب تغيير كلمات البحث أو التصنيف.</p></div>
+</div></section>
+<section class="section about-section" id="about"><div class="container about-grid"><div><span class="section-kicker">من نحن</span><h2>7sabatk<br><span>وجهتك الرقمية.</span></h2></div><div class="about-copy"><p>منصة كتالوج رقمية تهدف إلى عرض المعلومات بطريقة مرتبة وسهلة الاستخدام، مع الاهتمام بالشفافية والخصوصية واحترام شروط المنصات.</p><div class="values"><span>الشفافية</span><span>البساطة</span><span>الاحترافية</span></div></div></div></section>
+<section class="section contact-section" id="contact"><div class="container contact-panel"><div><span class="section-kicker">تواصل معنا</span><h2>هل لديك استفسار؟</h2><p>يسعدنا استقبال أسئلتك بخصوص المعلومات المعروضة في الكتالوج.</p></div><a class="button" id="contactLink" href="#">تواصل معنا <span>←</span></a></div></section>
+</main>
+<footer><div class="container footer-inner"><a class="brand footer-brand" href="#home"><span class="brand-mark">7S</span><span>7SABATK</span></a><span>© <span id="year"></span> 7sabatk. جميع الحقوق محفوظة.</span><a href="#home" class="back-top">العودة للأعلى ↑</a></div></footer>
+
+<!-- نافذة الدخول والتسجيل -->
+<div class="overlay" id="authDialog" aria-hidden="true"><section class="dialog auth-dialog"><button class="dialog-close" data-close="authDialog">×</button><div class="dialog-heading"><span class="section-kicker">7SABATK ACCOUNT</span><h2 id="authTitle">تسجيل الدخول</h2><p id="authSubtitle">مرحبًا بعودتك.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">تسجيل الدخول</button><button data-auth-tab="signup">إنشاء حساب</button></div>
+<form id="authForm"><label>البريد الإلكتروني<input name="email" type="email" required autocomplete="email" placeholder="name@example.com"></label><label id="nameField" hidden>الاسم<input name="fullName" type="text" autocomplete="name" placeholder="اسمك"></label><label>كلمة المرور<input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="8 أحرف على الأقل"></label><button class="button full-button" id="authSubmit">دخول</button><p class="form-message" id="authMessage" role="status"></p></form><p class="small-note">لن نطلب منك كلمة مرور أي منصة خارجية.</p></section></div>
+
+<!-- الإعدادات العامة للمستخدم -->
+<div class="overlay" id="settingsDialog" aria-hidden="true"><section class="dialog settings-dialog"><button class="dialog-close" data-close="settingsDialog">×</button><div class="dialog-heading"><span class="section-kicker">PERSONAL PREFERENCES</span><h2>إعدادات الموقع</h2><p>خصص طريقة عرض الموقع حسب تفضيلاتك.</p></div><div class="settings-list"><label>العملة المعروضة<select id="currencySelect"><option value="KWD">الدينار الكويتي (KWD)</option><option value="USD">الدولار الأمريكي (USD)</option><option value="EUR">اليورو (EUR)</option><option value="SAR">الريال السعودي (SAR)</option><option value="EGP">الجنيه المصري (EGP)</option></select></label><label>المظهر<select id="themeSelect"><option value="dark">داكن</option><option value="light">فاتح</option><option value="system">حسب الجهاز</option></select></label><label>لغة الأرقام<select id="numberLocale"><option value="ar">العربية</option><option value="en">الإنجليزية</option></select></label><label class="switch-row"><span><b>تقليل الحركة</b><small>إيقاف الحركات الانتقالية</small></span><input id="reduceMotion" type="checkbox"></label><label class="switch-row"><span><b>إشعارات المتصفح</b><small>لن يتم تفعيلها إلا بعد موافقتك</small></span><input id="browserNotifications" type="checkbox"></label></div><button class="button full-button" id="savePreferences">حفظ التفضيلات</button><p class="form-message" id="settingsMessage" role="status"></p></section></div>
+
+<!-- تفاصيل المنتج -->
+<div class="overlay" id="accountDialog" aria-hidden="true"><section class="dialog product-dialog"><button class="dialog-close" data-close="accountDialog">×</button><div class="product-image" id="detailImage"><span>7S</span></div><div class="product-info"><span class="category-tag" id="detailCategory"></span><h2 id="detailTitle"></h2><p class="card-username" id="detailUsername"></p><div class="product-price" id="detailPrice"></div><div class="modal-stats" id="detailStats"></div><p id="detailDescription"></p><a class="button full-button" id="detailContact" href="#contact">استفسر عن العرض</a><p class="small-note">لا تشارك كلمات المرور أو رموز الاسترداد أو البيانات الخاصة عبر الموقع.</p></div></section></div>
+
+<!-- صفحة الحساب داخل النافذة -->
+<div class="overlay" id="profileDialog" aria-hidden="true"><section class="dialog"><button class="dialog-close" data-close="profileDialog">×</button><div class="dialog-heading"><span class="section-kicker">MY ACCOUNT</span><h2>حسابي</h2><p id="profileEmail"></p></div><div class="profile-actions"><button class="button button-ghost" id="adminShortcut" hidden>لوحة تحكم الإدارة</button><button class="button button-ghost" id="signOut">تسجيل الخروج</button></div><p class="small-note">يمكنك تعديل اسمك من إعدادات الحساب لاحقًا.</p></section></div>
+<script type="module" src="assets/js/app.js"></script>
+</body></html>
