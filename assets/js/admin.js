@@ -2,7 +2,7 @@ import {supabase,isSupabaseConfigured} from './backend.js';
 const $=s=>document.querySelector(s);const OWNER_ADMIN_ID='be398df3-3918-46e1-abc4-59975ffe716b';let currentUser=null,listings=[],fieldDefinitions=[],fieldPlatformStates=[],selectedFieldPlatform='TikTok',productFieldDraft={};
 const toast=message=>{const el=$('#toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const platformKey=value=>String(value||'').trim().toLocaleLowerCase().replace(/\\s+/g,' ');
+const platformKey=value=>String(value||'').trim().toLocaleLowerCase().replace(/\s+/g,' ');
 function isFieldActiveForPlatform(field,platform=selectedFieldPlatform){
  const key=platformKey(platform);
  const override=fieldPlatformStates.find(x=>Number(x.field_id)===Number(field.id)&&x.platform_key===key);
@@ -38,7 +38,7 @@ async function loadFields(){
  ]);
  if(fieldError||stateError){
   fieldDefinitions=[];fieldPlatformStates=[];
-  $('#fieldsTable').innerHTML=`<tr><td colspan="4">${esc((fieldError||stateError).message)} — تأكد من تشغيل SQL الخاص بتخصيص الحقول حسب المنصة.</td></tr>`;
+  $('#fieldsTable').innerHTML=`<tr><td colspan="5">${esc((fieldError||stateError).message)} — تأكد من تشغيل SQL الخاص بتخصيص الحقول حسب المنصة.</td></tr>`;
   return;
  }
  fieldDefinitions=fields||[];fieldPlatformStates=states||[];
@@ -46,14 +46,20 @@ async function loadFields(){
  const platform=platformKey(selectedFieldPlatform);
  $('#fieldsTable').innerHTML=fieldDefinitions.map((f,i)=>{
   const active=isFieldActiveForPlatform(f,platform);
-  return `<tr><td>${esc(f.label_ar)} / ${esc(f.label_en)}</td><td>${esc(f.field_key)}</td><td>${f.field_type==='number'?'رقم':'نص'} · ${active?'نشط في '+esc(selectedFieldPlatform):'متوقف في '+esc(selectedFieldPlatform)}</td><td><div class="table-actions"><button data-field-up="${f.id}" ${i===0?'disabled':''}>↑</button><button data-field-down="${f.id}" ${i===fieldDefinitions.length-1?'disabled':''}>↓</button><button data-field-toggle="${f.id}">${active?'تعطيل لهذه المنصة':'تفعيل لهذه المنصة'}</button><button data-field-edit="${f.id}">تعديل</button><button class="danger" data-field-delete="${f.id}">حذف</button></div></td></tr>`;
- }).join('')||'<tr><td colspan="4">لا توجد حقول مخصصة.</td></tr>';
+  return `<tr><td>${esc(f.label_ar)} / ${esc(f.label_en)}</td><td>${esc(f.field_key)}</td><td><input class="field-scope-input" data-field-scope="${f.id}" value="${esc(f.platform_key||'*')}" aria-label="نطاق الحقل" title="اكتب * لكل المنصات أو اسم منصة مثل PUBG أو TikTok"></td><td>${f.field_type==='number'?'رقم':'نص'} · ${active?'نشط في '+esc(selectedFieldPlatform):'متوقف في '+esc(selectedFieldPlatform)}</td><td><div class="table-actions"><button data-field-scope-save="${f.id}">حفظ النطاق</button><button data-field-up="${f.id}" ${i===0?'disabled':''}>↑</button><button data-field-down="${f.id}" ${i===fieldDefinitions.length-1?'disabled':''}>↓</button><button data-field-toggle="${f.id}">${active?'تعطيل لهذه المنصة':'تفعيل لهذه المنصة'}</button><button data-field-edit="${f.id}">تعديل</button><button class="danger" data-field-delete="${f.id}">حذف</button></div></td></tr>`;
+ }).join('')||'<tr><td colspan="5">لا توجد حقول مخصصة.</td></tr>';
  renderCustomInputs();
  $('#fieldsTable').querySelectorAll('[data-field-toggle]').forEach(b=>b.addEventListener('click',async()=>{
   const field=fieldDefinitions.find(f=>String(f.id)===b.dataset.fieldToggle);if(!field)return;
   const platform_key=platformKey(selectedFieldPlatform),is_active=!isFieldActiveForPlatform(field,platform_key);
   const {error}=await supabase.from('listing_field_platforms').upsert({field_id:field.id,platform_key,is_active},{onConflict:'field_id,platform_key'});
   if(error)toast(error.message);else await loadFields();
+ }));
+ $('#fieldsTable').querySelectorAll('[data-field-scope-save]').forEach(b=>b.addEventListener('click',async()=>{
+  const id=b.dataset.fieldScopeSave,input=$(`#fieldsTable [data-field-scope="${id}"]`);
+  const scope=input?.value.trim()||'*';
+  const {error}=await supabase.from('listing_fields').update({platform_key:scope==='*'?'*':platformKey(scope)}).eq('id',id);
+  if(error)toast(error.message);else{toast('تم حفظ نطاق الحقل');await loadFields();}
  }));
  $('#fieldsTable').querySelectorAll('[data-field-edit]').forEach(b=>b.addEventListener('click',()=>editField(b.dataset.fieldEdit)));
  $('#fieldsTable').querySelectorAll('[data-field-delete]').forEach(b=>b.addEventListener('click',()=>deleteField(b.dataset.fieldDelete)));
@@ -84,7 +90,7 @@ $('#fieldPlatform')?.addEventListener('change',async()=>{
  selectedFieldPlatform=$('#fieldPlatform').value.trim()||'TikTok';
  await loadFields();
 });
-$('#fieldForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),ar=String(fd.get('label_ar')).trim(),en=String(fd.get('label_en')).trim(),slug=en.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||`field_${Date.now()}`,baseKey=`extra_${slug}`,field_key=fieldDefinitions.some(f=>f.field_key===baseKey)?`${baseKey}_${Date.now()}`:baseKey;const {error}=await supabase.from('listing_fields').insert({field_key,label_ar:ar,label_en:en,field_type:fd.get('field_type')||'number',is_active:true,sort_order:100+fieldDefinitions.length});if(error){toast(error.message);return;}e.currentTarget.reset();toast('تمت إضافة الحقل');await loadFields();});
+$('#fieldForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),ar=String(fd.get('label_ar')).trim(),en=String(fd.get('label_en')).trim(),slug=en.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||`field_${Date.now()}`,baseKey=`extra_${slug}`,field_key=fieldDefinitions.some(f=>f.field_key===baseKey)?`${baseKey}_${Date.now()}`:baseKey;const {error}=await supabase.from('listing_fields').insert({field_key,label_ar:ar,label_en:en,field_type:fd.get('field_type')||'number',platform_key:platformKey(selectedFieldPlatform),is_active:true,sort_order:100+fieldDefinitions.length});if(error){toast(error.message);return;}e.currentTarget.reset();toast('تمت إضافة الحقل');await loadFields();});
 async function updateField(id,patch){const {error}=await supabase.from('listing_fields').update(patch).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function editField(id){const f=fieldDefinitions.find(x=>String(x.id)===String(id));if(!f)return;const ar=prompt('اسم الحقل بالعربية',f.label_ar);if(ar===null)return;const en=prompt('اسم الحقل بالإنجليزية',f.label_en);if(en===null)return;const type=prompt('نوع البيانات: number أو text',f.field_type||'number');if(type===null)return;if(!['number','text'].includes(type.trim())){toast('نوع البيانات يجب أن يكون number أو text');return;}const {error}=await supabase.from('listing_fields').update({label_ar:ar.trim(),label_en:en.trim(),field_type:type.trim()}).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function deleteField(id){if(!confirm('حذف تعريف الحقل؟ القيم القديمة ستظل محفوظة داخل المنتجات لكنها لن تظهر.'))return;const {error}=await supabase.from('listing_fields').delete().eq('id',id);if(error)toast(error.message);else loadFields();}

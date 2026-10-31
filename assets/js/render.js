@@ -17,11 +17,26 @@ function valueForField(account, field) {
   if (field.field_key === "views_count") return account.average_views ?? null;
   return null;
 }
-function activeStats(account, fieldDefinitions, language) {
-  const dynamic = fieldDefinitions.filter(field => field.is_active).map(field => ({
-    label: language === "ar" ? field.label_ar : field.label_en,
-    value: valueForField(account, field)
-  })).filter(item => item.value !== null && item.value !== undefined && item.value !== "");
+function normalizePlatform(value) {
+  return String(value || "").trim().toLocaleLowerCase().replace(/\s+/g, " ");
+}
+function activeStats(account, fieldDefinitions, language, fieldPlatformStates = []) {
+  const platform = normalizePlatform(account.category);
+  const dynamic = fieldDefinitions
+    .filter(field => {
+      const scope = normalizePlatform(field.platform_key || "*");
+      if (scope !== "*" && scope !== platform) return false;
+      const override = fieldPlatformStates.find(item =>
+        Number(item.field_id) === Number(field.id) &&
+        normalizePlatform(item.platform_key) === platform
+      );
+      return override ? override.is_active === true : field.is_active === true;
+    })
+    .map(field => ({
+      label: language === "ar" ? field.label_ar : field.label_en,
+      value: valueForField(account, field)
+    }))
+    .filter(item => item.value !== null && item.value !== undefined && item.value !== "");
   if (fieldDefinitions.length) return dynamic;
   const fallback = language === "ar"
     ? [{ label: "عدد المتابعين", value: account.followers_count ?? account.followers }, { label: "متوسط المشاهدات", value: account.views_count ?? account.average_views }]

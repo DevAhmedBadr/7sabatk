@@ -102,7 +102,7 @@ $('#imageLightbox').addEventListener('click',e=>{if(e.target.id==='imageLightbox
 
 async function boot(){applyTheme(preferences.theme);document.documentElement.classList.toggle('reduce-motion',preferences.reduceMotion);document.documentElement.classList.toggle('compact-cards',preferences.compactCards);document.documentElement.dataset.imageFit=preferences.imageFit;$('#year').textContent=new Date().getFullYear();$('#languageSelect').value=preferences.language;$('#numberLocale').value=preferences.numberLocale;applyLanguage();try{rates=await getCurrencyRates();publicSettings=await loadPublicSettings();if(!localStorage.getItem('7sabatk_preferences_v3')&&['KWD','USD','EUR','SAR','EGP'].includes(publicSettings.default_currency)){preferences.currency=publicSettings.default_currency;savePreferences(preferences);}applySiteSettings();accounts=await loadAccounts();try{
  const [{data:fields,error:fieldsError},{data:states,error:statesError}]=await Promise.all([
-  supabase.from('listing_fields').select('id,field_key,label_ar,label_en,is_active,sort_order').eq('is_active',true).order('sort_order'),
+  supabase.from('listing_fields').select('id,field_key,label_ar,label_en,is_active,sort_order,platform_key').order('sort_order'),
   supabase.from('listing_field_platforms').select('field_id,platform_key,is_active')
  ]);
  if(fieldsError)throw fieldsError;if(statesError)throw statesError;
