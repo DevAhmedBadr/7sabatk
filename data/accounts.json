@@ -1,0 +1,30 @@
+{
+  "accounts": [
+    {
+      "id": "DH-001",
+      "title": "مثال — حساب ترفيهي",
+      "username": "@sample.entertainment",
+      "category": "ترفيه",
+      "price_kwd": 5.500,
+      "followers": 10000,
+      "averageViews": 50000,
+      "engagement": "—",
+      "image": "",
+      "description": "عنصر تجريبي للتوضيح فقط. استبدل بياناته ببيانات حقيقية ومصرح لك بعرضها.",
+      "createdAt": "2026-10-31"
+    },
+    {
+      "id": "DH-002",
+      "title": "مثال — حساب ألعاب",
+      "username": "@sample.gaming",
+      "category": "ألعاب",
+      "price_kwd": 12.750,
+      "followers": 25000,
+      "averageViews": 18000,
+      "engagement": "—",
+      "image": "",
+      "description": "عنصر تجريبي للتوضيح فقط. استبدل بياناته ببيانات حقيقية ومصرح لك بعرضها.",
+      "createdAt": "2026-10-30"
+    }
+  ]
+}
