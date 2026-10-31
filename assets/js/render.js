@@ -1,4 +1,4 @@
-import { formatPrice } from "./preferences.js";
+import { formatPrice, resolveNumberLocale } from "./preferences.js";
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -6,7 +6,8 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
 const escapeAttr = escapeHtml;
 function formatNumber(value, locale = "ar") {
   if (value === null || value === undefined || value === "") return "—";
-  return new Intl.NumberFormat(locale).format(value);
+  const safeLocale = resolveNumberLocale(locale, "ar");
+  return new Intl.NumberFormat(safeLocale).format(value);
 }
 function valueForField(account, field) {
   const custom = account.custom_fields && typeof account.custom_fields === "object" ? account.custom_fields : {};
