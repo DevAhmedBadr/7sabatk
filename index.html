@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d16">
+  <meta name="description" content="Digital Hub — كتالوج رقمي منظم لعرض الملفات والإحصائيات العامة.">
+  <title>Digital Hub | وجهتك الرقمية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#home" aria-label="Digital Hub - الرئيسية">
+        <span class="brand-mark">DH</span>
+        <span>DIGITAL <b>HUB</b></span>
+      </a>
+      <nav class="nav-links" aria-label="القائمة الرئيسية">
+        <a href="#home" class="active">الرئيسية</a>
+        <a href="#marketplace">الكتالوج</a>
+        <a href="#about">من نحن</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+      <a class="button button-small" href="#marketplace">تصفح الحسابات</a>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="pulse"></span> كتالوج رقمي منظم</span>
+          <h1>كل ما تبحث عنه<br><span>في مكان واحد.</span></h1>
+          <p>استكشف الحسابات المعروضة، وتعرّف على تفاصيلها وإحصائياتها العامة من خلال تجربة تصفح سهلة وواضحة.</p>
+          <div class="hero-actions">
+            <a class="button" href="#marketplace">استكشف الكتالوج <span>←</span></a>
+            <a class="button button-ghost" href="#about">اعرف المزيد</a>
+          </div>
+          <div class="hero-note"><span class="note-icon">✦</span> وضوح في التفاصيل، وسهولة في التصفح.</div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="glow"></div>
+          <div class="hero-card">
+            <div class="hero-card-top"><span>ملف رقمي</span><span class="live-dot">● متاح للاستفسار</span></div>
+            <div class="hero-avatar">DH</div>
+            <h3>ملفات مميزة</h3>
+            <p>تفاصيل منظمة وإحصائيات واضحة</p>
+            <div class="hero-metrics"><div><b>01</b><small>تفاصيل</small></div><div><b>02</b><small>إحصائيات</small></div><div><b>03</b><small>تصنيفات</small></div></div>
+          </div>
+          <div class="floating-chip">✦ Digital Hub</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section features-section">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-kicker">لماذا DIGITAL HUB؟</span>
+          <h2>تجربة أبسط وأكثر تنظيمًا</h2>
+          <p>كل المعلومات المهمة في واجهة واحدة، بدون تعقيد.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><span class="feature-icon">◈</span><h3>تفاصيل واضحة</h3><p>اعرف المعلومات والإحصائيات العامة لكل عنصر بسهولة.</p></article>
+          <article class="feature-card"><span class="feature-icon">⌕</span><h3>بحث سريع</h3><p>ابحث بالاسم أو التصنيف للوصول إلى ما تريده.</p></article>
+          <article class="feature-card"><span class="feature-icon">✧</span><h3>تواصل مباشر</h3><p>أرسل استفسارك عن طريق وسيلة التواصل المتاحة.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section marketplace-section" id="marketplace">
+      <div class="container">
+        <div class="section-heading heading-row">
+          <div><span class="section-kicker">الكتالوج</span><h2>الحسابات المعروضة</h2><p>تصفح العناصر المتاحة واستخدم البحث للوصول بسرعة.</p></div>
+          <span class="results-count" id="resultsCount">جارٍ تحميل البيانات...</span>
+        </div>
+        <div class="toolbar">
+          <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="ابحث عن حساب أو تصنيف..." autocomplete="off"></label>
+          <select id="categoryFilter" aria-label="تصفية حسب التصنيف"><option value="all">كل التصنيفات</option></select>
+          <select id="sortFilter" aria-label="ترتيب الحسابات"><option value="newest">الأحدث أولًا</option><option value="followers">الأكثر متابعين</option><option value="views">الأكثر مشاهدة</option></select>
+        </div>
+        <div class="account-grid" id="accountGrid" aria-live="polite"></div>
+        <div class="empty-state" id="emptyState" hidden><div class="empty-icon">⌕</div><h3>لا توجد نتائج</h3><p>جرّب تغيير كلمات البحث أو التصنيف.</p></div>
+        <p class="data-hint">تُحدّث بيانات الكتالوج من ملف <code>data/accounts.json</code>.</p>
+      </div>
+    </section>
+
+    <section class="section about-section" id="about">
+      <div class="container about-grid">
+        <div><span class="section-kicker">من نحن</span><h2>Digital Hub<br><span>وجهتك الرقمية.</span></h2></div>
+        <div class="about-copy"><p>Digital Hub منصة كتالوج رقمية تهدف إلى عرض المعلومات بطريقة مرتبة وسهلة الاستخدام. نحرص على وضوح البيانات واحترام خصوصية المستخدمين وشروط المنصات.</p><div class="values"><span>الشفافية</span><span>البساطة</span><span>الاحترافية</span></div></div>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contact">
+      <div class="container contact-panel">
+        <div><span class="section-kicker">تواصل معنا</span><h2>هل لديك استفسار؟</h2><p>يسعدنا استقبال أسئلتك بخصوص المعلومات المعروضة في الكتالوج.</p></div>
+        <a class="button" id="contactLink" href="mailto:hello@example.com">تواصل معنا <span>←</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container footer-inner"><a class="brand footer-brand" href="#home"><span class="brand-mark">DH</span><span>DIGITAL <b>HUB</b></span></a><span>© <span id="year"></span> Digital Hub. جميع الحقوق محفوظة.</span><a href="#home" class="back-top">العودة للأعلى ↑</a></div></footer>
+
+  <div class="modal" id="accountModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" type="button" aria-label="إغلاق" data-close-modal>×</button>
+      <div class="modal-cover"><span class="modal-avatar" id="modalAvatar">DH</span></div>
+      <div class="modal-content"><span class="section-kicker" id="modalCategory">تفاصيل الحساب</span><h2 id="modalTitle">اسم الحساب</h2><p class="modal-username" id="modalUsername"></p><div class="modal-stats" id="modalStats"></div><p class="modal-description" id="modalDescription"></p><a class="button modal-contact" id="modalContact" href="#contact">استفسر عن التفاصيل</a><p class="privacy-note">لا تشارك كلمات المرور أو رموز الاسترداد أو أي بيانات خاصة عبر الموقع.</p></div>
+    </section>
+  </div>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
