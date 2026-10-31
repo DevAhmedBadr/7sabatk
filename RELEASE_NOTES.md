@@ -1,0 +1,33 @@
+# 7sabatk — Release notes
+
+## Improvements in this package
+
+- Reworked the storefront and admin visual styling with a new marketplace-focused teal/navy visual system and responsive layouts.
+- Kept Arabic/English automatic device-language detection and language override.
+- Expanded personal preferences: currency, theme, number format, reduced motion, compact cards, reference visibility and image-fit selection.
+- Added full-size image preview and kept `contain` as the default so uploaded account screenshots are not cropped.
+- Expanded the account profile with display name, unique username, email confirmation, profile photo upload and password recovery by email OTP.
+- Added a forgot-password action directly in the sign-in dialog.
+- Fixed the owner dashboard shortcut so it is shown for the configured owner account; the dashboard still independently checks the owner UUID and database admin role.
+- Made listing statistics use the active dynamic field definitions in both cards and detail views.
+- Added custom field data types and ordering controls.
+- Hardened the database migration: owner-only listing/site-settings/field writes, safe profile column grants, profile email triggers and isolated avatar storage uploads.
+- Hardened the `admin-users` Edge Function and protected the owner account from customer-management actions.
+
+## Verification performed
+
+- JavaScript syntax checked with Node.js.
+- HTML parsed and duplicate IDs checked.
+- CSS parsed with tinycss2; no CSS parse errors remain.
+- Static selector-to-HTML ID checks passed.
+
+## Actions still required in the live project
+
+This ZIP does not modify GitHub or Supabase automatically. After uploading the repository:
+1. Back up the existing Supabase database.
+2. Run `supabase/migration_marketplace_v2.sql` in the existing project's SQL Editor.
+3. Deploy `supabase/functions/admin-users` with the Supabase CLI.
+4. Verify Authentication URL Configuration and email templates.
+5. Test signup, email confirmation, forgot password OTP, profile edits, avatar upload, owner dashboard, listing CRUD, dynamic fields, user ban/unban, email/password admin updates and user deletion against the live project.
+
+A static source check cannot prove live SMTP delivery, live database-policy behavior or Edge Function deployment. Those require testing against the actual Supabase project.

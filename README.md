@@ -1,40 +1,57 @@
-# 7sabatk — ربط النسخة الحالية بـ Supabase
+# 7sabatk — Digital Accounts Marketplace
 
-هذه الحزمة معدّلة لتطابق مشروع Supabase الذي أنشأته بالفعل في الخطوات السابقة: الجداول `profiles` و`listings` و`site_settings`، والـ Storage bucket باسم `listing-images`. لا تشغّل أي ملف SQL قديم ينشئ جداول مختلفة.
+A bilingual Arabic/English storefront for digital accounts owned and listed by the store owner. Visitors can browse listings; only the fixed owner account can create, edit, publish, hide or delete listings.
 
-## 1) إضافة مفتاح الربط العام
+## Frontend files
 
-تم إدخال رابط مشروع Supabase ومفتاح Publishable الخاص بك بالفعل في `assets/js/supabaseClient.js`. لا تحتاج إلى تعديلهما.
+- `index.html` — storefront, authentication, personal preferences, profile editor and account detail dialogs.
+- `admin.html` — owner-only dashboard for listings, custom fields, site settings and user administration.
+- `assets/css/marketplace-pro.css` — refreshed marketplace visual system and responsive refinements.
+- `assets/js/supabaseClient.js` — public Supabase URL and publishable key only. Never add a service-role key here.
+- `supabase/migration_marketplace_v2.sql` — additive upgrade for the existing Supabase project.
+- `supabase/functions/admin-users/index.ts` — server-side user administration using the service-role key from Supabase's function environment.
+- `supabase/email-templates/` — branded confirmation and OTP password-reset templates.
 
-رابط المشروع مضبوط مسبقًا. لا تستخدم `sb_secret_` أو `service_role` أو كلمة مرور قاعدة البيانات في ملفات الموقع. المفتاح `sb_publishable_` مخصص للمتصفح بشرط بقاء سياسات RLS مفعّلة.
+## Upgrade the existing Supabase project
 
-## 2) تنفيذ ترحيل صغير للحقول المطلوبة
+Do not create a new project. Before applying database changes, export/backup the current database schema and data.
 
-في Supabase → SQL Editor → New query، افتح وانسخ محتوى `supabase/migration_existing_project.sql` ثم اضغط Run مرة واحدة. هذا الترحيل يضيف حقل البريد إلى `profiles` وحقل التفاعل إلى `listings` ويملأ بريد حسابك الحالي. لا يعيد إنشاء الجداول ولا يغيّر دور admin.
+1. Open Supabase → SQL Editor.
+2. Run `supabase/migration_marketplace_v2.sql` from this repository. It is designed to be re-runnable and keeps existing listings and user records. It resets policies on `profiles`, `listings`, `listing_fields` and `site_settings` to the intended rules: public read of published listings/settings/active fields, owner-only listing and settings writes, and self-only safe profile updates.
+3. Confirm that the owner profile still has `role = 'admin'` and `is_banned = false`. The owner UUID used by this project is fixed in the migration and Edge Function.
+4. Deploy the Edge Function from the repository root:
 
-## 3) إعداد الموقع
+   ```bash
+   supabase link --project-ref lkxmdrxfdrlbppkairik
+   supabase functions deploy admin-users
+   ```
 
-1. فك ضغط الحزمة. افتح مجلد `7sabatk` الذي يحتوي مباشرة على `index.html`.
-2. ارفع محتويات هذا المجلد إلى جذر مستودع GitHub `7sabatk`، مع الحفاظ على مجلدات `assets` و`data` و`supabase` وملف `admin.html`.
-3. وافق على استبدال الملفات القديمة ثم Commit changes.
-4. بعد اكتمال GitHub Pages افتح `https://devahmedbadr.github.io/7sabatk/` مع `Ctrl + F5`.
+   `SUPABASE_SERVICE_ROLE_KEY` is read only from the Supabase Edge Function environment. Never copy it into the frontend, repository, ZIP, or GitHub.
+5. In Supabase → Authentication → URL Configuration, keep:
+   - Site URL: `https://devahmedbadr.github.io/7sabatk/`
+   - Redirect URL allowlist: `https://devahmedbadr.github.io/7sabatk/`
+6. In Authentication → Email Templates:
+   - Confirm signup: use `supabase/email-templates/confirm-signup.html`.
+   - Reset password: use `supabase/email-templates/reset-password-otp.html`.
+7. Custom SMTP must be configured separately in Supabase. Do not commit SMTP passwords or Google App Passwords to this repository.
+8. Push the updated repository to the `main` branch. Wait for the newest GitHub Pages workflow to complete successfully.
 
-## 4) تسجيل الدخول ولوحة الإدارة
+## Security model
 
-- سجّل الدخول ببريد الحساب الذي منحته دور `admin` في Supabase.
-- افتح `https://devahmedbadr.github.io/7sabatk/admin.html`.
-- لوحة الإدارة تتحقق من الدور من جدول `profiles`؛ إخفاء رابط الصفحة وحده ليس حماية.
-- المستخدمون الجدد يأخذون دور `user` تلقائيًا ولا يستطيعون ترقية أنفسهم.
+- The browser uses only the public Supabase publishable key. RLS is the security boundary for database access.
+- `public.is_admin()` requires both the fixed owner UUID and `profiles.role = 'admin'`; a different user cannot gain owner write privileges by changing a profile role.
+- Listing, field-definition and site-setting writes are restricted by RLS to the owner.
+- Profile clients can update only `full_name`, `username` and `avatar_url`; they cannot change `role`, `is_banned` or email copies in the profile table.
+- Email changes use Supabase Auth and require the configured confirmation flow.
+- Password changes from the user profile use the password-reset email OTP flow. Admin password resets use the server-side Edge Function.
+- The `avatars` bucket is public-read, but uploads/updates/deletes are restricted to the authenticated user's own folder.
+- The Edge Function authenticates the caller, checks the fixed owner UUID and admin role, and protects the owner account from customer-management actions.
+- Do not store account passwords, recovery codes, or private platform credentials in listing descriptions or images. Only list accounts you are authorized to transfer under the relevant platform terms.
 
-## 5) المنتجات والصور
+## Current storefront preferences
 
-لوحة الإدارة تقرأ وتكتب في جدول `listings` الحالي. الصور تُرفع إلى `listing-images` بحد 5 MB والأنواع JPG/PNG/WEBP. عرض الصور عام لأن الـ bucket Public؛ أما الرفع والتعديل والحذف فيتطلب جلسة admin وسياسات Storage التي أضفتها.
-
-لا تضع كلمات مرور حسابات المنصات أو البريد الخاص أو رموز الاسترداد في الموقع أو قاعدة البيانات. اعرض بيانات عامة فقط ومصرحًا بنشرها.
-
-## 6) ملاحظات
-
-- العملة الأساسية للأسعار هي KWD، ويستطيع الزائر اختيار KWD / USD / EUR / SAR / EGP. أسعار التحويل تُجلب من خدمة عامة وتُخزّن مؤقتًا في المتصفح.
-- لا توجد بوابة دفع في هذه النسخة.
-- تأكيد البريد مفعّل في إعدادات Supabase؛ خدمة البريد الافتراضية قد تكون محدودة. قبل فتح التسجيل للجمهور، اضبط SMTP مخصصًا واختبر رسائل التأكيد واستعادة كلمة المرور.
-- GitHub Pages يستضيف ملفات الواجهة فقط؛ Supabase يتولى المصادقة والبيانات والصلاحيات.
+- Device-language detection on first visit, with Arabic/English override.
+- Dark, light and system themes; display currency; number locale; reduced motion; compact cards; account-reference visibility; image fit.
+- Listing images default to `contain` so full profile screenshots are visible; users can optionally choose `cover`. Images can be opened in a full-screen viewer.
+- Account profile supports display name, unique username, email update confirmation, profile photo and password reset by email OTP.
+- Account statistics are driven by `listing_fields`, including labels, type, active state and display order.
