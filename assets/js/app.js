@@ -178,16 +178,7 @@ function applySiteSettings() {
         announcementBar.setAttribute("role", "status");
         announcementBar.setAttribute("aria-live", "polite");
         announcementBar.dataset.style = publicSettings.announcement_style || "teal";
-        if (link && /^https?:\\/\\//i.test(link)) {
-            announcementBar.href = link;
-            announcementBar.target = "_blank";
-            announcementBar.rel = "noopener noreferrer";
-            announcementBar.setAttribute("aria-label", announcement);
-        } else {
-            announcementBar.removeAttribute("href");
-            announcementBar.removeAttribute("target");
-            announcementBar.removeAttribute("rel");
-        }
+        if (link) {\n            try {\n                const parsedLink = new URL(link, window.location.href);\n                if (!["http:", "https:"].includes(parsedLink.protocol)) throw new Error("Invalid announcement URL");\n                announcementBar.href = parsedLink.href;\n                announcementBar.target = "_blank";\n                announcementBar.rel = "noopener noreferrer";\n                announcementBar.setAttribute("aria-label", announcement);\n            } catch {\n                announcementBar.removeAttribute("href");\n                announcementBar.removeAttribute("target");\n                announcementBar.removeAttribute("rel");\n            }\n        }
     }
     if (publicSettings.maintenance_mode === true) {
         $('#marketplace .container').innerHTML = `<div class="section-heading"><h2>${language === 'ar' ? 'المتجر تحت الصيانة' : 'Store maintenance'}</h2></div>`;

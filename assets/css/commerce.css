@@ -129,3 +129,8 @@ html {
 .site-copy-panel{margin-top:18px}
 .site-copy-panel label{display:grid;gap:8px;margin:16px 0;color:var(--text,#fff);font-weight:700}
 .site-copy-panel textarea{width:100%;min-height:220px;resize:vertical;padding:13px;border:1px solid #2b4354;border-radius:12px;background:#081722;color:#dcecf3;font:12px/1.6 ui-monospace,monospace}
+
+
+/* Announcement bar must not cover navigation or page controls. */
+#announcement[hidden] { display: none !important; }
+#announcement:not([hidden]) { position: relative; z-index: 1; }

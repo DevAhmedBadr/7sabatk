@@ -55,3 +55,8 @@ footer{border-top:1px solid #ffffff12;padding:25px 0;color:var(--muted);font-siz
 .announcement[data-style="purple"]{background:linear-gradient(90deg,#50318e,#8660d5)}
 .announcement[data-style="warning"]{background:linear-gradient(90deg,#8b4a14,#d58a24);color:#fff}
 .announcement[href]{cursor:pointer}
+
+
+/* Announcement bar must not cover navigation or page controls. */
+#announcement[hidden] { display: none !important; }
+#announcement:not([hidden]) { position: relative; z-index: 1; }
