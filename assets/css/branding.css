@@ -1,7 +1,6 @@
-
 /* =========================================
    7sabatk Brand Identity
-   SevenX Technologies
+   Hero banner beside the main copy
 ========================================= */
 
 .brand {
@@ -21,34 +20,50 @@
   height: 36px;
 }
 
-/* Main Banner */
+/* Hero layout: copy on the right, banner image on the left (RTL) */
 
 .hero {
-  padding-top: 24px;
+  padding: 72px 0 68px;
 }
 
-.hero-banner-wrap {
-  margin-bottom: 28px;
+.hero-grid {
+  display: grid !important;
+  grid-template-columns: 1.08fr .92fr;
+  align-items: center;
+  gap: 54px;
+}
+
+.hero-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1.5 / 1;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(0, 225, 225, .22);
+  border-radius: 25px;
+  background: #061522;
+  box-shadow: 0 22px 65px rgba(0, 0, 0, .28);
 }
 
 .hero-banner-image {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 7;
+  height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  border: 1px solid rgba(0, 225, 225, .22);
-  border-radius: 22px;
-  box-shadow: 0 22px 65px rgba(0, 0, 0, .28);
+  object-position: center;
+  border-radius: inherit;
   background: #061522;
 }
 
-/*
- Keep original hero markup in the DOM
- because app.js uses it for language updates.
-*/
-
-.hero-grid {
+/* Avoid downloading the old decorative hero-card styles visually. */
+.hero-art .glow,
+.hero-art .hero-card,
+.hero-art .floating-chip {
   display: none !important;
 }
 
@@ -58,24 +73,39 @@
 
 /* Responsive */
 
-@media (max-width: 700px) {
-
+@media (max-width: 850px) {
   .hero {
-    padding-top: 14px;
+    padding: 54px 0 48px;
   }
 
-  .hero-banner-wrap {
-    margin-bottom: 20px;
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
 
-  .hero-banner-image {
-    border-radius: 13px;
-    aspect-ratio: 4 / 3;
+  .hero-art {
+    width: min(100%, 650px);
+    margin-inline: auto;
+    aspect-ratio: 1.7 / 1;
   }
+}
 
+@media (max-width: 620px) {
   .brand-logo {
     width: 35px;
     height: 35px;
   }
 
+  .hero {
+    padding: 38px 0 36px;
+  }
+
+  .hero-art {
+    aspect-ratio: 1.45 / 1;
+    border-radius: 16px;
+  }
+
+  .hero-banner-image {
+    border-radius: 16px;
+  }
 }
