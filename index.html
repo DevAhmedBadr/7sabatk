@@ -8,6 +8,9 @@
   <meta name="description" content="7sabatk من SevenX Technologies: منصة متكاملة للحسابات الرقمية وخدمات السوشيال ميديا والاشتراكات الرقمية.">
   <title>7sabatk | منصة رقمية متكاملة</title>
 
+  <link rel="preload" as="image" href="assets/images/banner-ar.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/images/banner-en.webp">
+  <link rel="preload" as="image" href="assets/images/7sabatk-logo.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +26,7 @@
 <header class="site-header">
   <div class="container nav">
     <a class="brand" href="#home">
-      <img class="brand-logo" src="assets/images/7sabatk-logo.png" alt="7sabatk">
+      <img class="brand-logo" src="assets/images/7sabatk-logo.webp" loading="eager" decoding="async" alt="7sabatk">
       <span data-brand-name>موقع حساباتك</span>
     </a>
 
@@ -50,16 +53,6 @@
 
   <!-- Main Banner -->
   <section class="hero">
-    <div class="container hero-banner-wrap">
-      <img
-        id="heroBanner"
-        class="hero-banner-image"
-        src="assets/images/banner-ar.png"
-        alt="7sabatk — منصة رقمية متكاملة"
-      >
-    </div>
-
-    <!-- Original hero markup retained for app.js compatibility -->
     <div class="container hero-grid">
       <div class="hero-copy">
         <span class="eyebrow">
@@ -84,23 +77,18 @@
         </div>
       </div>
 
-      <div class="hero-art" aria-hidden="true">
-        <div class="glow"></div>
-        <div class="hero-card">
-          <div class="hero-card-top">
-            <span>7sabatk</span>
-            <span class="live-dot">● SevenX Technologies</span>
-          </div>
-          <div class="hero-avatar">@</div>
-          <h3>منصة رقمية متكاملة</h3>
-          <p>Accounts · Services · Subscriptions</p>
-          <div class="hero-metrics">
-            <div><b>01</b><small>Accounts</small></div>
-            <div><b>02</b><small>Services</small></div>
-            <div><b>03</b><small>Subscriptions</small></div>
-          </div>
-        </div>
-        <div class="floating-chip">✦ 7sabatk</div>
+      <div class="hero-art">
+        <!-- Compatibility hook used by the existing language script -->
+        <div class="hero-card-top" hidden><span>7sabatk</span></div>
+        <img
+          id="heroBanner"
+          class="hero-banner-image"
+          src="assets/images/banner-ar.webp"
+          alt="7sabatk — منصة رقمية متكاملة"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        >
       </div>
     </div>
   </section>
@@ -253,7 +241,7 @@
   <div class="container footer-inner">
 
     <a class="brand footer-brand" href="#home">
-      <img class="brand-logo" src="assets/images/7sabatk-logo.png" alt="7sabatk">
+      <img class="brand-logo" src="assets/images/7sabatk-logo.webp" loading="eager" decoding="async" alt="7sabatk">
       <span data-brand-name>موقع حساباتك</span>
     </a>
 
