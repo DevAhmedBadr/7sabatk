@@ -158,11 +158,13 @@ export function openDialog(id) {
   el.classList.add("open");
   el.setAttribute("aria-hidden", "false");
   document.body.classList.add("dialog-open");
+  if (id === "accountDialog") document.body.classList.add("account-dialog-open");
 }
 export function closeDialog(id) {
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.remove("open");
   el.setAttribute("aria-hidden", "true");
+  if (id === "accountDialog") document.body.classList.remove("account-dialog-open");
   if (!document.querySelector(".overlay.open")) document.body.classList.remove("dialog-open");
 }

@@ -539,3 +539,19 @@
     overflow-x: hidden;
   }
 }
+
+
+/* On phones, move the sticky header behind the account-details experience.
+   The body class is toggled by render.js only while accountDialog is open. */
+@media (max-width: 620px) {
+  body.account-dialog-open .site-header {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+  }
+
+  body.account-dialog-open #accountDialog {
+    z-index: 2147483000 !important;
+  }
+}
