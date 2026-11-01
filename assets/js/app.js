@@ -34,12 +34,20 @@ function applyDynamicHtmlTexts(){
   const index=[...node.parentElement.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).indexOf(node);
   const key=dynamicTextPath(node,root)+`::text:${index}`;
   const entry=saved[key],value=entry?.[language];
-  if(typeof value==='string'&&value.trim())node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),value);
+  // Apply an override only when this is still the exact source text scanned
+  // from index.html. This prevents stale DOM paths from changing unrelated
+  // elements after the language script or dynamic rendering changes the DOM.
+  const current=node.nodeValue.trim();
+  if(typeof value==='string'&&value.trim()&&current===entry?.source){
+   node.nodeValue=node.nodeValue.replace(current,value);
+  }
  }
  document.querySelectorAll('input,textarea,button,a,[title],[aria-label],[placeholder],[alt]').forEach(el=>{
   ['placeholder','title','aria-label','alt'].forEach(attr=>{
    const key=dynamicTextPath(el,root)+`::attr:${attr}`;
-   const value=saved[key]?.[language];if(typeof value==='string'&&value.trim())el.setAttribute(attr,value);
+   const entry=saved[key],value=entry?.[language];
+   const current=(el.getAttribute(attr)||'').trim();
+   if(typeof value==='string'&&value.trim()&&current===entry?.source)el.setAttribute(attr,value);
   });
  });
 }
