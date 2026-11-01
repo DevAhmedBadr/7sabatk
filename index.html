@@ -275,17 +275,27 @@
     </div>
 
     <form id="authForm">
-      <label>
-        البريد الإلكتروني
-        <input name="email" type="email" required autocomplete="email" placeholder="name@example.com">
+      <label id="authIdentifierLabel">
+        البريد الإلكتروني أو اسم المستخدم
+        <input name="email" type="text" required autocomplete="username" placeholder="name@example.com أو username">
       </label>
 
-      <label>
+      <label id="authUsernameLabel" hidden>
+        اسم المستخدم
+        <input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" autocomplete="username" placeholder="username">
+      </label>
+
+      <label id="authPasswordLabel">
         كلمة المرور
         <input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="8 أحرف على الأقل">
       </label>
 
-      <button class="button full-button" id="authSubmit">دخول</button>
+      <label id="authConfirmPasswordLabel" hidden>
+        تأكيد كلمة المرور
+        <input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور">
+      </label>
+
+      <button class="button full-button" id="authSubmit" type="submit">دخول</button>
       <p class="form-message" id="authMessage" role="status"></p>
     </form>
 
