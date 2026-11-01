@@ -360,3 +360,130 @@
     flex-basis: 84%;
   }
 }
+
+
+/* Mobile-only marketplace refinements — desktop styles remain untouched. */
+@media (max-width: 620px) {
+  /* Shorter hero banner: keep the same artwork, colors and rounded frame. */
+  .hero-art {
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 2.45 / 1;
+    overflow: hidden;
+  }
+
+  .hero-art > .hero-banner-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  /* Account listings become a compact horizontal swipe carousel. */
+  .account-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 3px 2px 12px;
+    margin-inline: -2px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #18b8a6 transparent;
+  }
+
+  .account-card {
+    flex: 0 0 min(82%, 340px);
+    min-width: 0;
+    scroll-snap-align: start;
+    border-radius: 16px;
+  }
+
+  .card-cover {
+    height: 125px;
+    overflow: hidden;
+  }
+
+  .card-cover .image-preview-button {
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: #fff;
+  }
+
+  .card-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+
+  .card-body h3 {
+    margin-top: 7px;
+    font-size: 14px;
+  }
+
+  .card-stats {
+    margin: 10px 0;
+    gap: 6px;
+  }
+
+  .card-stats b {
+    font-size: 13px;
+  }
+
+  .card-stats span {
+    font-size: 10px;
+  }
+
+  .price-row {
+    gap: 7px;
+    padding-top: 9px;
+  }
+
+  .card-footer {
+    padding-top: 9px;
+  }
+
+  /* Keep the close control above the account image/content on phones. */
+  #accountDialog .product-dialog {
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #accountDialog .dialog-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 12px;
+    background: rgba(7, 18, 29, .92);
+    color: #fff;
+    font-size: 27px;
+    line-height: 1;
+    box-shadow: 0 4px 16px rgba(0,0,0,.35);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  #accountDialog .dialog-close:focus-visible {
+    outline: 2px solid #20c8b5;
+    outline-offset: 2px;
+  }
+}
