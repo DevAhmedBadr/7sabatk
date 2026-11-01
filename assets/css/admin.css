@@ -8,3 +8,5 @@
 .table-actions{flex-wrap:wrap;max-width:360px}
 .table-actions button{white-space:nowrap}
 .admin-table small{color:#8d9ab3;direction:ltr;display:inline-block}
+
+.field-scope-input{max-width:130px;min-width:90px;padding:8px 10px;border:1px solid var(--line,#294253);border-radius:8px;background:var(--surface,#0b1722);color:inherit;text-align:center}

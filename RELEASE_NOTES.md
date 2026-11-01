@@ -31,3 +31,9 @@ This ZIP does not modify GitHub or Supabase automatically. After uploading the r
 5. Test signup, email confirmation, forgot password OTP, profile edits, avatar upload, owner dashboard, listing CRUD, dynamic fields, user ban/unban, email/password admin updates and user deletion against the live project.
 
 A static source check cannot prove live SMTP delivery, live database-policy behavior or Edge Function deployment. Those require testing against the actual Supabase project.
+
+## Hero banner and image loading update
+- Moved the Arabic/English promotional banner into the hero artwork area beside the main text.
+- Converted the logo and both banners from large PNG files to optimized WebP assets.
+- Preloaded the logo and both language banners for faster first paint.
+- Prioritized the first six marketplace card images and left later cards lazy-loaded to avoid downloading the entire catalog before the visitor needs it.

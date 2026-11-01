@@ -24,6 +24,11 @@ export function resolveLanguage(language = "auto") {
   if (language === "ar" || language === "en") return language;
   return /^ar/i.test(navigator.language || "") ? "ar" : "en";
 }
+
+export function resolveNumberLocale(locale = "auto", fallback = "ar") {
+  if (locale === "ar" || locale === "en") return locale;
+  return fallback === "en" ? "en" : "ar";
+}
 export function applyTheme(theme) {
   const resolved = theme === "system"
     ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
@@ -48,6 +53,7 @@ export async function getCurrencyRates() {
   }
 }
 export function formatPrice(priceKwd, currency, rates, locale = "ar") {
+  locale = resolveNumberLocale(locale, "ar");
   if (priceKwd === null || priceKwd === undefined || priceKwd === "") return locale === "ar" ? "السعر عند الاستفسار" : "Price on request";
   const rate = rates?.[currency];
   if (!rate) return `${new Intl.NumberFormat(locale).format(Number(priceKwd))} KWD`;

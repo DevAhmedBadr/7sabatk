@@ -1,4 +1,4 @@
-import { formatPrice } from "./preferences.js";
+import { formatPrice, resolveNumberLocale } from "./preferences.js";
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -6,7 +6,8 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
 const escapeAttr = escapeHtml;
 function formatNumber(value, locale = "ar") {
   if (value === null || value === undefined || value === "") return "—";
-  return new Intl.NumberFormat(locale).format(value);
+  const safeLocale = resolveNumberLocale(locale, "ar");
+  return new Intl.NumberFormat(safeLocale).format(value);
 }
 function valueForField(account, field) {
   const custom = account.custom_fields && typeof account.custom_fields === "object" ? account.custom_fields : {};
@@ -16,17 +17,67 @@ function valueForField(account, field) {
   if (field.field_key === "views_count") return account.average_views ?? null;
   return null;
 }
-function activeStats(account, fieldDefinitions, language) {
-  const dynamic = fieldDefinitions.filter(field => field.is_active).map(field => ({
-    label: language === "ar" ? field.label_ar : field.label_en,
-    value: valueForField(account, field)
-  })).filter(item => item.value !== null && item.value !== undefined && item.value !== "");
+function normalizePlatform(value) {
+  return String(value || "").trim().toLocaleLowerCase().replace(/\s+/g, " ");
+}
+function activeStats(account, fieldDefinitions, language, fieldPlatformStates = []) {
+  const platform = normalizePlatform(account.category);
+  const dynamic = fieldDefinitions
+    .filter(field => {
+      const scope = normalizePlatform(field.platform_key || "*");
+      if (scope !== "*" && scope !== platform) return false;
+      const override = fieldPlatformStates.find(item =>
+        Number(item.field_id) === Number(field.id) &&
+        normalizePlatform(item.platform_key) === platform
+      );
+      return override ? override.is_active === true : field.is_active === true;
+    })
+    .map(field => ({
+      label: language === "ar" ? field.label_ar : field.label_en,
+      value: valueForField(account, field)
+    }))
+    .filter(item => item.value !== null && item.value !== undefined && item.value !== "");
   if (fieldDefinitions.length) return dynamic;
   const fallback = language === "ar"
     ? [{ label: "عدد المتابعين", value: account.followers_count ?? account.followers }, { label: "متوسط المشاهدات", value: account.views_count ?? account.average_views }]
     : [{ label: "Followers", value: account.followers_count ?? account.followers }, { label: "Average views", value: account.views_count ?? account.average_views }];
   return fallback.filter(item => item.value !== null && item.value !== undefined && item.value !== "");
 }
+function warmAccountImageCache(accounts) {
+  const urls = [...new Set(accounts
+    .slice(6)
+    .map(account => account.image_url || account.image || "")
+    .filter(Boolean))];
+
+  if (!urls.length) return;
+
+  let nextIndex = 0;
+  let active = 0;
+  const concurrency = 3;
+
+  const loadNext = () => {
+    while (active < concurrency && nextIndex < urls.length) {
+      const url = urls[nextIndex++];
+      active++;
+
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = image.onerror = () => {
+        active--;
+        loadNext();
+      };
+      image.src = url;
+    }
+  };
+
+  // Let the page render first, then warm the remaining catalog images.
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(loadNext, { timeout: 1800 });
+  } else {
+    window.setTimeout(loadNext, 900);
+  }
+}
+
 function openImageLightbox(url, title) {
   const overlay = document.getElementById("imageLightbox");
   const image = document.getElementById("lightboxImage");
@@ -37,21 +88,21 @@ function openImageLightbox(url, title) {
   overlay.setAttribute("aria-hidden", "false");
 }
 
-export function renderAccounts(accounts, container, onDetails, preferences, rates, fieldDefinitions = [], language = "ar") {
+export function renderAccounts(accounts, container, onDetails, preferences, rates, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {
   container.innerHTML = "";
   const labels = language === "ar"
     ? { details: "عرض التفاصيل ←", available: "متاح", unavailable: "غير متاح", username: "اسم المستخدم", account: "حساب رقمي" }
     : { details: "View details →", available: "Available", unavailable: "Unavailable", username: "Username", account: "Digital account" };
 
-  for (const account of accounts) {
+  for (const [index, account] of accounts.entries()) {
     const card = document.createElement("article");
     card.className = "account-card";
     const image = account.image_url || account.image || "";
     const title = account.title || account.name || (language === "ar" ? "حساب بدون اسم" : "Untitled account");
     const avatar = image
-      ? `<button type="button" class="image-preview-button" aria-label="${language === "ar" ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="lazy"></button>`
+      ? `<button type="button" class="image-preview-button" aria-label="${language === "ar" ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="${index < 6 ? "eager" : "lazy"}" fetchpriority="${index < 2 ? "high" : "auto"}" decoding="async"></button>`
       : `<div class="card-avatar">${escapeHtml(title.slice(0, 2).toUpperCase())}</div>`;
-    const stats = activeStats(account, fieldDefinitions, language).slice(0, 3);
+    const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates).slice(0, 3);
     const ref = preferences.showReference === false ? "" : `<span class="ref-id">${escapeHtml(account.reference || account.id || "")}</span>`;
     card.innerHTML = `
       <div class="card-cover">${avatar}</div>
@@ -67,9 +118,11 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
     card.querySelector(".image-preview-button")?.addEventListener("click", () => openImageLightbox(image, title));
     container.appendChild(card);
   }
+
+  warmAccountImageCache(accounts);
 }
 
-export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar") {
+export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {
   const ar = language === "ar";
   const title = account.title || account.name || (ar ? "حساب بدون اسم" : "Untitled account");
   dialog.querySelector("#detailCategory").textContent = account.category || (ar ? "حساب رقمي" : "Digital account");
@@ -82,7 +135,7 @@ export function showAccountDetails(account, dialog, preferences, rates, settings
     ? `<button type="button" class="detail-image-preview" aria-label="${ar ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}"></button>`
     : `<span>7S</span>`;
   image.querySelector("button")?.addEventListener("click", () => openImageLightbox(imageUrl, title));
-  const stats = activeStats(account, fieldDefinitions, language);
+  const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates);
   dialog.querySelector("#detailStats").innerHTML = stats.map(s =>
     `<div class="modal-stat"><b>${escapeHtml(s.value)}</b><span>${escapeHtml(s.label)}</span></div>`
   ).join("");
