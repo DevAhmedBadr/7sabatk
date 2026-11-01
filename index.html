@@ -8,6 +8,9 @@
   <meta name="description" content="7sabatk من SevenX Technologies: منصة متكاملة للحسابات الرقمية وخدمات السوشيال ميديا والاشتراكات الرقمية.">
   <title>7sabatk | منصة رقمية متكاملة</title>
 
+  <link rel="icon" type="image/webp" href="assets/images/7sabatk-logo.webp">
+  <link rel="apple-touch-icon" href="assets/images/7sabatk-logo.webp">
+
   <link rel="preload" as="image" href="assets/images/banner-ar.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/images/banner-en.webp">
   <link rel="preload" as="image" href="assets/images/7sabatk-logo.webp">
@@ -19,6 +22,7 @@
   <link rel="stylesheet" href="assets/css/commerce.css">
   <link rel="stylesheet" href="assets/css/marketplace-pro.css">
   <link rel="stylesheet" href="assets/css/branding.css">
+<link rel="stylesheet" href="assets/css/mobile-responsive.css">
 </head>
 
 <body>
@@ -272,27 +276,37 @@
     </div>
 
     <form id="authForm">
-      <label>
-        البريد الإلكتروني
-        <input name="email" type="email" required autocomplete="email" placeholder="name@example.com">
+      <label id="authIdentifierLabel">
+        البريد الإلكتروني أو اسم المستخدم
+        <input name="email" type="text" required autocomplete="username" placeholder="name@example.com أو username">
       </label>
 
-      <label>
+      <label id="authUsernameLabel" hidden>
+        اسم المستخدم
+        <input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" autocomplete="username" placeholder="username">
+      </label>
+
+      <label id="authPasswordLabel">
         كلمة المرور
         <input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="8 أحرف على الأقل">
       </label>
 
-      <button class="button full-button" id="authSubmit">دخول</button>
+      <label id="authConfirmPasswordLabel" hidden>
+        تأكيد كلمة المرور
+        <input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور">
+      </label>
+
+      <button class="button full-button" id="authSubmit" type="submit">دخول</button>
       <p class="form-message" id="authMessage" role="status"></p>
+      <!-- Required by app.js; kept hidden because the privacy note was removed from the UI. -->
+      <p id="authPrivacyNote" hidden></p>
     </form>
 
     <button type="button" class="text-button forgot-password" id="forgotPassword">
       نسيت كلمة المرور؟
     </button>
 
-    <p class="small-note" id="authPrivacyNote">
-      لن نطلب منك كلمة مرور أي منصة خارجية. بيانات الدخول هنا تخص حسابك في الموقع فقط.
-    </p>
+
 
   </section>
 </div>
@@ -409,10 +423,7 @@
       <a class="button full-button" id="detailContact" href="#contact">
         استفسر عن العرض
       </a>
-
-      <p class="small-note">
-        لا تشارك كلمات المرور أو رموز الاسترداد أو البيانات الخاصة عبر الموقع.
-      </p>
+      
     </div>
 
   </section>
@@ -458,6 +469,8 @@
 
       <button class="button full-button" type="submit">حفظ بيانات الحساب</button>
       <p class="form-message" id="profileMessage" role="status"></p>
+      <!-- Required by app.js; kept hidden because the privacy note was removed from the UI. -->
+      <p id="profilePrivacyNote" hidden></p>
 
     </form>
 
@@ -475,9 +488,6 @@
       </button>
     </div>
 
-    <p class="small-note" id="profilePrivacyNote">
-      تغيير البريد يتطلب تأكيد البريد الجديد. لا تشارك كلمة مرور حسابك أو رموز التحقق مع أي شخص.
-    </p>
 
   </section>
 </div>

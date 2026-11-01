@@ -9,3 +9,36 @@ footer{border-top:1px solid #ffffff12;padding:25px 0;color:var(--muted);font-siz
 .modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:18px}.modal.open{display:grid}.modal-backdrop{position:absolute;inset:0;background:#05060bdd;backdrop-filter:blur(5px)}.modal-panel{position:relative;width:min(500px,100%);max-height:90vh;overflow:auto;background:#141a2a;border:1px solid var(--line);border-radius:22px;box-shadow:0 25px 80px #000a}.modal-close{position:absolute;top:10px;left:13px;z-index:2;border:0;background:#ffffff12;color:white;border-radius:10px;width:34px;height:34px;font-size:22px;cursor:pointer}.modal-cover{height:120px;background:radial-gradient(circle at 70% 30%,#7651d855,transparent 40%),linear-gradient(135deg,#222943,#111522);display:flex;align-items:end;padding:0 23px}.modal-avatar{width:66px;height:66px;border-radius:20px;background:linear-gradient(135deg,#8e65ff,#3a9eae);border:4px solid #141a2a;display:grid;place-items:center;font-weight:900;overflow:hidden}.modal-avatar img{width:100%;height:100%;object-fit:cover}.modal-content{padding:20px 23px 23px}.modal-content h2{margin:5px 0 0;font-size:23px}.modal-username{color:var(--muted);font-size:12px;direction:ltr;text-align:right;margin:0}.modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:17px 0}.modal-stat{background:#ffffff09;border:1px solid #ffffff10;border-radius:12px;padding:10px;text-align:center}.modal-stat b,.modal-stat span{display:block}.modal-stat b{font-size:16px}.modal-stat span{font-size:10px;color:var(--muted)}.modal-description{color:var(--muted);font-size:12px}.privacy-note{font-size:10px;color:#8c97ad;border-top:1px solid var(--line);padding-top:12px;margin-top:16px}
 @media(max-width:850px){.hero-grid{grid-template-columns:1fr;gap:35px}.hero-art{min-height:340px}.feature-grid,.account-grid{grid-template-columns:repeat(2,1fr)}.nav-links{gap:14px}}
 @media(max-width:620px){.container{width:calc(100% - 28px)}.nav{height:68px}.nav-links{display:none}.nav>.button{font-size:10px;padding:8px 11px}.hero{padding:55px 0}.hero-art{min-height:320px;padding:17px}.feature-grid,.account-grid,.about-grid{grid-template-columns:1fr}.section{padding:52px 0}.heading-row{align-items:start;flex-direction:column}.toolbar{flex-direction:column}.toolbar select{width:100%}.contact-panel{align-items:start;flex-direction:column;padding:23px}.about-grid h2{font-size:32px}}
+
+
+/* 7sabatk hero banner: fill the frame without empty bands */
+.hero-art {
+    height: 380px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    display: block;
+}
+
+.hero-art > .hero-banner-image {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+@media (max-width: 850px) {
+    .hero-art {
+        height: 340px !important;
+    }
+}
+
+@media (max-width: 620px) {
+    .hero-art {
+        height: 320px !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+    }
+}

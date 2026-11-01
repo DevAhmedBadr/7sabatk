@@ -1,0 +1,353 @@
+/*
+ * 7sabatk – Mobile refinement
+ * Desktop styles are intentionally untouched.
+ * These rules only apply to tablet/mobile widths.
+ */
+
+@media (max-width: 850px) {
+  .container {
+    width: min(100% - 36px, 720px);
+  }
+
+  .nav {
+    gap: 14px;
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .hero-copy {
+    min-width: 0;
+  }
+
+  .hero-copy > p {
+    max-width: 100%;
+  }
+
+  .hero-art {
+    width: min(100%, 650px);
+    margin-inline: auto;
+  }
+
+  .heading-row {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: 0;
+  }
+
+  .account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  html {
+    scroll-padding-top: 78px;
+  }
+
+  .container {
+    width: calc(100% - 32px);
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .nav {
+    min-height: 68px;
+    height: auto;
+    padding: 9px 0;
+    gap: 9px;
+  }
+
+  .brand {
+    gap: 7px;
+    font-size: 12px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nav-actions {
+    gap: 7px;
+    flex-shrink: 0;
+  }
+
+  .nav-actions .button,
+  .nav > .button {
+    min-height: 40px;
+    padding: 8px 11px;
+    font-size: 11px;
+    border-radius: 11px;
+    white-space: nowrap;
+  }
+
+  .hero {
+    padding: 38px 0 34px;
+  }
+
+  .hero-grid {
+    gap: 24px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    padding: 5px 11px;
+  }
+
+  h1 {
+    font-size: clamp(32px, 9vw, 43px);
+    line-height: 1.28;
+    letter-spacing: -0.035em;
+    margin: 14px 0 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-copy > p {
+    font-size: 14px;
+    line-height: 1.9;
+    margin-bottom: 19px;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .hero-note {
+    margin-top: 16px;
+    font-size: 11px;
+  }
+
+  .hero-art {
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 1.45 / 1;
+    border-radius: 18px;
+  }
+
+  .hero-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+  }
+
+  .section {
+    padding: 42px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 20px;
+  }
+
+  .section-heading h2,
+  .about-grid h2,
+  .contact-panel h2 {
+    font-size: clamp(25px, 7vw, 32px);
+    line-height: 1.4;
+  }
+
+  .section-heading p,
+  .contact-panel p {
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .feature-grid,
+  .account-grid,
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feature-grid {
+    gap: 12px;
+  }
+
+  .feature-card {
+    padding: 19px;
+    border-radius: 20px;
+  }
+
+  .feature-card h3 {
+    font-size: 16px;
+  }
+
+  .feature-card p {
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .heading-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .results-count {
+    white-space: normal;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin: 18px 0;
+  }
+
+  .search-box {
+    width: 100%;
+    min-height: 49px;
+    padding-inline: 12px;
+  }
+
+  .search-box input {
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .toolbar select {
+    width: 100%;
+    min-height: 48px;
+    font-size: 13px;
+  }
+
+  .account-grid {
+    gap: 15px;
+  }
+
+  .account-card {
+    border-radius: 19px;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .card-stats {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-stats > * {
+    min-width: 0;
+  }
+
+  .card-stats b {
+    font-size: 14px;
+  }
+
+  .about-grid {
+    gap: 18px;
+  }
+
+  .about-grid h2 {
+    font-size: 30px;
+  }
+
+  .about-copy p {
+    font-size: 13px;
+    line-height: 1.95;
+  }
+
+  .values {
+    gap: 8px;
+  }
+
+  .values span {
+    font-size: 11px;
+  }
+
+  .contact-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 22px 19px;
+    border-radius: 22px;
+  }
+
+  .contact-panel .button {
+    width: 100%;
+    min-height: 49px;
+  }
+
+  .footer-inner {
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .modal {
+    padding: 10px;
+    align-items: center;
+  }
+
+  .modal-panel {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    border-radius: 19px;
+  }
+
+  .modal-content {
+    padding: 17px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+
+  .brand {
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .brand-logo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .nav-actions .button,
+  .nav > .button {
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+
+  h1 {
+    font-size: 31px;
+  }
+
+  .hero-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card-stats {
+    font-size: 9px;
+  }
+}
