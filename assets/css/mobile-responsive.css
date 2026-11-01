@@ -487,3 +487,55 @@
     outline-offset: 2px;
   }
 }
+
+
+/* Mobile account-details dialog: render above the sticky site header. */
+@media (max-width: 620px) {
+  .site-header {
+    z-index: 20;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000 !important;
+    align-items: flex-start;
+    justify-content: center;
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 12px)
+      10px
+      calc(env(safe-area-inset-bottom, 0px) + 12px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .overlay.open {
+    display: flex;
+  }
+
+  .overlay > .dialog {
+    position: relative;
+    width: 100%;
+    max-height: calc(
+      100dvh - env(safe-area-inset-top, 0px)
+      - env(safe-area-inset-bottom, 0px) - 24px
+    );
+    margin: 0 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .overlay .dialog-close {
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+    float: left;
+    margin: 0 0 -35px 0;
+  }
+
+  .overlay .product-dialog {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
