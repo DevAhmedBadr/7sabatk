@@ -13,7 +13,6 @@ let accounts = [], preferences = getPreferences(), rates = {
 function t(k) {
     if (k === "brand" && publicSettings.site_name) return publicSettings.site_name;
     return textOverrides?.[language]?.[k] ?? translations[language][k] ?? k;
-}  return translations[language][k] || k;
 }
 function applyLanguage() {
     const globalLanguage = publicSettings.default_language;
