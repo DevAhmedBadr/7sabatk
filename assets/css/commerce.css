@@ -56,3 +56,68 @@ html {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+
+/* Keep product details modal within the screen */
+.product-dialog {
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+/* Keep the product image from stretching with long descriptions */
+.product-image {
+    min-height: 0;
+    max-height: 90vh;
+    align-self: stretch;
+    overflow: hidden;
+}
+
+.product-image img {
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Make the description independently scrollable */
+#detailDescription {
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding-inline-end: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #13b8b0 #0b1520;
+}
+
+/* Custom scrollbar for long descriptions */
+#detailDescription::-webkit-scrollbar {
+    width: 7px;
+}
+
+#detailDescription::-webkit-scrollbar-track {
+    background: #0b1520;
+    border-radius: 10px;
+}
+
+#detailDescription::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #20c8b5, #087f91);
+    border-radius: 10px;
+}
+
+/* Mobile layout */
+@media (max-width: 760px) {
+    .product-dialog {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .product-image {
+        min-height: 180px;
+        max-height: 220px;
+    }
+
+    #detailDescription {
+        max-height: 200px;
+    }
+}
+
