@@ -95,11 +95,88 @@ $('#fieldForm').addEventListener('submit',async e=>{e.preventDefault();const fd=
 async function updateField(id,patch){const {error}=await supabase.from('listing_fields').update(patch).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function editField(id){const f=fieldDefinitions.find(x=>String(x.id)===String(id));if(!f)return;const ar=prompt('اسم الحقل بالعربية',f.label_ar);if(ar===null)return;const en=prompt('اسم الحقل بالإنجليزية',f.label_en);if(en===null)return;const type=prompt('نوع البيانات: number أو text',f.field_type||'number');if(type===null)return;if(!['number','text'].includes(type.trim())){toast('نوع البيانات يجب أن يكون number أو text');return;}const {error}=await supabase.from('listing_fields').update({label_ar:ar.trim(),label_en:en.trim(),field_type:type.trim()}).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function deleteField(id){if(!confirm('حذف تعريف الحقل؟ القيم القديمة ستظل محفوظة داخل المنتجات لكنها لن تظهر.'))return;const {error}=await supabase.from('listing_fields').delete().eq('id',id);if(error)toast(error.message);else loadFields();}
-function renderSiteTextFields(language,overrides={}){const container=$(`#siteTextFields${language==='ar'?'Ar':'En'}`);if(!container)return;const dictionary=translations[language]||{};container.innerHTML=Object.entries(dictionary).map(([key,defaultValue])=>{const value=Object.prototype.hasOwnProperty.call(overrides,key)?overrides[key]:defaultValue;const long=/Text|Sub|Welcome|Invalid|Mismatch|Taken/i.test(key)||String(value).length>90;return `<label class="site-text-field" data-search="${esc(key+' '+value+' '+defaultValue).toLocaleLowerCase()}"><span>${esc(key)}</span>${long?`<textarea data-copy-lang="${language}" data-copy-key="${esc(key)}" rows="2">${esc(value)}</textarea>`:`<input data-copy-lang="${language}" data-copy-key="${esc(key)}" value="${esc(value)}">`}<small>الافتراضي: ${esc(defaultValue)}</small></label>`;}).join('');}
-async function loadSettings(){const {data,error}=await supabase.from('site_settings').select('key,value');if(error){toast(error.message);return;}const values=Object.fromEntries((data||[]).map(x=>[x.key,x.value]));const f=$('#siteForm');for(const [key,value] of Object.entries(values)){const field=f.elements[key];if(field){if(field.type==='checkbox')field.checked=(value===true||value==='true'||value===1);else field.value=value??'';}}$('#statCurrency').textContent=values.default_currency||'KWD';renderSiteTextFields('ar',values.site_text_ar||{});renderSiteTextFields('en',values.site_text_en||{});}
-$('#siteForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,fd=new FormData(f),keys=['site_name','default_currency','whatsapp_number','contact_email','announcement_text_ar','announcement_text_en','announcement_style','default_language'];const rows=keys.filter(k=>f.elements[k]).map(key=>({key,value:fd.get(key)||''}));rows.push({key:'announcement_enabled',value:f.elements.announcement_enabled.checked},{key:'maintenance_mode',value:f.elements.maintenance_mode.checked},{key:'show_unavailable',value:f.elements.show_unavailable.checked});const {error}=await supabase.from('site_settings').upsert(rows,{onConflict:'key'});$('#siteMessage').textContent=error?error.message:'تم حفظ إعدادات الموقع.';if(!error){toast('تم حفظ الإعدادات');$('#statCurrency').textContent=f.elements.default_currency.value;}});
+
+function domPath(node,root){
+ const parts=[];let el=node.nodeType===Node.TEXT_NODE?node.parentElement:node;
+ while(el&&el!==root){
+  const parent=el.parentElement;if(!parent)break;
+  const same=[...parent.children].filter(x=>x.tagName===el.tagName);
+  parts.unshift(`${el.tagName.toLowerCase()}:`+same.indexOf(el));
+  el=parent;
+ }
+ return parts.join('>');
+}
+function scanIndexTexts(doc){
+ const root=doc.body||doc.documentElement,items=[];
+ const walker=doc.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+ let node;
+ while((node=walker.nextNode())){
+  const value=node.nodeValue.replace(/\s+/g,' ').trim();
+  if(!value||!node.parentElement||node.parentElement.closest('script,style,noscript,template,svg,code,pre'))continue;
+  const path=domPath(node,root)+`::text:${[...node.parentElement.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).indexOf(node)}`;
+  items.push({key:path,source:value,tag:node.parentElement.tagName.toLowerCase(),kind:'text'});
+ }
+ doc.querySelectorAll('input,textarea,button,a,[title],[aria-label],[placeholder],[alt]').forEach((el)=>{
+  ['placeholder','title','aria-label','alt'].forEach(attr=>{
+   const value=el.getAttribute(attr);if(!value||!value.trim())return;
+   const key=domPath(el,root)+`::attr:${attr}`;
+   if(!items.some(x=>x.key===key))items.push({key,source:value.trim(),tag:el.tagName.toLowerCase(),kind:attr});
+  });
+ });
+ return items;
+}
+let scannedHtmlTexts=[];
+async function fetchIndexTexts(){
+ const response=await fetch(new URL('index.html',location.href),{cache:'no-store'});
+ if(!response.ok)throw new Error(`تعذر قراءة index.html (${response.status})`);
+ const source=await response.text(),doc=new DOMParser().parseFromString(source,'text/html');
+ return scanIndexTexts(doc);
+}
+function renderSiteTextFields(items,overrides={}){
+ const ar=$('#siteTextFieldsAr'),en=$('#siteTextFieldsEn');
+ const render=(lang,container)=>{container.innerHTML=items.map(item=>{
+  const saved=overrides[item.key]||{};
+  const translationKey=Object.keys(translations.ar||{}).find(k=>translations.ar[k]===item.source||translations.en?.[k]===item.source);
+  const detectedArabic=/[\\u0600-\\u06FF]/.test(item.source);
+  const fallback=translationKey?(translations[lang]?.[translationKey]||''):(detectedArabic?(lang==='ar'?item.source:''):(lang==='en'?item.source:''));
+  const value=typeof saved[lang]==='string'?saved[lang]:fallback;
+  return `<label class="site-text-field" data-search="${esc((item.source+' '+item.key+' '+value).toLocaleLowerCase())}"><span>${esc(item.source.slice(0,100))}${item.source.length>100?'…':''}</span><small>${esc(item.tag)} · ${esc(item.kind)} · ${esc(item.key)}</small><textarea data-html-lang="${lang}" data-html-key="${esc(item.key)}" rows="${item.source.length>90?3:2}">${esc(value)}</textarea></label>`;
+ }).join('');};
+ render('ar',ar);render('en',en);
+}
+async function loadSettings(){
+ const {data,error}=await supabase.from('site_settings').select('key,value');
+ if(error){toast(error.message);return;}
+ const values=Object.fromEntries((data||[]).map(x=>[x.key,x.value]));
+ const f=$('#siteForm');
+ for(const [key,value] of Object.entries(values)){
+  const field=f.elements[key];if(field){if(field.type==='checkbox')field.checked=(value===true||value==='true'||value===1);else field.value=value??'';}
+ }
+ $('#statCurrency').textContent=values.default_currency||'KWD';
+ try{
+  scannedHtmlTexts=await fetchIndexTexts();
+  renderSiteTextFields(scannedHtmlTexts,values.site_html_texts||{});
+  $('#siteTextsMessage').textContent=`تم اكتشاف ${scannedHtmlTexts.length} نصًا وحقلاً من index.html الحالي.`;
+ }catch(err){$('#siteTextsMessage').textContent=err.message;}
+}
+$('#siteForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,fd=new FormData(f),keys=['site_name','default_currency','whatsapp_number','contact_email','announcement_text_ar','announcement_text_en','announcement_link','announcement_style','default_language'];const rows=keys.filter(k=>f.elements[k]).map(key=>({key,value:fd.get(key)||''}));rows.push({key:'announcement_enabled',value:f.elements.announcement_enabled.checked},{key:'maintenance_mode',value:f.elements.maintenance_mode.checked},{key:'show_unavailable',value:f.elements.show_unavailable.checked});const {error}=await supabase.from('site_settings').upsert(rows,{onConflict:'key'});$('#siteMessage').textContent=error?error.message:'تم حفظ إعدادات الموقع.';if(!error){toast('تم حفظ الإعدادات');$('#statCurrency').textContent=f.elements.default_currency.value;}});
 $('#siteTextSearch')?.addEventListener('input',e=>{const q=e.target.value.trim().toLocaleLowerCase();document.querySelectorAll('.site-text-field').forEach(el=>el.hidden=!!q&&!el.dataset.search.includes(q));});
-$('#saveSiteTexts').addEventListener('click',async()=>{const message=$('#siteTextsMessage');try{const collect=lang=>Object.fromEntries([...document.querySelectorAll(`[data-copy-lang="${lang}"]`)].map(el=>[el.dataset.copyKey,el.value]));const ar=collect('ar'),en=collect('en');message.textContent='جارٍ حفظ النصوص...';const {error}=await supabase.from('site_settings').upsert([{key:'site_text_ar',value:ar},{key:'site_text_en',value:en}],{onConflict:'key'});if(error)throw error;message.textContent='تم حفظ النصوص بنجاح. حدّث الموقع لرؤية التغييرات.';toast('تم حفظ نصوص الموقع');}catch(error){message.textContent='خطأ: '+error.message;}});
+$('#saveSiteTexts').addEventListener('click',async()=>{
+ const message=$('#siteTextsMessage');
+ try{
+  const saved={};
+  for(const item of scannedHtmlTexts){
+   const ar=document.querySelector(`[data-html-lang="ar"][data-html-key="${CSS.escape(item.key)}"]`)?.value??'';
+   const en=document.querySelector(`[data-html-lang="en"][data-html-key="${CSS.escape(item.key)}"]`)?.value??'';
+   saved[item.key]={source:item.source,ar,en,tag:item.tag,kind:item.kind};
+  }
+  message.textContent='جارٍ حفظ النصوص...';
+  const {error}=await supabase.from('site_settings').upsert({key:'site_html_texts',value:saved},{onConflict:'key'});
+  if(error)throw error;
+  message.textContent='تم حفظ النصوص المستخرجة من index.html. النصوص الجديدة أو المحذوفة ستتحدث عند إعادة فتح المحرر.';
+  toast('تم حفظ نصوص الصفحة');
+ }catch(error){message.textContent='خطأ: '+error.message;}
+});
 async function adminAction(action,userId,extra={}){const {data,error}=await supabase.functions.invoke('admin-users',{body:{action,userId,...extra}});if(error)throw error;if(data?.error)throw new Error(data.error);return data;}
 async function loadUsers(){let data;try{data=await adminAction('list_users');}catch(error){$('#usersTable').innerHTML=`<tr><td colspan="5">${esc(error.message)}</td></tr>`;return;}$('#statUsers').textContent=(data||[]).length;$('#usersTable').innerHTML=(data||[]).map(u=>`<tr><td>${esc(u.email||'—')}</td><td>${esc(u.full_name||u.username||'—')}<br><small>@${esc(u.username||'—')}</small></td><td>${u.role==='admin'?'مدير':'مستخدم'} · ${u.is_banned?'محظور':'نشط'}</td><td>${u.created_at?new Date(u.created_at).toLocaleDateString('ar'):'—'}</td><td>${u.id===OWNER_ADMIN_ID?'<span class="status-pill">مالك الموقع — محمي</span>':`<div class="table-actions"><button data-user-role="${u.id}">${u.role==='admin'?'إزالة الإدارة':'ترقية لمدير'}</button><button data-user-ban="${u.id}">${u.is_banned?'إلغاء الحظر':'حظر نهائي'}</button><button data-user-email="${u.id}">تغيير البريد</button><button data-user-password="${u.id}">تغيير كلمة المرور</button><button class="danger" data-user-delete="${u.id}">حذف</button></div>`}</td></tr>`).join('')||'<tr><td colspan="5">لا يوجد مستخدمون.</td></tr>';
  $('#usersTable').querySelectorAll('[data-user-role]').forEach(b=>b.addEventListener('click',async()=>{const u=data.find(x=>x.id===b.dataset.userRole);if(!u||!confirm('تأكيد تغيير صلاحية المستخدم؟'))return;try{await adminAction('set_role',u.id,{role:u.role==='admin'?'user':'admin'});toast('تم تحديث الصلاحية');loadUsers();}catch(e){toast(e.message);}}));

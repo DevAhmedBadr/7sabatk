@@ -44,3 +44,10 @@ A static source check cannot prove live SMTP delivery, live database-policy beha
 - Moved announcement styling into the public stylesheet so the banner is styled on the actual website.
 - Improved announcement visibility handling and multiline text rendering.
 - Kept the global default-language setting and bilingual site-copy editor; clarified the scope of editable UI text.
+
+
+## Automatic HTML text editor
+- The admin text editor now fetches the currently published `index.html` and discovers its static text nodes and common text attributes automatically.
+- Newly added or removed HTML text is reflected when the admin settings editor is reopened after the updated site is published.
+- Arabic and English values are saved in the `site_html_texts` setting and applied to matching elements on the public page.
+- Text created dynamically by JavaScript, product descriptions, and content loaded from Supabase are not static HTML and remain managed by their respective features.

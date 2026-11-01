@@ -14,6 +14,35 @@ function t(k) {
     if (k === "brand" && publicSettings.site_name) return publicSettings.site_name;
     return textOverrides?.[language]?.[k] ?? translations[language][k] ?? k;
 }
+
+function dynamicTextPath(node,root){
+ const parts=[];let el=node.nodeType===Node.TEXT_NODE?node.parentElement:node;
+ while(el&&el!==root){
+  const parent=el.parentElement;if(!parent)break;
+  const same=[...parent.children].filter(x=>x.tagName===el.tagName);
+  parts.unshift(`${el.tagName.toLowerCase()}:`+same.indexOf(el));el=parent;
+ }
+ return parts.join('>');
+}
+function applyDynamicHtmlTexts(){
+ const saved=publicSettings.site_html_texts;
+ if(!saved||typeof saved!=='object')return;
+ const root=document.body;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
+ while((node=walker.nextNode())){
+  if(!node.parentElement||node.parentElement.closest('script,style,noscript,template,svg,code,pre'))continue;
+  const index=[...node.parentElement.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).indexOf(node);
+  const key=dynamicTextPath(node,root)+`::text:${index}`;
+  const entry=saved[key],value=entry?.[language];
+  if(typeof value==='string'&&value.trim())node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),value);
+ }
+ document.querySelectorAll('input,textarea,button,a,[title],[aria-label],[placeholder],[alt]').forEach(el=>{
+  ['placeholder','title','aria-label','alt'].forEach(attr=>{
+   const key=dynamicTextPath(el,root)+`::attr:${attr}`;
+   const value=saved[key]?.[language];if(typeof value==='string'&&value.trim())el.setAttribute(attr,value);
+  });
+ });
+}
 function applyLanguage() {
     const globalLanguage = publicSettings.default_language;
     language = resolveLanguage(globalLanguage === "ar" || globalLanguage === "en" ? globalLanguage : preferences.language);
@@ -133,6 +162,7 @@ function applyLanguage() {
     $('#updatePasswordButton').textContent = language === 'ar' ? 'تحديث كلمة المرور' : 'Update password';
     $('#emptyState h3').textContent = t('noResults');
     $('#emptyState p').textContent = t('noResultsText');
+    applyDynamicHtmlTexts();
 }
 const $$ = s => [...document.querySelectorAll(s)];
 function applySiteSettings() {
