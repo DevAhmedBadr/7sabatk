@@ -18,3 +18,16 @@
 .site-copy-panel{margin-top:18px}
 .site-copy-panel label{display:grid;gap:8px;margin:16px 0;color:var(--text,#fff);font-weight:700}
 .site-copy-panel textarea{width:100%;min-height:220px;resize:vertical;padding:13px;border:1px solid #2b4354;border-radius:12px;background:#081722;color:#dcecf3;font:12px/1.6 ui-monospace,monospace}
+
+
+.site-copy-languages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0}
+.site-copy-languages section{min-width:0}
+.site-copy-languages h4{margin:8px 0 12px;color:var(--text,#eaf4f7)}
+.site-text-fields{display:grid;gap:10px;max-height:720px;overflow:auto;padding:12px;border:1px solid var(--line,#294253);border-radius:12px}
+.site-text-field{display:grid;gap:6px;padding:10px;border-bottom:1px solid rgba(130,160,180,.14)}
+.site-text-field span{font-weight:800;color:var(--accent,#6de0d4)}
+.site-text-field input,.site-text-field textarea{width:100%;min-width:0;padding:9px 11px;border:1px solid #294253;border-radius:8px;background:#081722;color:#eaf4f7;font:inherit}
+.site-text-field textarea{resize:vertical;line-height:1.6}
+.site-text-field small{color:#8194a7;font-size:11px}
+.site-text-field[hidden]{display:none!important}
+@media(max-width:760px){.site-copy-languages{grid-template-columns:1fr}}

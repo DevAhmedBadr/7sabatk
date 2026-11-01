@@ -37,3 +37,10 @@ A static source check cannot prove live SMTP delivery, live database-policy beha
 - Converted the logo and both banners from large PNG files to optimized WebP assets.
 - Preloaded the logo and both language banners for faster first paint.
 - Prioritized the first six marketplace card images and left later cards lazy-loaded to avoid downloading the entire catalog before the visitor needs it.
+
+
+## Site-wide controls update
+- Added an optional clickable URL to the bilingual announcement board.
+- Moved announcement styling into the public stylesheet so the banner is styled on the actual website.
+- Improved announcement visibility handling and multiline text rendering.
+- Kept the global default-language setting and bilingual site-copy editor; clarified the scope of editable UI text.

@@ -42,3 +42,16 @@ footer{border-top:1px solid #ffffff12;padding:25px 0;color:var(--muted);font-siz
         padding: 0 !important;
     }
 }
+
+
+/* Public announcement board: styles belong to the public site stylesheet. */
+.announcement[hidden]{display:none!important}
+.announcement{
+  display:block;position:relative;z-index:20;padding:11px 18px;
+  text-align:center;background:linear-gradient(90deg,#087f86,#13b8a6);
+  color:#fff;font-weight:800;line-height:1.7;overflow-wrap:anywhere;
+  white-space:pre-line;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.12)
+}
+.announcement[data-style="purple"]{background:linear-gradient(90deg,#50318e,#8660d5)}
+.announcement[data-style="warning"]{background:linear-gradient(90deg,#8b4a14,#d58a24);color:#fff}
+.announcement[href]{cursor:pointer}

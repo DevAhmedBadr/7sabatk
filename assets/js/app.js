@@ -141,11 +141,23 @@ function applySiteSettings() {
         : (publicSettings.announcement_text_ar || publicSettings.announcement_text || "");
     const announcementBar = $("#announcement");
     if (announcementBar) {
+        const enabled = publicSettings.announcement_enabled === true || publicSettings.announcement_enabled === "true";
+        const link = String(publicSettings.announcement_link || "").trim();
         announcementBar.textContent = announcement;
-        announcementBar.hidden = !(announcement && publicSettings.announcement_enabled === true);
+        announcementBar.hidden = !(announcement && enabled);
         announcementBar.setAttribute("role", "status");
         announcementBar.setAttribute("aria-live", "polite");
         announcementBar.dataset.style = publicSettings.announcement_style || "teal";
+        if (link && /^https?:\\/\\//i.test(link)) {
+            announcementBar.href = link;
+            announcementBar.target = "_blank";
+            announcementBar.rel = "noopener noreferrer";
+            announcementBar.setAttribute("aria-label", announcement);
+        } else {
+            announcementBar.removeAttribute("href");
+            announcementBar.removeAttribute("target");
+            announcementBar.removeAttribute("rel");
+        }
     }
     if (publicSettings.maintenance_mode === true) {
         $('#marketplace .container').innerHTML = `<div class="section-heading"><h2>${language === 'ar' ? 'المتجر تحت الصيانة' : 'Store maintenance'}</h2></div>`;
