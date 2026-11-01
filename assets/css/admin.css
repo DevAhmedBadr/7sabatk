@@ -10,3 +10,11 @@
 .admin-table small{color:#8d9ab3;direction:ltr;display:inline-block}
 
 .field-scope-input{max-width:130px;min-width:90px;padding:8px 10px;border:1px solid var(--line,#294253);border-radius:8px;background:var(--surface,#0b1722);color:inherit;text-align:center}
+
+.announcement[hidden]{display:none!important}
+.announcement{display:block;position:relative;z-index:5;padding:11px 18px;text-align:center;background:linear-gradient(90deg,#087f86,#13b8a6);color:#fff;font-weight:800;line-height:1.6;overflow-wrap:anywhere}
+.announcement[data-style="purple"]{background:linear-gradient(90deg,#50318e,#8660d5)}
+.announcement[data-style="warning"]{background:linear-gradient(90deg,#8b4a14,#d58a24);color:#fff}
+.site-copy-panel{margin-top:18px}
+.site-copy-panel label{display:grid;gap:8px;margin:16px 0;color:var(--text,#fff);font-weight:700}
+.site-copy-panel textarea{width:100%;min-height:220px;resize:vertical;padding:13px;border:1px solid #2b4354;border-radius:12px;background:#081722;color:#dcecf3;font:12px/1.6 ui-monospace,monospace}

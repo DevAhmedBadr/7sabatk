@@ -1,188 +1,28 @@
 import { supabase, isSupabaseConfigured } from "./backend.js";
+import { translations } from "./site-copy.js";
 import { loadAccounts, loadPublicSettings } from "./data.js";
 import { renderAccounts, showAccountDetails, openDialog, closeDialog } from "./render.js";
 import { getPreferences, savePreferences, applyTheme, getCurrencyRates, resolveLanguage, resolveNumberLocale } from "./preferences.js";
 const $ = s => document.querySelector(s);
 const OWNER_ADMIN_ID = "be398df3-3918-46e1-abc4-59975ffe716b";
 const grid = $("#accountGrid"), search = $("#searchInput"), category = $("#categoryFilter"), sort = $("#sortFilter"), count = $("#resultsCount"), empty = $("#emptyState");
+let textOverrides = { ar: {}, en: {} };
 let accounts = [], preferences = getPreferences(), rates = {
     KWD: 1
 }, publicSettings = {}, fieldDefinitions = [], fieldPlatformStates = [], session = null, profile = null, language = resolveLanguage(preferences.language), numberLocale = resolveNumberLocale(preferences.numberLocale, language);
-const translations = {
-    ar: {
-        brand: "موقع حساباتك",
-        home: "الرئيسية",
-        catalog: "الحسابات",
-        about: "من نحن",
-        contact: "تواصل معنا",
-        login: "تسجيل الدخول",
-        account: "حسابي",
-        heroKicker: "سوق الحسابات الرقمية",
-        hero1: "حسابك القادم",
-        hero2: "يبدأ من هنا.",
-        heroText: "تصفح حسابات TikTok وYouTube وSteam وغيرها من الحسابات الرقمية المعروضة للبيع مباشرة من المالك، مع تفاصيل واضحة وصور وإحصائيات لكل حساب.",
-        browse: "تصفح الحسابات",
-        more: "اعرف المزيد",
-        featuresKicker: "لماذا تشتري من موقع حساباتك؟",
-        featuresTitle: "كل حساب معروض بتفاصيله",
-        featuresText: "كتالوج واحد لحسابات ومنصات مختلفة، وإدارة العروض تتم من المالك فقط.",
-        f1: "منصات متعددة",
-        f1p: "حسابات TikTok وYouTube وSteam ومنصات رقمية أخرى.",
-        f2: "بيانات واضحة",
-        f2p: "شاهد اسم المستخدم والإحصائيات والسعر والصور قبل الاستفسار.",
-        f3: "عروض من المالك",
-        f3p: "إضافة الحسابات وإدارة البيع محصورة بصاحب المتجر، وليس بالمستخدمين.",
-        catalogKicker: "حسابات للبيع",
-        catalogTitle: "الحسابات المتاحة",
-        catalogText: "اختر المنصة وابحث عن الحساب المناسب لك.",
-        search: "ابحث باسم الحساب أو اسم المستخدم أو المنصة...",
-        all: "كل المنصات",
-        newest: "الأحدث أولًا",
-        low: "السعر: الأقل أولًا",
-        high: "السعر: الأعلى أولًا",
-        followersSort: "الأكثر متابعين",
-        aboutTitle: "حسابات رقمية للبيع.",
-        aboutText: "موقع حساباتك مساحة لعرض الحسابات الرقمية المملوكة لصاحب الموقع، مثل حسابات التواصل والألعاب والمنصات المختلفة. نوفر معلومات الحساب وصوره وإحصائياته وسعره لتسهيل معاينة العرض والتواصل بشأنه.",
-        contactTitle: "هل لديك استفسار؟",
-        contactText: "للاستفسار عن حساب معروض أو معرفة تفاصيل الشراء، تواصل معنا عبر قناة التواصل المتاحة.",
-        contactBtn: "تواصل معنا",
-        footer: "جميع الحقوق محفوظة.",
-        authLogin: "تسجيل الدخول",
-        authSignup: "إنشاء حساب",
-        email: "البريد الإلكتروني",
-        loginIdentifier: "البريد الإلكتروني أو اسم المستخدم",
-        username: "اسم المستخدم",
-        confirmPassword: "تأكيد كلمة المرور",
-        passwordMismatch: "كلمتا المرور غير متطابقتين.",
-        usernameInvalid: "اسم المستخدم يجب أن يكون من 3 إلى 24 حرفًا إنجليزيًا أو رقمًا أو _.",
-        usernameTaken: "اسم المستخدم مستخدم بالفعل. اختر اسمًا آخر.",
-        enter: "دخول",
-        create: "إنشاء الحساب",
-        welcome: "مرحبًا بعودتك.",
-        signupWelcome: "أنشئ حسابك باستخدام البريد الإلكتروني وكلمة المرور.",
-        currency: "العملة المعروضة",
-        theme: "المظهر",
-        language: "لغة الموقع",
-        auto: "حسب لغة الجهاز (تلقائي)",
-        numbers: "لغة الأرقام",
-        motion: "تقليل الحركة",
-        motionSub: "إيقاف الحركات الانتقالية",
-        compact: "عرض مضغوط",
-        compactSub: "إظهار عدد أكبر من الحسابات في الشاشة",
-        reference: "إظهار رقم الحساب",
-        referenceSub: "عرض المعرّف المرجعي أسفل بطاقة الحساب",
-        imageFit: "طريقة عرض الصور",
-        imageContain: "إظهار الصورة كاملة",
-        imageCover: "ملء مساحة الصورة",
-        save: "حفظ التفضيلات",
-        profile: "حسابي",
-        fullName: "الاسم الظاهر",
-        username: "اسم المستخدم",
-        saveProfile: "حفظ بيانات الحساب",
-        passwordReset: "إرسال رمز/رابط تغيير كلمة المرور",
-        admin: "لوحة تحكم الإدارة",
-        logout: "تسجيل الخروج",
-        details: "عرض التفاصيل",
-        available: "متاح",
-        unavailable: "غير متاح",
-        followers: "المتابعون",
-        views: "متوسط المشاهدات",
-        noResults: "لا توجد نتائج",
-        noResultsText: "جرّب تغيير كلمات البحث أو التصنيف.",
-        ask: "استفسر عن العرض",
-        aboutKicker: "من نحن",
-        marketplace: "سوق الحسابات الرقمية"
-    },
-    en: {
-        brand: "7sabatk",
-        home: "Home",
-        catalog: "Accounts",
-        about: "About",
-        contact: "Contact",
-        login: "Log in",
-        account: "Account",
-        heroKicker: "Digital accounts marketplace",
-        hero1: "Your next account",
-        hero2: "starts here.",
-        heroText: "Browse TikTok, YouTube, Steam and other digital accounts listed for sale by the store owner, with clear details, images and account statistics.",
-        browse: "Browse accounts",
-        more: "Learn more",
-        featuresKicker: "Why buy from 7sabatk?",
-        featuresTitle: "Every account, clearly presented",
-        featuresText: "One catalog for accounts across different platforms. Listings are managed only by the store owner.",
-        f1: "Multiple platforms",
-        f1p: "TikTok, YouTube, Steam and other digital platform accounts.",
-        f2: "Clear information",
-        f2p: "Review usernames, statistics, prices and images before making an inquiry.",
-        f3: "Owner-managed listings",
-        f3p: "Only the store owner can add accounts and manage listings.",
-        catalogKicker: "Accounts for sale",
-        catalogTitle: "Available accounts",
-        catalogText: "Choose a platform and search for the account you want.",
-        search: "Search by account, username or platform...",
-        all: "All platforms",
-        newest: "Newest first",
-        low: "Price: low to high",
-        high: "Price: high to low",
-        followersSort: "Most followers",
-        aboutTitle: "Digital accounts for sale.",
-        aboutText: "7sabatk showcases digital accounts owned and listed by the store owner, including social media, gaming and other platform accounts. Review account information, images, statistics and pricing before contacting us.",
-        contactTitle: "Have a question?",
-        contactText: "Contact us to ask about a listing or learn more about the purchase process.",
-        contactBtn: "Contact us",
-        footer: "All rights reserved.",
-        authLogin: "Log in",
-        authSignup: "Create account",
-        email: "Email address",
-        loginIdentifier: "Email address or username",
-        username: "Username",
-        confirmPassword: "Confirm password",
-        passwordMismatch: "Passwords do not match.",
-        usernameInvalid: "Username must be 3–24 characters: letters, numbers or underscores.",
-        usernameTaken: "That username is already taken. Choose another.",
-        enter: "Log in",
-        create: "Create account",
-        welcome: "Welcome back.",
-        signupWelcome: "Create your account with your email and password.",
-        currency: "Display currency",
-        theme: "Appearance",
-        language: "Website language",
-        auto: "Use device language (automatic)",
-        numbers: "Number format",
-        motion: "Reduce motion",
-        motionSub: "Disable interface animations",
-        compact: "Compact layout",
-        compactSub: "Fit more account cards on screen",
-        reference: "Show account reference",
-        referenceSub: "Display the listing reference under each card",
-        imageFit: "Image display",
-        imageContain: "Show the full image",
-        imageCover: "Fill the image area",
-        save: "Save preferences",
-        profile: "My account",
-        fullName: "Display name",
-        username: "Username",
-        saveProfile: "Save account details",
-        passwordReset: "Send password reset code/link",
-        admin: "Admin dashboard",
-        logout: "Log out",
-        details: "View details",
-        available: "Available",
-        unavailable: "Unavailable",
-        followers: "Followers",
-        views: "Average views",
-        noResults: "No results",
-        noResultsText: "Try changing your search or category.",
-        ask: "Ask about this account",
-        aboutKicker: "About us",
-        marketplace: "Digital accounts marketplace"
-    }
-};
 function t(k) {
-    return translations[language][k] || k;
+    if (k === "brand" && publicSettings.site_name) return publicSettings.site_name;
+    return textOverrides?.[language]?.[k] ?? translations[language][k] ?? k;
+}  return translations[language][k] || k;
 }
 function applyLanguage() {
-    language = resolveLanguage(preferences.language);
+    const globalLanguage = publicSettings.default_language;
+    language = resolveLanguage(globalLanguage === "ar" || globalLanguage === "en" ? globalLanguage : preferences.language);
+    const languageControl = $("#languageSelect");
+    if (languageControl) {
+        languageControl.disabled = globalLanguage === "ar" || globalLanguage === "en";
+        languageControl.value = languageControl.disabled ? globalLanguage : preferences.language;
+    }
     numberLocale = resolveNumberLocale(preferences.numberLocale, language);
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
@@ -297,10 +137,16 @@ function applyLanguage() {
 }
 const $$ = s => [...document.querySelectorAll(s)];
 function applySiteSettings() {
-    const announcement = publicSettings.announcement_text;
-    if (announcement && publicSettings.announcement_enabled) {
-        $('#announcement').textContent = announcement;
-        $('#announcement').hidden = false;
+    const announcement = language === "en"
+        ? (publicSettings.announcement_text_en || publicSettings.announcement_text || "")
+        : (publicSettings.announcement_text_ar || publicSettings.announcement_text || "");
+    const announcementBar = $("#announcement");
+    if (announcementBar) {
+        announcementBar.textContent = announcement;
+        announcementBar.hidden = !(announcement && publicSettings.announcement_enabled === true);
+        announcementBar.setAttribute("role", "status");
+        announcementBar.setAttribute("aria-live", "polite");
+        announcementBar.dataset.style = publicSettings.announcement_style || "teal";
     }
     if (publicSettings.maintenance_mode === true) {
         $('#marketplace .container').innerHTML = `<div class="section-heading"><h2>${language === 'ar' ? 'المتجر تحت الصيانة' : 'Store maintenance'}</h2></div>`;
@@ -360,7 +206,9 @@ $('#settingsOpen').addEventListener('click', () => {
     $('#currencySelect').value = preferences.currency;
     $('#themeSelect').value = preferences.theme;
     $('#numberLocale').value = preferences.numberLocale;
-    $('#languageSelect').value = preferences.language;
+    $('#languageSelect').value = (publicSettings.default_language === "ar" || publicSettings.default_language === "en")
+        ? publicSettings.default_language : preferences.language;
+    $('#languageSelect').disabled = publicSettings.default_language === "ar" || publicSettings.default_language === "en";
     $('#reduceMotion').checked = preferences.reduceMotion;
     $('#compactCards').checked = preferences.compactCards;
     $('#showReference').checked = preferences.showReference;
@@ -373,7 +221,8 @@ $('#savePreferences').addEventListener('click', async() => {
         currency: $('#currencySelect').value,
         theme: $('#themeSelect').value,
         numberLocale: $('#numberLocale').value,
-        language: $('#languageSelect').value,
+        language: (publicSettings.default_language === "ar" || publicSettings.default_language === "en")
+            ? publicSettings.default_language : $('#languageSelect').value,
         reduceMotion: $('#reduceMotion').checked,
         compactCards: $('#compactCards').checked,
         showReference: $('#showReference').checked,
@@ -762,6 +611,11 @@ async function boot() {
     try {
         rates = await getCurrencyRates();
         publicSettings = await loadPublicSettings();
+        textOverrides = {
+            ar: publicSettings.site_text_ar && typeof publicSettings.site_text_ar === "object" ? publicSettings.site_text_ar : {},
+            en: publicSettings.site_text_en && typeof publicSettings.site_text_en === "object" ? publicSettings.site_text_en : {}
+        };
+        applyLanguage();
         if (!localStorage.getItem('7sabatk_preferences_v3') && ['KWD', 'USD', 'EUR', 'SAR', 'EGP'].includes(publicSettings.default_currency)) {
             preferences.currency = publicSettings.default_currency;
             savePreferences(preferences);
