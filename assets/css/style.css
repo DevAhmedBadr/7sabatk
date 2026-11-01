@@ -60,3 +60,14 @@ footer{border-top:1px solid #ffffff12;padding:25px 0;color:var(--muted);font-siz
 /* Announcement bar must not cover navigation or page controls. */
 #announcement[hidden] { display: none !important; }
 #announcement:not([hidden]) { position: relative; z-index: 1; }
+
+
+/* Keep navigation controls above decorative layers and fully interactive. */
+.site-header { position: sticky; top: 0; z-index: 1000; isolation: isolate; }
+.site-header .nav, .site-header .nav-actions, .site-header .nav-actions button {
+  position: relative;
+  z-index: 1001;
+  pointer-events: auto;
+}
+.overlay[aria-hidden="true"] { display: none !important; pointer-events: none !important; }
+.overlay.open[aria-hidden="false"] { display: flex; pointer-events: auto; }
