@@ -638,7 +638,7 @@ $('#profileForm').addEventListener('submit', async e => {
 
         if (duplicateUsername) {
             msg.textContent = language === 'ar'
-                ? 'اسم المستخدم ده مستخدم بالفعل. من فضلك اختار اسم مستخدم تاني.'
+                ? 'اسم المستخدم مستخدم بالفعل. يرجى اختيار اسم مستخدم اخر.'
                 : 'This username is already taken. Please choose another one.';
 
             $('#profileUsername').focus();
