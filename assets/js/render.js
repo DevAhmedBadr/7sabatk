@@ -43,6 +43,41 @@ function activeStats(account, fieldDefinitions, language, fieldPlatformStates = 
     : [{ label: "Followers", value: account.followers_count ?? account.followers }, { label: "Average views", value: account.views_count ?? account.average_views }];
   return fallback.filter(item => item.value !== null && item.value !== undefined && item.value !== "");
 }
+function warmAccountImageCache(accounts) {
+  const urls = [...new Set(accounts
+    .slice(6)
+    .map(account => account.image_url || account.image || "")
+    .filter(Boolean))];
+
+  if (!urls.length) return;
+
+  let nextIndex = 0;
+  let active = 0;
+  const concurrency = 3;
+
+  const loadNext = () => {
+    while (active < concurrency && nextIndex < urls.length) {
+      const url = urls[nextIndex++];
+      active++;
+
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = image.onerror = () => {
+        active--;
+        loadNext();
+      };
+      image.src = url;
+    }
+  };
+
+  // Let the page render first, then warm the remaining catalog images.
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(loadNext, { timeout: 1800 });
+  } else {
+    window.setTimeout(loadNext, 900);
+  }
+}
+
 function openImageLightbox(url, title) {
   const overlay = document.getElementById("imageLightbox");
   const image = document.getElementById("lightboxImage");
@@ -59,13 +94,13 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
     ? { details: "عرض التفاصيل ←", available: "متاح", unavailable: "غير متاح", username: "اسم المستخدم", account: "حساب رقمي" }
     : { details: "View details →", available: "Available", unavailable: "Unavailable", username: "Username", account: "Digital account" };
 
-  for (const account of accounts) {
+  for (const [index, account] of accounts.entries()) {
     const card = document.createElement("article");
     card.className = "account-card";
     const image = account.image_url || account.image || "";
     const title = account.title || account.name || (language === "ar" ? "حساب بدون اسم" : "Untitled account");
     const avatar = image
-      ? `<button type="button" class="image-preview-button" aria-label="${language === "ar" ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="lazy"></button>`
+      ? `<button type="button" class="image-preview-button" aria-label="${language === "ar" ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="${index < 6 ? "eager" : "lazy"}" fetchpriority="${index < 2 ? "high" : "auto"}" decoding="async"></button>`
       : `<div class="card-avatar">${escapeHtml(title.slice(0, 2).toUpperCase())}</div>`;
     const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates).slice(0, 3);
     const ref = preferences.showReference === false ? "" : `<span class="ref-id">${escapeHtml(account.reference || account.id || "")}</span>`;
@@ -83,6 +118,8 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
     card.querySelector(".image-preview-button")?.addEventListener("click", () => openImageLightbox(image, title));
     container.appendChild(card);
   }
+
+  warmAccountImageCache(accounts);
 }
 
 export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {

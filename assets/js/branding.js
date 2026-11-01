@@ -158,8 +158,8 @@ function apply7sabatkBranding() {
   if (banner) {
 
     banner.src = language === "ar"
-      ? "assets/images/banner-ar.png"
-      : "assets/images/banner-en.png";
+      ? "assets/images/banner-ar.webp"
+      : "assets/images/banner-en.webp";
 
     banner.alt = copy.heroAlt;
 
