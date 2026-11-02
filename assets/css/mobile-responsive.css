@@ -557,41 +557,63 @@
 }
 
 
-/* Mobile section navigation: a second row below the brand/actions.
-   It stays in the normal header flow and never overlays page content. */
+/* === Mobile navigation: show the desktop section links on a second row === */
 @media (max-width: 620px) {
-  .site-header .nav {
-    height: auto !important;
-    min-height: 64px;
-    padding-top: 7px;
-    padding-bottom: 8px;
-    display: flex;
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7, 18, 29, .97);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .site-header > .container.nav {
+    display: flex !important;
+    flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    row-gap: 5px;
+    justify-content: space-between;
+    gap: 5px 8px;
+    width: calc(100% - 28px);
+    height: auto !important;
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 9px;
   }
 
   .site-header .brand {
     order: 1;
-    margin-inline-end: auto;
+    flex: 0 0 auto;
+    margin: 0;
   }
 
   .site-header .nav-actions {
     order: 2;
+    display: flex;
+    flex: 0 0 auto;
+    margin-inline-start: auto;
   }
 
+  /* style.css explicitly hides .nav-links at <=620px; override it here. */
   .site-header .nav-links {
     order: 3;
     display: flex !important;
-    position: static;
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
     flex: 0 0 100%;
     width: 100%;
     max-width: 100%;
-    justify-content: flex-start;
+    min-width: 0;
+    justify-content: center;
     align-items: center;
-    gap: 7px;
-    margin: 0;
-    padding: 5px 0 1px;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 2px 0 0;
+    padding: 5px 0 0;
+    border: 0;
+    background: transparent;
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
@@ -604,35 +626,41 @@
   }
 
   .site-header .nav-links a {
-    flex: 0 0 auto;
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
     min-height: 34px;
-    padding: 7px 12px;
-    border: 1px solid rgba(107, 157, 177, .22);
+    padding: 7px 11px;
+    border: 1px solid rgba(107, 157, 177, .24);
     border-radius: 999px;
-    background: rgba(19, 39, 53, .72);
+    background: rgba(19, 39, 53, .78);
     color: var(--muted, #a9bdc9);
     font-size: 11px;
     line-height: 1.2;
     text-decoration: none;
   }
 
-  .site-header .nav-links a:active {
-    background: rgba(24, 184, 166, .18);
-    border-color: rgba(24, 184, 166, .55);
-    color: #62e0d2;
+  .site-header .nav-links a:hover,
+  .site-header .nav-links a:focus-visible,
+  .site-header .nav-links a.active {
+    border-color: rgba(24, 184, 166, .6);
+    background: rgba(24, 184, 166, .13);
+    color: #65e2d5;
   }
 
-  /* Reserve space for the taller, two-row sticky header when using anchors. */
   html {
-    scroll-padding-top: 112px;
+    scroll-padding-top: 120px;
   }
 
-  /* The product-details overlay remains above the header; the header is
-     hidden only while the account details dialog is open (existing behavior). */
-  .overlay {
+  /* Keep detail dialogs above the now-visible mobile navigation. */
+  body.account-dialog-open .site-header {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body.account-dialog-open #accountDialog,
+  .overlay.open {
     z-index: 2147483000 !important;
   }
 }

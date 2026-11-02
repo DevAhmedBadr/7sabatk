@@ -23,23 +23,22 @@
   <link rel="stylesheet" href="assets/css/marketplace-pro.css">
   <link rel="stylesheet" href="assets/css/branding.css">
 <link rel="stylesheet" href="assets/css/mobile-responsive.css">
-  <link rel="stylesheet" href="assets/css/page-layouts.css">
 </head>
 
-<body data-page="home">
+<body>
 
 <header class="site-header">
   <div class="container nav">
-    <a class="brand" href="index.html">
+    <a class="brand" href="#home">
       <img class="brand-logo" src="assets/images/7sabatk-logo.webp" loading="eager" decoding="async" alt="7sabatk">
       <span data-brand-name>موقع حساباتك</span>
     </a>
 
     <nav class="nav-links">
-      <a href="index.html">الرئيسية</a>
-      <a href="accounts.html">الحسابات</a>
-      <a href="social-services.html">خدمات السوشيال ميديا</a>
-      <a href="subscriptions.html">الاشتراكات</a>
+      <a href="#home">الرئيسية</a>
+      <a href="#marketplace">الكتالوج</a>
+      <a href="#about">من نحن</a>
+      <a href="#contact">تواصل معنا</a>
     </nav>
 
     <div class="nav-actions">
@@ -72,7 +71,7 @@
         </p>
 
         <div class="hero-actions">
-          <a class="button" href="accounts.html">استكشف الحسابات <span>←</span></a>
+          <a class="button" href="#marketplace">استكشف المتجر <span>←</span></a>
           <a class="button button-ghost" href="#about">اعرف المزيد</a>
         </div>
 
@@ -99,7 +98,7 @@
   </section>
 
   <!-- Platform Categories -->
-  <section class="section features-section" id="features">
+  <section class="section features-section">
     <div class="container">
       <div class="section-heading">
         <span class="section-kicker">منصة رقمية متكاملة</span>
@@ -111,7 +110,7 @@
 
       <div class="feature-grid">
 
-        <a class="feature-card service-choice" href="accounts.html" data-service="accounts">
+        <a class="feature-card service-choice" href="#marketplace" data-service="accounts">
           <span class="feature-icon">◎</span>
           <h3>الحسابات الرقمية</h3>
           <p>
@@ -119,7 +118,7 @@
           </p>
         </a>
 
-        <a class="feature-card service-choice" href="social-services.html" data-service="social">
+        <a class="feature-card service-choice" href="#social-services" data-service="social">
           <span class="feature-icon">▤</span>
           <h3>خدمات السوشيال ميديا</h3>
           <p>
@@ -127,7 +126,7 @@
           </p>
         </a>
 
-        <a class="feature-card service-choice" href="subscriptions.html" data-service="subscriptions">
+        <a class="feature-card service-choice" href="#subscriptions" data-service="subscriptions">
           <span class="feature-icon">✓</span>
           <h3>الاشتراكات الرقمية</h3>
           <p>

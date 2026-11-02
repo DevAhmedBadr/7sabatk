@@ -22,10 +22,8 @@ function normalizePlatform(value) {
 }
 function activeStats(account, fieldDefinitions, language, fieldPlatformStates = []) {
   const platform = normalizePlatform(account.category);
-  const productType = account.product_type || 'account';
   const dynamic = fieldDefinitions
     .filter(field => {
-      if ((field.product_type || 'account') !== productType) return false;
       const scope = normalizePlatform(field.platform_key || "*");
       if (scope !== "*" && scope !== platform) return false;
       const override = fieldPlatformStates.find(item =>
@@ -125,7 +123,7 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
 }
 
 
-export function renderSubscriptions(items, container, onDetails, preferences, rates, language = "ar", fieldDefinitions = [], fieldPlatformStates = []) {
+export function renderSubscriptions(items, container, onDetails, preferences, rates, language = "ar") {
   container.innerHTML = "";
   const ar = language === "ar";
   for (const [index, item] of items.entries()) {
@@ -133,7 +131,6 @@ export function renderSubscriptions(items, container, onDetails, preferences, ra
     card.className = "account-card subscription-card";
     const image = item.image_url || item.image || "";
     const title = item.title || (ar ? "اشتراك رقمي" : "Digital subscription");
-    const stats = activeStats(item, fieldDefinitions, language, fieldPlatformStates).slice(0, 3);
     const media = image
       ? `<button type="button" class="image-preview-button"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="${index < 4 ? "eager" : "lazy"}"></button>`
       : `<div class="card-avatar">7S</div>`;
@@ -142,8 +139,7 @@ export function renderSubscriptions(items, container, onDetails, preferences, ra
       <div class="card-body">
         <span class="category-tag">${escapeHtml(item.category || (ar ? "اشتراك رقمي" : "Subscription"))}</span>
         <h3>${escapeHtml(title)}</h3>
-        <p class="subscription-description">${escapeHtml((ar ? (item.description_ar || item.description || "اشتراك رقمي متاح للطلب.") : (item.description_en || "Digital subscription available to order.")))}</p>
-        <div class="card-stats">${stats.map(s => `<div><b>${escapeHtml(formatNumber(s.value, preferences.numberLocale))}</b><span>${escapeHtml(s.label)}</span></div>`).join("")}</div>
+        <p class="subscription-description">${escapeHtml(item.description || (ar ? "اشتراك رقمي متاح للطلب." : "Digital subscription available to order."))}</p>
         <div class="account-price">${escapeHtml(formatPrice(item.price_kwd ?? item.price, preferences.currency, rates, preferences.numberLocale))}</div>
         <button type="button" class="button subscription-details">${ar ? "عرض التفاصيل" : "View details"}</button>
       </div>`;
@@ -165,11 +161,11 @@ export function showAccountDetails(account, dialog, preferences, rates, settings
     ? `<button type="button" class="detail-image-preview" aria-label="${ar ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}"></button>`
     : `<span>7S</span>`;
   image.querySelector("button")?.addEventListener("click", () => openImageLightbox(imageUrl, title));
-  const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates);
+  const stats = account.product_type === "subscription" ? [] : activeStats(account, fieldDefinitions, language, fieldPlatformStates);
   dialog.querySelector("#detailStats").innerHTML = stats.map(s =>
     `<div class="modal-stat"><b>${escapeHtml(s.value)}</b><span>${escapeHtml(s.label)}</span></div>`
   ).join("");
-  dialog.querySelector("#detailDescription").textContent = (ar ? (account.description_ar || account.description) : account.description_en) || (ar ? "لا توجد تفاصيل إضافية." : "No additional details.");
+  dialog.querySelector("#detailDescription").textContent = account.description || (ar ? "لا توجد تفاصيل إضافية." : "No additional details.");
   const contact = dialog.querySelector("#detailContact");
   if (settings.whatsapp_number) {
     const msg = encodeURIComponent(`${ar ? "مرحبًا، أريد الاستفسار عن" : "Hello, I’m interested in"} ${title} (${account.reference || account.id || ""}).`);
