@@ -68,10 +68,10 @@ function applyLanguage() {
         if (el)
             el.textContent = t(key);
     };
-    set('.nav-links a[href="#home"]', 'home');
-    set('.nav-links a[href="#marketplace"]', 'catalog');
-    set('.nav-links a[href="#about"]', 'about');
-    set('.nav-links a[href="#contact"]', 'contact');
+    set('.nav-links a[href="index.html"]', 'home');
+    set('.nav-links a[href="accounts.html"]', 'catalog');
+    set('.nav-links a[href="social-services.html"]', 'f2');
+    set('.nav-links a[href="subscriptions.html"]', 'f3');
     set('#authOpen', 'login');
     $('#accountOpen').setAttribute('aria-label', t('account'));
     const brand = $$("[data-brand-name]");
@@ -98,8 +98,8 @@ function applyLanguage() {
       featureHeading.querySelector('p').textContent=language==='ar'?'اختر بين الحسابات الرقمية وخدمات السوشيال ميديا والاشتراكات الرقمية.':'Explore digital accounts, social media services and digital subscriptions.';
     }
     const serviceLabels = language === 'ar'
-      ? [{title:'الحسابات الرقمية',text:'تصفح الحسابات الرقمية المعروضة للبيع.',href:'#marketplace'},{title:'خدمات السوشيال ميديا',text:'خدمات زيادة المتابعين واللايكات والمشاهدات. قريبًا',href:'#social-services'},{title:'الاشتراكات الرقمية',text:'اشتراكات Netflix وYouTube وغيرها.',href:'#subscriptions'}]
-      : [{title:'Digital Accounts',text:'Browse digital accounts listed for sale.',href:'#marketplace'},{title:'Social Media Services',text:'Followers, likes and views services. Coming soon.',href:'#social-services'},{title:'Digital Subscriptions',text:'Netflix, YouTube and other subscriptions.',href:'#subscriptions'}];
+      ? [{title:'الحسابات الرقمية',text:'تصفح الحسابات الرقمية المعروضة للبيع.',href:'accounts.html'},{title:'خدمات السوشيال ميديا',text:'خدمات زيادة المتابعين واللايكات والمشاهدات. قريبًا',href:'social-services.html'},{title:'الاشتراكات الرقمية',text:'اشتراكات Netflix وYouTube وغيرها.',href:'subscriptions.html'}]
+      : [{title:'Digital Accounts',text:'Browse digital accounts listed for sale.',href:'accounts.html'},{title:'Social Media Services',text:'Followers, likes and views services. Coming soon.',href:'social-services.html'},{title:'Digital Subscriptions',text:'Netflix, YouTube and other subscriptions.',href:'subscriptions.html'}];
     cards.forEach((card,i)=>{if(serviceLabels[i]){card.href=serviceLabels[i].href;card.querySelector('h3').textContent=serviceLabels[i].title;card.querySelector('p').textContent=serviceLabels[i].text;}});
     const socialTitle=$('[data-social-title]'), socialKicker=$('[data-social-kicker]'), socialSoon=$('[data-social-soon]');
     if(socialTitle)socialTitle.textContent=language==='ar'?'خدمات السوشيال ميديا':'Social Media Services';
@@ -109,9 +109,7 @@ function applyLanguage() {
     Object.entries(subLabels).forEach(([sel,value])=>{const el=$(sel);if(el)el.textContent=value;});
 
     const mh = $('.marketplace-section .section-heading');
-    mh.querySelector('.section-kicker').textContent = t('catalogKicker');
-    mh.querySelector('h2').textContent = t('catalogTitle');
-    mh.querySelector('p').textContent = t('catalogText');
+    if(mh){ mh.querySelector('.section-kicker').textContent = t('catalogKicker'); mh.querySelector('h2').textContent = document.body.dataset.page==='subscriptions'?(language==='ar'?'الاشتراكات المتاحة':'Available subscriptions'):(document.body.dataset.page==='accounts'?(language==='ar'?'الحسابات المتاحة':'Available accounts'):t('catalogTitle')); mh.querySelector('p').textContent = t('catalogText'); }
     search.placeholder = t('search');
     category.options[0].textContent = t('all');
     sort.options[0].textContent = t('newest');

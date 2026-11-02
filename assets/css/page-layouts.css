@@ -1,0 +1,27 @@
+
+/* Dedicated category pages */
+body[data-page="home"] #marketplace,
+body[data-page="home"] #social-services,
+body[data-page="home"] #subscriptions { display:none !important; }
+body[data-page="accounts"] .hero,
+body[data-page="accounts"] .features-section,
+body[data-page="accounts"] #social-services,
+body[data-page="accounts"] #subscriptions,
+body[data-page="accounts"] .about-section,
+body[data-page="accounts"] .contact-section { display:none !important; }
+body[data-page="social"] .hero,
+body[data-page="social"] .features-section,
+body[data-page="social"] #marketplace,
+body[data-page="social"] #subscriptions,
+body[data-page="social"] .about-section,
+body[data-page="social"] .contact-section { display:none !important; }
+body[data-page="subscriptions"] .hero,
+body[data-page="subscriptions"] .features-section,
+body[data-page="subscriptions"] #marketplace,
+body[data-page="subscriptions"] #social-services,
+body[data-page="subscriptions"] .about-section,
+body[data-page="subscriptions"] .contact-section { display:none !important; }
+body[data-page="social"] #social-services { min-height:calc(100vh - 170px); display:flex !important; align-items:center; }
+body[data-page="accounts"] #marketplace,
+body[data-page="subscriptions"] #subscriptions { min-height:calc(100vh - 170px); padding-top:60px; }
+@media(max-width:760px){ body[data-page] .nav-links{display:none;} }
