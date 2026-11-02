@@ -555,3 +555,103 @@
     z-index: 2147483000 !important;
   }
 }
+
+
+/*
+ * Mobile section navigation fix.
+ * Desktop navigation is intentionally unchanged.
+ * The later-loaded page-layouts.css hides .nav-links on mobile; this
+ * higher-specificity rule restores the section links only on phones.
+ */
+@media (max-width: 620px) {
+  body[data-page] .site-header .nav {
+    height: auto !important;
+    min-height: 68px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 10px;
+    row-gap: 7px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  body[data-page] .site-header .brand {
+    order: 1;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  body[data-page] .site-header .nav-actions {
+    order: 2;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-inline-start: auto;
+  }
+
+  body[data-page] .site-header .nav-links {
+    order: 3;
+    display: flex !important;
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    margin: 0;
+    padding: 2px 0 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    direction: rtl;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  body[data-page] .site-header .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  body[data-page] .site-header .nav-links a {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 7px 11px;
+    border: 1px solid rgba(95, 210, 207, .16);
+    border-radius: 10px;
+    background: rgba(17, 36, 49, .72);
+    color: var(--muted, #a6afc4);
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  body[data-page] .site-header .nav-links a.active,
+  body[data-page] .site-header .nav-links a[aria-current="page"] {
+    border-color: rgba(24, 184, 166, .5);
+    background: rgba(24, 184, 166, .13);
+    color: #72e5d8;
+  }
+
+  /* The header remains in normal document flow; it never overlays content. */
+  body[data-page] .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  /* Preserve the existing full-screen product-details behavior. */
+  body.account-dialog-open .site-header {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+  }
+}
