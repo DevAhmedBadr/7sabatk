@@ -1,0 +1,97 @@
+/* 7sabatk visual refresh — marketplace-first responsive interface */
+:root{
+  --bg:#080f18;--panel:#101d2a;--panel2:#142637;--line:#263b4b;
+  --text:#edf7f8;--muted:#9db1bd;--purple:#18b8a6;--purple2:#087f8c;
+  --cyan:#5ce1d1;--radius:20px;--accent:#18b8a6;
+}
+body{background:radial-gradient(ellipse at 85% -8%,#124653 0,transparent 34%),radial-gradient(ellipse at 4% 25%,#123040 0,transparent 30%),var(--bg)}
+.site-header{background:#08131ded;border-bottom-color:#5ce1d11c}
+.brand-mark{background:linear-gradient(135deg,#22c7b3,#087f8c);box-shadow:0 8px 25px #18b8a633}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan)}
+.button{background:linear-gradient(135deg,#19b9a7,#087f8c);box-shadow:0 10px 28px #0caa9a2b}
+.button-ghost{background:#122333;border-color:#294554}
+.icon-button{border-color:#294554;background:#102130}
+.hero{padding-top:82px}
+.eyebrow{border-color:#28c5b35c;background:#18b8a617;color:#75e8d8}
+.pulse{background:#5ce1d1;box-shadow:0 0 12px #5ce1d1}
+h1 span,.about-grid h2 span{background:linear-gradient(90deg,#72e7d8,#7db9f4);-webkit-background-clip:text;background-clip:text}
+.hero-art{background:linear-gradient(145deg,#143448,#0d1a27 72%);border-color:#4ac8bf2b}
+.glow{background:#18b8a655}
+.hero-card{background:#0b1723ed;border-color:#ffffff20}
+.hero-avatar{background:linear-gradient(135deg,#20c7b4,#3679a6)}
+.hero-metrics div{background:#ffffff08;border-color:#ffffff14}
+.feature-card,.account-card{background:linear-gradient(145deg,#122637,#0d1925);border-color:#263d4c}
+.feature-icon{background:#18b8a61d;color:#6ce4d5}
+.marketplace-section{background:#0a1520;border-color:#ffffff0b}
+.toolbar select,.search-box{background:#0d1b28;border-color:#2a4050}
+.search-box{color:#5ce1d1}
+.category-tag{color:#70e3d5;background:#18b8a61a;border-color:#18b8a64a}
+.card-cover{background:radial-gradient(circle at 70% 25%,#1a9f9a33,transparent 43%),linear-gradient(135deg,#183247,#0d1925)}
+.card-stats b{color:#e8fffc}
+.price-row strong,.product-price{color:#6be4d5}
+.price-row span{background:#143a35;color:#8cebd2}
+.details-button,.back-top{color:#68e3d4}
+.contact-panel{background:linear-gradient(120deg,#123b46,#122435);border-color:#246b70}
+.values span{background:#102333;color:#83e1d6}
+.dialog{background:#0f1d2a;border-color:#2b4556}
+.auth-tabs{background:#0a1621}
+.auth-tabs button.active{background:#12463f}
+.auth-dialog input,.settings-list select,.profile-form input,#passwordForm input,#passwordOtpForm input{background:#0a1722;border-color:#2b4556}
+.auth-dialog input:focus,.settings-list select:focus{border-color:#35cdbb;box-shadow:0 0 0 3px #18b8a622}
+.product-image{background:#0b1925}
+.product-image img,.card-cover-image,.card-avatar img{object-fit:contain}
+html[data-image-fit="cover"] .product-image img,html[data-image-fit="cover"] .card-cover-image{object-fit:cover}
+html[data-image-fit="contain"] .product-image img,html[data-image-fit="contain"] .card-cover-image{object-fit:contain}
+.account-card{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.account-card:hover{border-color:#32bdae;box-shadow:0 18px 44px #0005}
+.account-card .card-cover-image{width:100%;height:100%;padding:8px;background:#08131c}
+.image-preview-button,.detail-image-preview{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:zoom-in}
+.image-preview-button img{display:block}
+.detail-image-preview img{display:block;width:100%;height:100%;max-height:520px;object-fit:contain}
+.card-stats span{display:block;font-size:10px;color:var(--muted)}
+.card-footer{gap:10px}
+.compact-cards .account-grid{gap:11px}
+.compact-cards .card-cover{height:112px}
+.compact-cards .card-body{padding:12px}
+.compact-cards .account-card h3{font-size:14px}
+.compact-cards .card-stats{gap:12px;margin:9px 0}
+.profile-avatar-editor{display:flex;align-items:center;gap:14px;margin:12px 0 18px}
+.profile-avatar-editor img,.profile-avatar-editor>span{width:76px;height:76px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#20c7b4,#3679a6);border:3px solid #ffffff22}
+.profile-avatar-editor>span{display:grid;place-items:center;font-size:25px;font-weight:800}
+.profile-avatar-editor label{cursor:pointer}
+.image-lightbox{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:48px 20px;background:#02070cf2;backdrop-filter:blur(10px)}
+.image-lightbox.open{display:flex}
+.image-lightbox img{max-width:min(1100px,96vw);max-height:88vh;object-fit:contain;border-radius:12px;box-shadow:0 25px 90px #000a}
+.lightbox-close{position:absolute;top:18px;right:22px;width:44px;height:44px;border:1px solid #ffffff35;border-radius:50%;background:#ffffff12;color:#fff;font-size:28px;cursor:pointer}
+.admin-body{background:radial-gradient(ellipse at 90% 0%,#123c47 0,transparent 30%),#080f18}
+.admin-sidebar,.admin-panel,.admin-stat{background:#101e2b;border-color:#294252}
+.side-link.active,.side-link:hover{background:#12443f;color:#83e9dc}
+.status-pill{background:#143a35;color:#8cebd2}
+.table-actions button,.text-button{background:#142b3a;border-color:#31505d}
+.table-actions button:hover,.text-button:hover{border-color:#42c7b7}
+.admin-form input,.admin-form select,.admin-form textarea,.field-manager #fieldForm input{background:#0a1722;border-color:#2b4556}
+.admin-form input:focus,.admin-form select:focus,.admin-form textarea:focus{border-color:#35cdbb}
+.toast{background:#12443f}
+html[data-theme="light"] body{background:#f3f8fa;color:#162a35}
+html[data-theme="light"] .site-header{background:#f8fcfdec;border-bottom-color:#dce9eb}
+html[data-theme="light"] .hero-art{background:linear-gradient(145deg,#e2f5f2,#e8f0f7)}
+html[data-theme="light"] .hero-card{background:#fff;color:#162a35;border-color:#d6e7e9}
+html[data-theme="light"] .feature-card,html[data-theme="light"] .account-card{background:#fff;color:#162a35;border-color:#dbe8eb}
+html[data-theme="light"] .marketplace-section{background:#eaf2f5}
+html[data-theme="light"] .toolbar select,html[data-theme="light"] .search-box{background:#fff;color:#162a35;border-color:#d2e1e5}
+html[data-theme="light"] .search-box input{color:#162a35}
+html[data-theme="light"] .card-cover{background:#e8f2f4}
+html[data-theme="light"] .card-cover-image{background:#f7fbfc}
+html[data-theme="light"] .card-stats b{color:#183542}
+html[data-theme="light"] .contact-panel{background:#e2f4f1;color:#162a35;border-color:#c2e5df}
+html[data-theme="light"] .dialog{background:#fff;color:#162a35;border-color:#d6e4e8}
+html[data-theme="light"] .auth-dialog input,html[data-theme="light"] .settings-list select,html[data-theme="light"] .profile-form input{background:#f7fbfc;color:#162a35;border-color:#d2e1e5}
+html[data-theme="light"] .admin-body{background:#f3f8fa}
+html[data-theme="light"] .admin-sidebar,html[data-theme="light"] .admin-panel,html[data-theme="light"] .admin-stat{background:#fff;color:#162a35;border-color:#dbe8eb}
+html[data-theme="light"] .admin-table td{color:#263e49}
+html[dir="ltr"] .profile-avatar-editor{direction:ltr}
+@media(max-width:760px){.image-lightbox{padding:55px 10px 20px}.profile-avatar-editor{flex-wrap:wrap}.hero{padding-top:54px}}
+
+.account-avatar-button img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
+
+.forgot-password{display:inline-flex;margin:12px 0 0;padding:6px 0;border:0;background:transparent;color:#71dfd2;cursor:pointer}

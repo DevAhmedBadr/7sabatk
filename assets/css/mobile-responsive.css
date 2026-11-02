@@ -555,3 +555,84 @@
     z-index: 2147483000 !important;
   }
 }
+
+
+/* Mobile section navigation: a second row below the brand/actions.
+   It stays in the normal header flow and never overlays page content. */
+@media (max-width: 620px) {
+  .site-header .nav {
+    height: auto !important;
+    min-height: 64px;
+    padding-top: 7px;
+    padding-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 5px;
+  }
+
+  .site-header .brand {
+    order: 1;
+    margin-inline-end: auto;
+  }
+
+  .site-header .nav-actions {
+    order: 2;
+  }
+
+  .site-header .nav-links {
+    order: 3;
+    display: flex !important;
+    position: static;
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 5px 0 1px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .site-header .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-header .nav-links a {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 7px 12px;
+    border: 1px solid rgba(107, 157, 177, .22);
+    border-radius: 999px;
+    background: rgba(19, 39, 53, .72);
+    color: var(--muted, #a9bdc9);
+    font-size: 11px;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .site-header .nav-links a:active {
+    background: rgba(24, 184, 166, .18);
+    border-color: rgba(24, 184, 166, .55);
+    color: #62e0d2;
+  }
+
+  /* Reserve space for the taller, two-row sticky header when using anchors. */
+  html {
+    scroll-padding-top: 112px;
+  }
+
+  /* The product-details overlay remains above the header; the header is
+     hidden only while the account details dialog is open (existing behavior). */
+  .overlay {
+    z-index: 2147483000 !important;
+  }
+}
