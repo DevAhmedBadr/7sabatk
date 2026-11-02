@@ -11,6 +11,7 @@ function isFieldActiveForPlatform(field,platform=selectedFieldPlatform,productTy
  return override?override.is_active:field.is_active;
 }
 function currentProductPlatform(){return $('#productForm [name="category"]')?.value||'TikTok';}
+function formProductType(){return $('#productForm [name="product_type"]')?.value||'account';}
 function renderCustomInputs(values={}){
  productFieldDraft={...productFieldDraft,...values};
  const platform=platformKey(currentProductPlatform());
@@ -51,7 +52,6 @@ async function loadFields(){
   const active=isFieldActiveForPlatform(f,platform);
   return `<tr><td>${esc(f.label_ar)} / ${esc(f.label_en)}</td><td>${esc(f.field_key)}</td><td><input class="field-scope-input" data-field-scope="${f.id}" value="${esc(f.platform_key||'*')}" aria-label="نطاق الحقل" title="اكتب * لكل المنصات أو اسم منصة مثل PUBG أو TikTok"></td><td>${f.field_type==='number'?'رقم':'نص'} · ${active?'نشط في '+esc(selectedFieldPlatform):'متوقف في '+esc(selectedFieldPlatform)}</td><td><div class="table-actions"><button data-field-scope-save="${f.id}">حفظ النطاق</button><button data-field-up="${f.id}" ${i===0?'disabled':''}>↑</button><button data-field-down="${f.id}" ${i===scopedFields.length-1?'disabled':''}>↓</button><button data-field-toggle="${f.id}">${active?'تعطيل لهذه المنصة':'تفعيل لهذه المنصة'}</button><button data-field-edit="${f.id}">تعديل</button><button class="danger" data-field-delete="${f.id}">حذف</button></div></td></tr>`;
  }).join('')||'<tr><td colspan="5">لا توجد حقول مخصصة.</td></tr>';
- renderCustomInputs();
  $('#fieldsTable').querySelectorAll('[data-field-toggle]').forEach(b=>b.addEventListener('click',async()=>{
   const field=fieldDefinitions.find(f=>String(f.id)===b.dataset.fieldToggle);if(!field)return;
   const platform_key=platformKey(selectedFieldPlatform),is_active=!isFieldActiveForPlatform(field,platform_key);
@@ -76,8 +76,9 @@ async function loadFields(){
   ],{onConflict:'id'});
   if(error)toast(error.message);else loadFields();
  }));
+ renderCustomInputs();
 }
-function openProductForm(item=null){const form=$('#productForm');form.hidden=false;form.reset();form.elements.id.value=item?.id||'';$('#productFormTitle').textContent=item?'تعديل المنتج':'إضافة منتج جديد';form.elements.product_type.value=item?.product_type||'account';form.elements.username.closest('label').hidden=form.elements.product_type.value==='subscription';$('#customProductFields').hidden=false;for(const [field,key] of Object.entries({title:'title',username:'username',category:'category',price_kwd:'price_kwd',description_ar:'description_ar',description_en:'description_en'})){if(form.elements[field])form.elements[field].value=item?.[key]??(field==='category'?'TikTok':'');}if(form.elements.price_kwd)form.elements.price_kwd.value=String(item?.price_kwd??item?.price??'').replace('.',',');form.elements.image_url.value=item?.image_url||'';form.elements.is_published.checked=item?item.status==='published':true;productFieldDraft={...(item?.custom_fields||{}),followers_count:item?.followers_count??item?.custom_fields?.followers_count,views_count:item?.views_count??item?.custom_fields?.views_count};document.querySelector('#customProductFields').hidden=form.elements.product_type.value==='subscription';renderCustomInputs();form.scrollIntoView({behavior:'smooth',block:'start'});}
+function openProductForm(item=null){const form=$('#productForm');form.hidden=false;form.reset();form.elements.id.value=item?.id||'';$('#productFormTitle').textContent=item?'تعديل المنتج':'إضافة منتج جديد';form.elements.product_type.value=item?.product_type||'account';form.elements.username.closest('label').hidden=form.elements.product_type.value==='subscription';$('#customProductFields').hidden=false;for(const [field,key] of Object.entries({title:'title',username:'username',category:'category',price_kwd:'price_kwd',description_ar:'description_ar',description_en:'description_en'})){if(form.elements[field])form.elements[field].value=item?.[key]??(field==='category'?'TikTok':'');}if(form.elements.price_kwd)form.elements.price_kwd.value=String(item?.price_kwd??item?.price??'').replace('.',',');form.elements.image_url.value=item?.image_url||'';form.elements.is_published.checked=item?item.status==='published':true;productFieldDraft={...(item?.custom_fields||{}),followers_count:item?.followers_count??item?.custom_fields?.followers_count,views_count:item?.views_count??item?.custom_fields?.views_count};document.querySelector('#customProductFields').hidden=false;renderCustomInputs();form.scrollIntoView({behavior:'smooth',block:'start'});}
 function editListing(id){const item=listings.find(x=>String(x.id)===String(id));if(item)openProductForm(item);}
 $('#newProduct').addEventListener('click',()=>openProductForm());$('#newProductTop').addEventListener('click',()=>{showSection('products');openProductForm();});$('#cancelProduct').addEventListener('click',()=>$('#productForm').hidden=true);
 $('#productForm [name="product_type"]').addEventListener('change',e=>{
@@ -101,7 +102,21 @@ $('#fieldPlatform')?.addEventListener('change',async()=>{
  selectedFieldPlatform=$('#fieldPlatform').value.trim()||'TikTok';
  await loadFields();
 });
-$('#fieldForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),ar=String(fd.get('label_ar')).trim(),en=String(fd.get('label_en')).trim(),slug=en.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||`field_${Date.now()}`,baseKey=`extra_${slug}`,field_key=fieldDefinitions.some(f=>f.field_key===baseKey)?`${baseKey}_${Date.now()}`:baseKey;const {error}=await supabase.from('listing_fields').insert({field_key,label_ar:ar,label_en:en,field_type:fd.get('field_type')||'number',product_type:selectedFieldProductType,platform_key:platformKey(selectedFieldPlatform),is_active:true,sort_order:100+fieldDefinitions.length});if(error){toast(error.message);return;}e.currentTarget.reset();toast('تمت إضافة الحقل');await loadFields();});
+$('#fieldForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const form=e.currentTarget,button=form.querySelector('button[type="submit"]');
+ const fd=new FormData(form),ar=String(fd.get('label_ar')||'').trim(),en=String(fd.get('label_en')||'').trim();
+ if(!ar||!en){toast('اكتب اسم الحقل بالعربية والإنجليزية');return;}
+ const slug=en.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||`field_${Date.now()}`;
+ const baseKey=`extra_${slug}`,field_key=fieldDefinitions.some(f=>f.field_key===baseKey)?`${baseKey}_${Date.now()}`:baseKey;
+ button.disabled=true;button.textContent='جارٍ الإضافة...';
+ try{
+  const {error}=await supabase.from('listing_fields').insert({field_key,label_ar:ar,label_en:en,field_type:fd.get('field_type')||'number',product_type:selectedFieldProductType,platform_key:platformKey(selectedFieldPlatform),is_active:true,sort_order:100+fieldDefinitions.length});
+  if(error)throw error;
+  form.reset();toast('تمت إضافة الحقل بنجاح');await loadFields();
+ }catch(error){toast(error.message||'تعذرت إضافة الحقل');}
+ finally{button.disabled=false;button.textContent='إضافة حقل';}
+});
 async function updateField(id,patch){const {error}=await supabase.from('listing_fields').update(patch).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function editField(id){const f=fieldDefinitions.find(x=>String(x.id)===String(id));if(!f)return;const ar=prompt('اسم الحقل بالعربية',f.label_ar);if(ar===null)return;const en=prompt('اسم الحقل بالإنجليزية',f.label_en);if(en===null)return;const type=prompt('نوع البيانات: number أو text',f.field_type||'number');if(type===null)return;if(!['number','text'].includes(type.trim())){toast('نوع البيانات يجب أن يكون number أو text');return;}const {error}=await supabase.from('listing_fields').update({label_ar:ar.trim(),label_en:en.trim(),field_type:type.trim(),product_type:f.product_type||selectedFieldProductType}).eq('id',id);if(error)toast(error.message);else loadFields();}
 async function deleteField(id){if(!confirm('حذف تعريف الحقل؟ القيم القديمة ستظل محفوظة داخل المنتجات لكنها لن تظهر.'))return;const {error}=await supabase.from('listing_fields').delete().eq('id',id);if(error)toast(error.message);else loadFields();}
