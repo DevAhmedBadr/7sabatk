@@ -62,6 +62,8 @@ function applyLanguage() {
     numberLocale = resolveNumberLocale(preferences.numberLocale, language);
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    const heroBanner = $('#heroBanner');
+    if (heroBanner) { heroBanner.src = language === 'ar' ? 'assets/images/banner-ar.webp' : 'assets/images/banner-en.webp'; heroBanner.alt = language === 'ar' ? '7sabatk — منصة رقمية متكاملة' : '7sabatk — All-in-One Digital Platform'; }
     document.title = language === "ar" ? "موقع حساباتك | بيع الحسابات الرقمية" : "7sabatk | Digital Accounts Marketplace";
     const set = (sel, key) => {
         const el = $(sel);
@@ -81,6 +83,7 @@ function applyLanguage() {
     h.innerHTML = `${t('hero1')}<br><span>${t('hero2')}</span>`;
     set('.hero-copy>p', 'heroText');
     $('.hero-actions a.button').textContent = t('browse');
+    $('.hero-actions a.button').setAttribute('href', '#features');
     $('.hero-actions a.button-ghost').textContent = t('more');
     const f = $('.features-section .section-heading');
     f.querySelector('.section-kicker').textContent = t('featuresKicker');
@@ -271,7 +274,7 @@ function filter() {
 }
 function renderSubscriptionList(){
     const container=$('#subscriptionGrid'); if(!container)return;
-    renderSubscriptions(subscriptions,container,item=>showAccountDetails(item,$('#accountDialog'),{...preferences,numberLocale},rates,publicSettings,fieldDefinitions,language,fieldPlatformStates),{...preferences,numberLocale},rates,language);
+    renderSubscriptions(subscriptions,container,item=>showAccountDetails(item,$('#accountDialog'),{...preferences,numberLocale},rates,publicSettings,fieldDefinitions,language,fieldPlatformStates),{...preferences,numberLocale},rates,language,fieldDefinitions,fieldPlatformStates);
     const countEl=$('#subscriptionsCount');
     if(countEl)countEl.textContent=language==='ar'?`عدد الاشتراكات: ${subscriptions.length}`:`Subscriptions: ${subscriptions.length}`;
     const emptyEl=$('#subscriptionsEmpty');if(emptyEl)emptyEl.hidden=subscriptions.length>0;
