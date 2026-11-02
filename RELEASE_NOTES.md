@@ -59,3 +59,20 @@ A static source check cannot prove live SMTP delivery, live database-policy beha
 - Added a subscription catalog with account-style product cards and detail/contact flow.
 - Added a product type selector in Admin → Product Management so subscriptions can be created, edited, published, hidden, and deleted separately from accounts.
 - Added `supabase/migration_subscriptions.sql` to safely classify existing listings as accounts and enable subscription records.
+
+## Dedicated category pages and legacy listing recovery
+- The home page now acts as a category selector instead of stacking the catalog sections vertically.
+- Added dedicated pages: `accounts.html`, `social-services.html`, and `subscriptions.html`.
+- Existing published listings remain visible as accounts if the database migration has not yet added `listings.product_type`.
+- Run `supabase/migration_subscriptions.sql` in Supabase SQL Editor to enable subscription listings and administration.
+
+
+## Admin, bilingual product content, and category polish
+- Product prices accept decimal comma or decimal point (for example 1,500 or 1.500 KWD).
+- Product descriptions now have separate Arabic and English fields.
+- Custom fields are scoped separately to digital accounts or subscriptions, as well as the platform/category.
+- Subscription custom fields can be configured and displayed in subscription cards and detail views.
+- The homepage hero banner is selected directly from the active site language.
+- Homepage category cards are larger and have clearer hover/focus affordances; the main CTA now leads to the category choices.
+
+Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` once in Supabase SQL Editor. This migration preserves existing listings and copies the old description into the Arabic description field.

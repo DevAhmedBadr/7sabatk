@@ -62,3 +62,12 @@ Do not create a new project. Before applying database changes, export/backup the
 The storefront now separates three service areas: digital accounts, social-media services (coming soon), and digital subscriptions. Subscription offers are stored in the existing `listings` table with `product_type = 'subscription'`; account records remain `product_type = 'account'`.
 
 Before deploying this version, run `supabase/migration_subscriptions.sql` once in the Supabase SQL Editor. Then publish the updated project. In Admin → إدارة المنتجات, choose **اشتراك رقمي** when creating an offer; enter its title, category/platform (for example Netflix or YouTube), price, image, and description. Existing account listings are preserved and remain in the accounts catalog.
+
+## Separate category pages
+- `index.html`: home page and category selector.
+- `accounts.html`: existing digital-account catalog.
+- `social-services.html`: social-media services landing page (Coming Soon).
+- `subscriptions.html`: digital subscriptions catalog.
+
+### Enable subscriptions in an existing Supabase project
+Run `supabase/migration_subscriptions.sql` once in the Supabase Dashboard → SQL Editor. The migration adds `listings.product_type` with a default of `account`, so existing listings stay classified as accounts. The frontend also has a compatibility fallback that continues showing published legacy listings as accounts until the migration is run.
