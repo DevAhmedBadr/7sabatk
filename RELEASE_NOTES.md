@@ -51,3 +51,11 @@ A static source check cannot prove live SMTP delivery, live database-policy beha
 - Newly added or removed HTML text is reflected when the admin settings editor is reopened after the updated site is published.
 - Arabic and English values are saved in the `site_html_texts` setting and applied to matching elements on the public page.
 - Text created dynamically by JavaScript, product descriptions, and content loaded from Supabase are not static HTML and remain managed by their respective features.
+
+
+## Digital services expansion
+- Added a three-way service chooser on the home page: accounts, social-media services, and subscriptions.
+- Added a bilingual social-media services coming-soon page.
+- Added a subscription catalog with account-style product cards and detail/contact flow.
+- Added a product type selector in Admin → Product Management so subscriptions can be created, edited, published, hidden, and deleted separately from accounts.
+- Added `supabase/migration_subscriptions.sql` to safely classify existing listings as accounts and enable subscription records.

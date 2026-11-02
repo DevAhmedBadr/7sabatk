@@ -1,13 +1,13 @@
 import { supabase, isSupabaseConfigured } from "./backend.js";
 import { translations } from "./site-copy.js";
-import { loadAccounts, loadPublicSettings } from "./data.js";
-import { renderAccounts, showAccountDetails, openDialog, closeDialog } from "./render.js";
+import { loadAccounts, loadSubscriptions, loadPublicSettings } from "./data.js";
+import { renderAccounts, renderSubscriptions, showAccountDetails, openDialog, closeDialog } from "./render.js";
 import { getPreferences, savePreferences, applyTheme, getCurrencyRates, resolveLanguage, resolveNumberLocale } from "./preferences.js";
 const $ = s => document.querySelector(s);
 const OWNER_ADMIN_ID = "be398df3-3918-46e1-abc4-59975ffe716b";
 const grid = $("#accountGrid"), search = $("#searchInput"), category = $("#categoryFilter"), sort = $("#sortFilter"), count = $("#resultsCount"), empty = $("#emptyState");
 let textOverrides = { ar: {}, en: {} };
-let accounts = [], preferences = getPreferences(), rates = {
+let accounts = [], subscriptions = [], preferences = getPreferences(), rates = {
     KWD: 1
 }, publicSettings = {}, fieldDefinitions = [], fieldPlatformStates = [], session = null, profile = null, language = resolveLanguage(preferences.language), numberLocale = resolveNumberLocale(preferences.numberLocale, language);
 function t(k) {
@@ -91,6 +91,23 @@ function applyLanguage() {
         cards[i].querySelector('h3').textContent = t(keys[0]);
         cards[i].querySelector('p').textContent = t(keys[1]);
     });
+    const featureHeading=$('.features-section .section-heading');
+    if(featureHeading){
+      featureHeading.querySelector('.section-kicker').textContent=language==='ar'?'خدماتنا الرقمية':'OUR DIGITAL SERVICES';
+      featureHeading.querySelector('h2').textContent=language==='ar'?'اختر الخدمة التي تبحث عنها':'Choose the service you need';
+      featureHeading.querySelector('p').textContent=language==='ar'?'اختر بين الحسابات الرقمية وخدمات السوشيال ميديا والاشتراكات الرقمية.':'Explore digital accounts, social media services and digital subscriptions.';
+    }
+    const serviceLabels = language === 'ar'
+      ? [{title:'الحسابات الرقمية',text:'تصفح الحسابات الرقمية المعروضة للبيع.',href:'#marketplace'},{title:'خدمات السوشيال ميديا',text:'خدمات زيادة المتابعين واللايكات والمشاهدات. قريبًا',href:'#social-services'},{title:'الاشتراكات الرقمية',text:'اشتراكات Netflix وYouTube وغيرها.',href:'#subscriptions'}]
+      : [{title:'Digital Accounts',text:'Browse digital accounts listed for sale.',href:'#marketplace'},{title:'Social Media Services',text:'Followers, likes and views services. Coming soon.',href:'#social-services'},{title:'Digital Subscriptions',text:'Netflix, YouTube and other subscriptions.',href:'#subscriptions'}];
+    cards.forEach((card,i)=>{if(serviceLabels[i]){card.href=serviceLabels[i].href;card.querySelector('h3').textContent=serviceLabels[i].title;card.querySelector('p').textContent=serviceLabels[i].text;}});
+    const socialTitle=$('[data-social-title]'), socialKicker=$('[data-social-kicker]'), socialSoon=$('[data-social-soon]');
+    if(socialTitle)socialTitle.textContent=language==='ar'?'خدمات السوشيال ميديا':'Social Media Services';
+    if(socialKicker)socialKicker.textContent=language==='ar'?'القسم قيد التجهيز':'COMING SOON';
+    if(socialSoon)socialSoon.textContent=language==='ar'?'قريبًا':'Coming Soon';
+    const subLabels={'[data-sub-kicker]':language==='ar'?'اشتراكات رقمية':'DIGITAL SUBSCRIPTIONS','[data-sub-title]':language==='ar'?'الاشتراكات المتاحة':'Available Subscriptions','[data-sub-text]':language==='ar'?'اختر الاشتراك الرقمي المناسب لك.':'Choose the digital subscription that suits you.','[data-sub-empty]':language==='ar'?'لا توجد اشتراكات متاحة حاليًا':'No subscriptions available yet'};
+    Object.entries(subLabels).forEach(([sel,value])=>{const el=$(sel);if(el)el.textContent=value;});
+
     const mh = $('.marketplace-section .section-heading');
     mh.querySelector('.section-kicker').textContent = t('catalogKicker');
     mh.querySelector('h2').textContent = t('catalogTitle');
@@ -254,6 +271,13 @@ function filter() {
     count.textContent = language === 'ar' ? `عدد النتائج: ${new Intl.NumberFormat(numberLocale).format(list.length)}` : `Results: ${new Intl.NumberFormat(numberLocale).format(list.length)}`;
     empty.hidden = list.length > 0;
 }
+function renderSubscriptionList(){
+    const container=$('#subscriptionGrid'); if(!container)return;
+    renderSubscriptions(subscriptions,container,item=>showAccountDetails(item,$('#accountDialog'),{...preferences,numberLocale},rates,publicSettings,fieldDefinitions,language,fieldPlatformStates),{...preferences,numberLocale},rates,language);
+    const countEl=$('#subscriptionsCount');
+    if(countEl)countEl.textContent=language==='ar'?`عدد الاشتراكات: ${subscriptions.length}`:`Subscriptions: ${subscriptions.length}`;
+    const emptyEl=$('#subscriptionsEmpty');if(emptyEl)emptyEl.hidden=subscriptions.length>0;
+}
 [search, category, sort].forEach(el => el.addEventListener('input', filter));
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeDialog(b.dataset.close)));
 document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
@@ -298,6 +322,7 @@ $('#savePreferences').addEventListener('click', async() => {
     applyLanguage();
     rates = await getCurrencyRates();
     filter();
+    renderSubscriptionList();
     $('#settingsMessage').textContent = language === 'ar' ? 'تم حفظ تفضيلاتك.' : 'Preferences saved.';
 });
 let authMode = 'login', pendingRecoveryEmail = '';
@@ -684,6 +709,7 @@ async function boot() {
         }
         applySiteSettings();
         accounts = await loadAccounts();
+        subscriptions = await loadSubscriptions();
         try {
             const [{
                     data: fields,
@@ -709,6 +735,7 @@ async function boot() {
         }
         fillCategories();
         filter();
+        renderSubscriptionList();
     } catch (error) {
         console.error(error);
         count.textContent = language === 'ar' ? 'تعذر تحميل البيانات' : 'Could not load data';

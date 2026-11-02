@@ -55,3 +55,10 @@ Do not create a new project. Before applying database changes, export/backup the
 - Listing images default to `contain` so full profile screenshots are visible; users can optionally choose `cover`. Images can be opened in a full-screen viewer.
 - Account profile supports display name, unique username, email update confirmation, profile photo and password reset by email OTP.
 - Account statistics are driven by `listing_fields`, including labels, type, active state and display order.
+
+
+## Digital subscriptions catalog
+
+The storefront now separates three service areas: digital accounts, social-media services (coming soon), and digital subscriptions. Subscription offers are stored in the existing `listings` table with `product_type = 'subscription'`; account records remain `product_type = 'account'`.
+
+Before deploying this version, run `supabase/migration_subscriptions.sql` once in the Supabase SQL Editor. Then publish the updated project. In Admin → إدارة المنتجات, choose **اشتراك رقمي** when creating an offer; enter its title, category/platform (for example Netflix or YouTube), price, image, and description. Existing account listings are preserved and remain in the accounts catalog.

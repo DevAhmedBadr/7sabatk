@@ -122,6 +122,32 @@ export function renderAccounts(accounts, container, onDetails, preferences, rate
   warmAccountImageCache(accounts);
 }
 
+
+export function renderSubscriptions(items, container, onDetails, preferences, rates, language = "ar") {
+  container.innerHTML = "";
+  const ar = language === "ar";
+  for (const [index, item] of items.entries()) {
+    const card = document.createElement("article");
+    card.className = "account-card subscription-card";
+    const image = item.image_url || item.image || "";
+    const title = item.title || (ar ? "اشتراك رقمي" : "Digital subscription");
+    const media = image
+      ? `<button type="button" class="image-preview-button"><img class="card-cover-image" src="${escapeAttr(image)}" alt="${escapeAttr(title)}" loading="${index < 4 ? "eager" : "lazy"}"></button>`
+      : `<div class="card-avatar">7S</div>`;
+    card.innerHTML = `
+      <div class="card-cover">${media}</div>
+      <div class="card-body">
+        <span class="category-tag">${escapeHtml(item.category || (ar ? "اشتراك رقمي" : "Subscription"))}</span>
+        <h3>${escapeHtml(title)}</h3>
+        <p class="subscription-description">${escapeHtml(item.description || (ar ? "اشتراك رقمي متاح للطلب." : "Digital subscription available to order."))}</p>
+        <div class="account-price">${escapeHtml(formatPrice(item.price_kwd ?? item.price, preferences.currency, rates, preferences.numberLocale))}</div>
+        <button type="button" class="button subscription-details">${ar ? "عرض التفاصيل" : "View details"}</button>
+      </div>`;
+    card.querySelector(".subscription-details").addEventListener("click", () => onDetails(item));
+    card.querySelector(".image-preview-button")?.addEventListener("click", () => openImageLightbox(image, title));
+    container.append(card);
+  }
+}
 export function showAccountDetails(account, dialog, preferences, rates, settings, fieldDefinitions = [], language = "ar", fieldPlatformStates = []) {
   const ar = language === "ar";
   const title = account.title || account.name || (ar ? "حساب بدون اسم" : "Untitled account");
@@ -135,7 +161,7 @@ export function showAccountDetails(account, dialog, preferences, rates, settings
     ? `<button type="button" class="detail-image-preview" aria-label="${ar ? "عرض الصورة بالحجم الكامل" : "View full image"}"><img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}"></button>`
     : `<span>7S</span>`;
   image.querySelector("button")?.addEventListener("click", () => openImageLightbox(imageUrl, title));
-  const stats = activeStats(account, fieldDefinitions, language, fieldPlatformStates);
+  const stats = account.product_type === "subscription" ? [] : activeStats(account, fieldDefinitions, language, fieldPlatformStates);
   dialog.querySelector("#detailStats").innerHTML = stats.map(s =>
     `<div class="modal-stat"><b>${escapeHtml(s.value)}</b><span>${escapeHtml(s.label)}</span></div>`
   ).join("");

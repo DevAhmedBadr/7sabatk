@@ -110,29 +110,29 @@
 
       <div class="feature-grid">
 
-        <article class="feature-card">
+        <a class="feature-card service-choice" href="#marketplace" data-service="accounts">
           <span class="feature-icon">◎</span>
           <h3>الحسابات الرقمية</h3>
           <p>
             حسابات منصات التواصل والألعاب مثل TikTok وYouTube وSteam وغيرها.
           </p>
-        </article>
+        </a>
 
-        <article class="feature-card">
+        <a class="feature-card service-choice" href="#social-services" data-service="social">
           <span class="feature-icon">▤</span>
           <h3>خدمات السوشيال ميديا</h3>
           <p>
             خدمات زيادة المتابعين واللايكات والمشاهدات ودعم نمو الحسابات.
           </p>
-        </article>
+        </a>
 
-        <article class="feature-card">
+        <a class="feature-card service-choice" href="#subscriptions" data-service="subscriptions">
           <span class="feature-icon">✓</span>
           <h3>الاشتراكات الرقمية</h3>
           <p>
             اشتراكات منصات الترفيه والمحتوى مثل Shahid وNetflix وYouTube وغيرها.
           </p>
-        </article>
+        </a>
 
       </div>
     </div>
@@ -187,6 +187,34 @@
         <p>جرّب تغيير كلمات البحث أو التصنيف.</p>
       </div>
 
+    </div>
+  </section>
+
+  <!-- Social media services: coming soon -->
+  <section class="section coming-soon-section" id="social-services">
+    <div class="container coming-soon-panel">
+      <span class="section-kicker" data-social-kicker>خدمات السوشيال ميديا</span>
+      <h2 data-social-title>خدمات السوشيال ميديا</h2>
+      <p data-social-soon>قريبًا</p>
+    </div>
+  </section>
+
+  <!-- Digital subscriptions -->
+  <section class="section marketplace-section subscriptions-section" id="subscriptions">
+    <div class="container">
+      <div class="section-heading heading-row">
+        <div>
+          <span class="section-kicker" data-sub-kicker>اشتراكات رقمية</span>
+          <h2 data-sub-title>الاشتراكات المتاحة</h2>
+          <p data-sub-text>اختر الاشتراك الرقمي المناسب لك.</p>
+        </div>
+        <span class="results-count" id="subscriptionsCount">جارٍ تحميل الاشتراكات...</span>
+      </div>
+      <div class="subscription-grid" id="subscriptionGrid" aria-live="polite"></div>
+      <div class="empty-state" id="subscriptionsEmpty" hidden>
+        <div class="empty-icon">▤</div>
+        <h3 data-sub-empty>لا توجد اشتراكات متاحة حاليًا</h3>
+      </div>
     </div>
   </section>
 
