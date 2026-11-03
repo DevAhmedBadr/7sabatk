@@ -71,16 +71,3 @@ Before deploying this version, run `supabase/migration_subscriptions.sql` once i
 
 ### Enable subscriptions in an existing Supabase project
 Run `supabase/migration_subscriptions.sql` once in the Supabase Dashboard → SQL Editor. The migration adds `listings.product_type` with a default of `account`, so existing listings stay classified as accounts. The frontend also has a compatibility fallback that continues showing published legacy listings as accounts until the migration is run.
-
-
-## Visitor analytics (admin dashboard)
-
-The admin overview includes unique-device visitor analytics with today / 7-day / 30-day / 12-month views.
-
-1. Open Supabase Dashboard → SQL Editor.
-2. Run `supabase/migration_visitor_analytics.sql` once.
-3. Deploy the updated site to Cloudflare Workers.
-
-The public pages load `assets/js/visitor-tracker.js`. It uses the open-source FingerprintJS browser library to generate a probabilistic device identifier, hashes that identifier with SHA-256, and sends only the hash to a restricted database function. Visitors do not need to sign in. The database stores one row per pseudonymous device per UTC hour; the admin-only RPC aggregates unique devices for each chart interval.
-
-**Accuracy and privacy notes:** browser fingerprinting is probabilistic, not a guaranteed physical-device identity. Private browsing, browser updates, privacy extensions, VPNs, device setting changes, and different browsers can change the fingerprint; two similar devices can occasionally collide. A local browser storage fallback helps keep the same browser stable. The hash is pseudonymous data, not anonymous data in the strict legal sense. Update the privacy/cookie notice and assess applicable consent/GDPR requirements before production use. The visitor counter does not collect account identity, IP address, or raw fingerprint components.
