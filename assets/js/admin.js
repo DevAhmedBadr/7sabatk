@@ -29,6 +29,51 @@ function refreshPlatformOptions(){
  if(list)list.innerHTML=names.map(x=>`<option value="${esc(x)}"></option>`).join('');
 }
 
+
+// Visitor analytics: all visitors are counted, including anonymous sessions.
+let visitorPeriod='today';
+const visitorPeriods={today:{label:'زائر فريد اليوم',caption:'إحصائيات اليوم بالساعة'},week:{label:'زائر فريد هذا الأسبوع',caption:'إحصائيات آخر 7 أيام'},month:{label:'زائر فريد هذا الشهر',caption:'إحصائيات آخر 30 يومًا'},year:{label:'زائر فريد هذه السنة',caption:'إحصائيات آخر 12 شهرًا'}};
+function visitorDateLabel(value,period){
+ const d=new Date(value);
+ if(period==='today')return d.toLocaleTimeString('ar',{hour:'2-digit',hour12:false});
+ if(period==='year')return d.toLocaleDateString('ar',{month:'short'});
+ return d.toLocaleDateString('ar',{day:'numeric',month:'short'});
+}
+function renderVisitorChart(rows,period){
+ const host=$('#visitorChart');if(!host)return;
+ const values=(rows||[]).map(r=>({label:visitorDateLabel(r.bucket_start,period),value:Number(r.visitors)||0}));
+ if(!values.length){host.innerHTML='<div class="visitor-chart-loading">لا توجد بيانات لهذه الفترة حتى الآن.</div>';return;}
+ const width=920,height=260,padL=42,padR=16,padT=18,padB=42;
+ const max=Math.max(4,...values.map(x=>x.value));
+ const step=(width-padL-padR)/Math.max(1,values.length-1);
+ const x=i=>padL+i*step;
+ const y=v=>padT+(height-padT-padB)*(1-v/max);
+ const points=values.map((v,i)=>`${x(i)},${y(v.value)}`).join(' ');
+ const area=`${padL},${height-padB} ${points} ${x(values.length-1)},${height-padB}`;
+ const grid=[0,.25,.5,.75,1].map(t=>{const yy=padT+(height-padT-padB)*t;return `<line x1="${padL}" y1="${yy}" x2="${width-padR}" y2="${yy}" class="visitor-gridline"/><text x="${padL-10}" y="${yy+4}" text-anchor="end" class="visitor-axis-label">${Math.round(max*(1-t))}</text>`}).join('');
+ const labelEvery=period==='today'?3:period==='month'?4:1;
+ const labels=values.map((v,i)=>(i%labelEvery===0||i===values.length-1)?`<text x="${x(i)}" y="${height-12}" text-anchor="middle" class="visitor-axis-label">${esc(v.label)}</text>`:'').join('');
+ const dots=values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v.value)}" r="${values.length>40?2.2:3.6}" class="visitor-dot"><title>${esc(v.label)}: ${v.value}</title></circle>`).join('');
+ host.innerHTML=`<svg class="visitor-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="مخطط عدد الزوار الفريدين"><defs><linearGradient id="visitorFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#12b8ae" stop-opacity=".28"/><stop offset="100%" stop-color="#12b8ae" stop-opacity="0"/></linearGradient></defs>${grid}<polygon points="${area}" fill="url(#visitorFill)"/><polyline points="${points}" class="visitor-line"/>${dots}${labels}</svg>`;
+}
+async function loadVisitorStats(){
+ const host=$('#visitorChart');if(!host)return;
+ $('#visitorChartNote').textContent='جارٍ تحديث البيانات...';
+ const {data,error}=await supabase.rpc('admin_visitor_stats',{p_period:visitorPeriod});
+ if(error){host.innerHTML='<div class="visitor-chart-loading">تعذر تحميل الإحصائيات. تأكد من تشغيل migration_visitor_analytics.sql في Supabase.</div>';$('#visitorTotal').textContent='—';$('#visitorChartNote').textContent='';return;}
+ const rows=data||[],total=Number(rows[0]?.period_total)||0;
+ $('#visitorTotal').textContent=total.toLocaleString('ar');
+ $('#visitorTotalLabel').textContent=visitorPeriods[visitorPeriod].label;
+ $('#visitorPeriodCaption').textContent=visitorPeriods[visitorPeriod].caption;
+ $('#visitorChartNote').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+ renderVisitorChart(rows,visitorPeriod);
+}
+document.querySelectorAll('[data-period]').forEach(button=>button.addEventListener('click',()=>{
+ visitorPeriod=button.dataset.period;
+ document.querySelectorAll('[data-period]').forEach(x=>x.classList.toggle('active',x===button));
+ loadVisitorStats();
+}));
+
 function showSection(name){document.querySelectorAll('.admin-section').forEach(s=>s.classList.toggle('active',s.id===`section-${name}`));document.querySelectorAll('.side-link').forEach(b=>b.classList.toggle('active',b.dataset.section===name));if(name==='products'){loadListings();loadFields();}if(name==='site')loadSettings();if(name==='users')loadUsers();}
 document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.go)));
 async function requireAdmin(){if(!isSupabaseConfigured){document.body.innerHTML='<main class="container" style="padding:80px 20px;text-align:center"><h1>إعداد Supabase مطلوب</h1><a href="index.html">العودة للموقع</a></main>';return false;}const {data:{session},error}=await supabase.auth.getSession();if(error||!session){location.href='index.html';return false;}currentUser=session.user;const {data:profile,error:profileError}=await supabase.from('profiles').select('role,full_name,is_banned').eq('id',currentUser.id).single();if(profileError||profile?.role!=='admin'||profile?.is_banned){document.body.innerHTML='<main class="container" style="padding:80px 20px;text-align:center"><h1>غير مصرح بالدخول</h1><p>هذه الصفحة متاحة لحسابات الإدارة المعتمدة فقط.</p><a href="index.html">العودة للموقع</a></main>';return false;}if(currentUser.id!==OWNER_ADMIN_ID){const usersNav=document.querySelector('[data-section="users"]');if(usersNav)usersNav.hidden=true;const usersSection=$('#section-users');if(usersSection)usersSection.remove();}$('#adminIdentity').textContent=profile.full_name||currentUser.email;return true;}
@@ -212,4 +257,4 @@ async function loadUsers(){let data;try{data=await adminAction('list_users');}ca
 $('#adminPasswordForm').addEventListener('submit',async e=>{e.preventDefault();const userId=$('#adminPasswordUserId').value,password=$('#adminNewPassword').value;if(password.length<8){$('#adminPasswordMessage').textContent='استخدم 8 أحرف على الأقل.';return;}$('#adminPasswordMessage').textContent='جارٍ التحديث...';try{await adminAction('update_password',userId,{password});$('#adminPasswordMessage').textContent='تم تغيير كلمة المرور بنجاح.';toast('تم تغيير كلمة المرور');setTimeout(()=>$('#adminPasswordDialog').classList.remove('open'),1000);}catch(err){$('#adminPasswordMessage').textContent=err.message;}});
 $('#adminPasswordDialog [data-close]').addEventListener('click',()=>$('#adminPasswordDialog').classList.remove('open'));
 $('#adminSignOut').addEventListener('click',async()=>{await supabase.auth.signOut();location.href='index.html';});
-if(await requireAdmin()){await loadListings();await loadSettings();if(currentUser.id===OWNER_ADMIN_ID)await loadUsers();await loadFields();}
+if(await requireAdmin()){await loadListings();await loadVisitorStats();await loadSettings();if(currentUser.id===OWNER_ADMIN_ID)await loadUsers();await loadFields();}
