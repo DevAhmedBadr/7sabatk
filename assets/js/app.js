@@ -477,7 +477,7 @@ async function refreshAuth() {
         $('#accountAvatar').querySelector('img')?.remove();
         return;
     }
-    const { data: p, error: profileError } = await supabase.from('profiles').select('role,full_name,username,email,avatar_url').eq('id', session.user.id).maybeSingle();
+    const { data: p, error: profileError } = await supabase.from('profiles').select('role,full_name,username,email,avatar_url,is_banned').eq('id', session.user.id).maybeSingle();
     profile = p || {};
     if (profileError)
         console.warn('Could not load profile details:', profileError.message);
@@ -504,9 +504,8 @@ async function refreshAuth() {
         fallback.textContent = initial;
         $('#accountAvatar').textContent = initial;
     }
-    // The dashboard page performs the real role + owner authorization check.
-    // This only controls whether the owner sees the navigation shortcut.
-    $('#adminShortcut').hidden = session.user.id !== OWNER_ADMIN_ID;
+    // Show the dashboard shortcut to every active administrator.
+    $('#adminShortcut').hidden = profile.role !== 'admin' || !!profile.is_banned;
 }
 $('#accountOpen').addEventListener('click', () => openDialog('profileDialog'));
 $('#adminShortcut').addEventListener('click', () => location.href = 'admin.html');
