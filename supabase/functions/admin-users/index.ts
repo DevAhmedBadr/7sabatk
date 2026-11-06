@@ -53,14 +53,17 @@ Deno.serve(async (req) => {
       const agentsById = new Map<string, Record<string, unknown>>();
       for (let start = 0; start < ids.length; start += 500) {
         const batch = ids.slice(start, start + 500);
-        const [{ data: profiles, error: profilesError }, { data: agents, error: agentsError }] = await Promise.all([
-          admin.from('profiles').select('id,full_name,username,role,is_banned').in('id', batch),
-          admin.from('support_agents').select('user_id,is_active,receive_support_notifications').in('user_id', batch)
-        ]);
+        const { data: profiles, error: profilesError } = await admin.from('profiles')
+          .select('id,full_name,username,role,is_banned').in('id', batch);
         if (profilesError) throw profilesError;
-        if (agentsError) throw agentsError;
         for (const profile of profiles || []) profilesById.set(profile.id, profile);
-        for (const agent of agents || []) agentsById.set(agent.user_id, agent);
+        // Keep the existing users page independent from the optional support-agent schema.
+        if (action === 'list_support_agents') {
+          const { data: agents, error: agentsError } = await admin.from('support_agents')
+            .select('user_id,is_active,receive_support_notifications').in('user_id', batch);
+          if (agentsError) throw agentsError;
+          for (const agent of agents || []) agentsById.set(agent.user_id, agent);
+        }
       }
 
       const ticketCounts = new Map<string, { assigned: number; open: number; closed: number }>();
