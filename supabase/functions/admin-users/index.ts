@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
         // Keep the existing users page independent from the optional support-agent schema.
         if (action === 'list_support_agents') {
           const { data: agents, error: agentsError } = await admin.from('support_agents')
-            .select('user_id,is_active,receive_support_notifications').in('user_id', batch);
+            .select('user_id,is_active,receive_new_ticket_emails,receive_inapp_notifications').in('user_id', batch);
           if (agentsError) throw agentsError;
           for (const agent of agents || []) agentsById.set(agent.user_id, agent);
         }
@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
         for (const ticket of tickets || []) {
           const current = ticketCounts.get(ticket.assigned_agent_id) || { assigned: 0, open: 0, closed: 0 };
           current.assigned++;
-          if (ticket.status === 'closed') current.closed++;
+          if (ticket.status === 'closed' || ticket.status === 'resolved') current.closed++;
           else current.open++;
           ticketCounts.set(ticket.assigned_agent_id, current);
         }
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
           created_at: authUser.created_at,
           is_support_agent: Boolean(agent),
           support_agent_active: Boolean(agent?.is_active),
-          receive_support_notifications: agent?.receive_support_notifications ?? false,
+          receive_support_notifications: agent?.receive_new_ticket_emails ?? false,
           ticket_stats: ticketCounts.get(authUser.id) || { assigned: 0, open: 0, closed: 0 }
         };
       });
@@ -111,13 +111,14 @@ Deno.serve(async (req) => {
       if (profile.role === 'admin') return json({ error: 'Site administrators cannot be assigned as support agents.' }, 409);
       const { error } = await admin.from('support_agents').upsert({
         user_id: userId, is_active: true,
-        receive_support_notifications: body?.receiveNotifications !== false,
-        created_by: user.id, updated_at: new Date().toISOString()
+        receive_new_ticket_emails: body?.receiveNotifications !== false,
+        receive_inapp_notifications: body?.receiveNotifications !== false,
+        added_by: user.id, updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
       if (error) throw error;
     } else if (action === 'remove_support_agent') {
       const { error } = await admin.from('support_agents')
-        .update({ is_active: false, receive_support_notifications: false, updated_at: new Date().toISOString() })
+        .update({ is_active: false, receive_new_ticket_emails: false, receive_inapp_notifications: false, updated_at: new Date().toISOString() })
         .eq('user_id', userId);
       if (error) throw error;
     } else if (action === 'set_support_agent_active') {
@@ -126,7 +127,7 @@ Deno.serve(async (req) => {
       if (error) throw error;
     } else if (action === 'set_support_notifications') {
       const { error } = await admin.from('support_agents')
-        .update({ receive_support_notifications: body?.enabled === true, updated_at: new Date().toISOString() }).eq('user_id', userId);
+        .update({ receive_new_ticket_emails: body?.enabled === true, receive_inapp_notifications: body?.enabled === true, updated_at: new Date().toISOString() }).eq('user_id', userId);
       if (error) throw error;
     } else if (action === 'ban' || action === 'unban') {
       const { error: authUpdateError } = await admin.auth.admin.updateUserById(userId, {
