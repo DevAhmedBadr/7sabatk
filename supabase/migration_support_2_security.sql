@@ -70,7 +70,10 @@ grant select, insert, update, delete on public.support_agents to authenticated;
 drop policy if exists support_agents_read on public.support_agents;
 create policy support_agents_read on public.support_agents
   for select to authenticated
-  using (user_id = (select auth.uid()) or (select public.support_is_owner()));
+  using (
+    (user_id = (select auth.uid()) and is_active)
+    or (select public.support_is_owner())
+  );
 
 drop policy if exists support_agents_owner_write on public.support_agents;
 create policy support_agents_owner_write on public.support_agents
@@ -146,6 +149,9 @@ grant select on public.support_attachments to authenticated;
 grant insert (ticket_id, message_id, file_name, file_path, file_type, file_size)
   on public.support_attachments to authenticated;
 
+-- إزالة سياسة قراءة أقدم من migration_support_foundation.sql إن كانت موجودة.
+-- كانت تسمح للعميل بقراءة كل مرفقات تذكرته، بما فيها الملاحظات الداخلية.
+drop policy if exists support_attachments_read on public.support_attachments;
 drop policy if exists support_attachments_select on public.support_attachments;
 create policy support_attachments_select on public.support_attachments
   for select to authenticated

@@ -10,7 +10,8 @@ A bilingual Arabic/English storefront for digital accounts owned and listed by t
 - `assets/js/supabaseClient.js` — public Supabase URL and publishable key only. Never add a service-role key here.
 - `supabase/migration_marketplace_v2.sql` — additive upgrade for the existing Supabase project.
 - `supabase/functions/admin-users/index.ts` — server-side user administration using the service-role key from Supabase's function environment.
-- `supabase/migration_support_foundation.sql` and `supabase/migration_support_agents.sql` — additive support tables, RLS and support-agent membership.
+- `supabase/migration_support_1_schema.sql`, `migration_support_2_security.sql` and `migration_support_3_seed_categories.sql` — the current support schema, secure policies and initial categories. See `supabase/SUPPORT_PHASE2_README.md` for the required order.
+- `supabase/functions/admin-users/index.ts` and `assets/js/support-admin.js` — owner-only Support Agent management.
 - `supabase/email-templates/` — branded confirmation and OTP password-reset templates.
 
 ## Upgrade the existing Supabase project
@@ -37,9 +38,15 @@ Do not create a new project. Before applying database changes, export/backup the
 7. Custom SMTP must be configured separately in Supabase. Do not commit SMTP passwords or Google App Passwords to this repository.
 8. Push the updated repository to the `main` branch. Wait for the newest GitHub Pages workflow to complete successfully.
 
-### Enable support-agent management
+### Support system migrations and Support Agent management
 
-After applying `migration_support_foundation.sql`, run `migration_support_agents.sql` in Supabase SQL Editor, then redeploy `admin-users` so the owner-only support-agent actions are available. In Admin → موظفو الدعم, the site owner can assign an existing active customer, disable or remove the support role, and control the employee's new-ticket notification preference. Support membership is stored separately from `profiles.role` and does not grant product, site-setting or user-role administration.
+For the current support system, use only `migration_support_1_schema.sql`, `migration_support_2_security.sql`, and `migration_support_3_seed_categories.sql`, in that order. Do not combine them with the older `migration_support_foundation.sql` / `migration_support_agents.sql` pair. The site owner manages employees in Admin → موظفو الدعم. Membership is separate from `profiles.role`; disabling blocks access while preserving the membership record, and removing the role deletes that membership. Existing tickets remain intact if an employee's role is removed and can be reassigned by the owner.
+
+After updating the project, redeploy the Edge Function:
+
+```bash
+npx.cmd supabase functions deploy admin-users
+```
 
 ## Security model
 

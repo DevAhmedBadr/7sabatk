@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
       if (error) throw error;
     } else if (action === 'remove_support_agent') {
       const { error } = await admin.from('support_agents')
-        .update({ is_active: false, receive_new_ticket_emails: false, receive_inapp_notifications: false, updated_at: new Date().toISOString() })
+        .delete()
         .eq('user_id', userId);
       if (error) throw error;
     } else if (action === 'set_support_agent_active') {

@@ -75,7 +75,7 @@ async function loadSupportAgents() {
       catch (error) { notify(error.message || 'تعذر تحديث الإشعارات'); }
     }));
     table.querySelectorAll('[data-agent-remove]').forEach((button) => button.addEventListener('click', async () => {
-      if (!confirm('إزالة دور موظف الدعم؟ سيُمنع من الوصول إلى التذاكر.')) return;
+      if (!confirm('إزالة عضوية موظف الدعم؟ سيُمنع من الوصول فورًا، وستظل التذاكر السابقة محفوظة ويمكن إعادة إسنادها لاحقًا.')) return;
       try { await adminAction('remove_support_agent', button.dataset.agentRemove); notify('تمت إزالة دور الدعم'); await loadSupportAgents(); }
       catch (error) { notify(error.message || 'تعذرت إزالة الدور'); }
     }));
