@@ -74,6 +74,10 @@ function applyLanguage() {
     set('.nav-links a[href="accounts.html"]', 'catalog');
     set('.nav-links a[href="social-services.html"]', 'f2');
     set('.nav-links a[href="subscriptions.html"]', 'f3');
+    const supportNav = $('#supportNav');
+    if (supportNav) supportNav.textContent = language === 'ar' ? 'الدعم الفني' : 'Support';
+    const footerSupportLink = $('#footerSupportLink');
+    if (footerSupportLink) footerSupportLink.textContent = language === 'ar' ? 'الدعم الفني' : 'Support';
     set('#authOpen', 'login');
     $('#accountOpen').setAttribute('aria-label', t('account'));
     const brand = $$("[data-brand-name]");
@@ -189,6 +193,7 @@ function applyLanguage() {
     $('#emptyState h3').textContent = t('noResults');
     $('#emptyState p').textContent = t('noResultsText');
     applyDynamicHtmlTexts();
+    window.dispatchEvent(new CustomEvent('7sabatk:language-changed', { detail: { language } }));
 }
 const $$ = s => [...document.querySelectorAll(s)];
 function applySiteSettings() {

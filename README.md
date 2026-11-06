@@ -12,6 +12,7 @@ A bilingual Arabic/English storefront for digital accounts owned and listed by t
 - `supabase/functions/admin-users/index.ts` — server-side user administration using the service-role key from Supabase's function environment.
 - `supabase/migration_support_1_schema.sql`, `migration_support_2_security.sql` and `migration_support_3_seed_categories.sql` — the current support schema, secure policies and initial categories. See `supabase/SUPPORT_PHASE2_README.md` for the required order.
 - `supabase/functions/admin-users/index.ts` and `assets/js/support-admin.js` — owner-only Support Agent management.
+- `assets/js/support-customer.js` and `assets/css/support.css` — customer support form and ticket history on the home page.
 - `supabase/email-templates/` — branded confirmation and OTP password-reset templates.
 
 ## Upgrade the existing Supabase project
@@ -47,6 +48,12 @@ After updating the project, redeploy the Edge Function:
 ```bash
 npx.cmd supabase functions deploy admin-users
 ```
+
+### Customer ticket form (phase 4)
+
+The customer support center is available at `index.html#support` and requires an authenticated account. It reads active categories from Supabase, creates the ticket and first message through `support_create_ticket`, and lists only the signed-in customer's tickets. Before enabling attachment uploads, run `supabase/migration_support_4_customer_storage.sql` once in SQL Editor to replace permissive legacy Storage policies. Each file is limited to JPG/JPEG, PNG or PDF, 5 MB, with up to five files per ticket's first message.
+
+The current project has no orders table. The optional order number is stored as a reference only; automatic order selection and ownership validation require a real order table and are not claimed by this phase.
 
 ## Security model
 
