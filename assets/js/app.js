@@ -759,5 +759,9 @@ async function boot() {
             }
         });
     }
+    if (window.location.hash === '#register') {
+        setAuthMode('signup');
+        openDialog('authDialog');
+    }
 }
 boot();

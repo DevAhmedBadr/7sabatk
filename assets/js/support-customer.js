@@ -1,13 +1,15 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
-import { getPreferences, resolveLanguage } from './preferences.js';
+import { getPreferences, savePreferences, applyTheme, resolveLanguage } from './preferences.js';
 
 const $ = (selector) => document.querySelector(selector);
 const form = $('#supportTicketForm');
 if (form) {
   const copy = {
     ar: {
+      home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني',
       kicker: 'CUSTOMER CARE', title: 'مركز الدعم الفني', subtitle: 'افتح تذكرة وسنتابع طلبك من حسابك.',
-      loginTitle: 'الدعم متاح لأصحاب الحسابات', loginText: 'سجّل الدخول أو أنشئ حسابًا لمتابعة طلبات الدعم.', loginButton: 'تسجيل الدخول / إنشاء حساب',
+      loginTitle: 'الدعم متاح لأصحاب الحسابات', loginText: 'سجّل الدخول أو أنشئ حسابًا لمتابعة طلبات الدعم.', loginButton: 'تسجيل الدخول', createAccount: 'إنشاء حساب', signedIn: 'أنت مسجل الدخول',
+      authTitle: 'تسجيل الدخول', authText: 'استخدم حسابك الحالي في موقع حساباتك.', identifierLabel: 'البريد الإلكتروني أو اسم المستخدم', passwordLabel: 'كلمة المرور', authError: 'تعذر تسجيل الدخول. تحقق من البيانات وحاول مرة أخرى.', loggingIn: 'جارٍ تسجيل الدخول...', footer: 'جميع الحقوق محفوظة.', backHome: 'العودة للرئيسية',
       formTitle: 'إنشاء تذكرة جديدة', formText: 'اكتب تفاصيل المشكلة وسيراجعها فريق الدعم.',
       categoryLabel: 'الفئة', subcategoryLabel: 'الفئة الفرعية', orderLabel: 'رقم الطلب (اختياري)',
       orderPlaceholder: 'أدخل رقم الطلب إن وُجد', orderNote: 'الرقم يُحفظ كمرجع فقط؛ ربطه والتحقق من ملكيته يحتاجان جدول طلبات غير موجود حاليًا.',
@@ -26,8 +28,10 @@ if (form) {
       ticketPrefix: 'تذكرة #', categoryUnknown: 'دعم فني', remove: 'إزالة'
     },
     en: {
+      home: 'Home', accounts: 'Accounts', social: 'Social services', subscriptions: 'Subscriptions', support: 'Support',
       kicker: 'CUSTOMER CARE', title: 'Support Center', subtitle: 'Open a ticket and follow your support requests from your account.',
-      loginTitle: 'Support is available to account holders', loginText: 'Sign in or create an account to contact support.', loginButton: 'Sign in / Create account',
+      loginTitle: 'Support is available to account holders', loginText: 'Sign in or create an account to contact support.', loginButton: 'Sign in', createAccount: 'Create account', signedIn: 'You are signed in',
+      authTitle: 'Sign in', authText: 'Use your existing 7sabatk account.', identifierLabel: 'Email or username', passwordLabel: 'Password', authError: 'Could not sign in. Check your details and try again.', loggingIn: 'Signing in...', footer: 'All rights reserved.', backHome: 'Back to home',
       formTitle: 'Create a new ticket', formText: 'Describe the issue and our support team will review it.',
       categoryLabel: 'Category', subcategoryLabel: 'Subcategory', orderLabel: 'Order number (optional)',
       orderPlaceholder: 'Enter an order number if applicable', orderNote: 'Saved as a reference only. Automatic order ownership checks need an orders table, which this project does not currently have.',
@@ -55,6 +59,19 @@ if (form) {
   let requestFingerprint = '';
 
   function tr(key) { return copy[language][key]; }
+  function openAuthDialog() {
+    const dialog = $('#supportAuthDialog');
+    dialog.classList.add('open');
+    dialog.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('support-auth-open');
+    $('#supportAuthIdentifier').focus();
+  }
+  function closeAuthDialog() {
+    const dialog = $('#supportAuthDialog');
+    dialog.classList.remove('open');
+    dialog.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('support-auth-open');
+  }
   function showMessage(message = '', kind = '') {
     const node = $('#supportFormMessage');
     node.textContent = message;
@@ -62,6 +79,9 @@ if (form) {
   }
   function applyLanguage(nextLanguage = document.documentElement.lang) {
     language = resolveLanguage(nextLanguage);
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.title = language === 'ar' ? 'الدعم الفني | 7sabatk' : 'Support Center | 7sabatk';
     document.querySelectorAll('[data-support-copy]').forEach((node) => {
       const value = tr(node.dataset.supportCopy);
       if (typeof value === 'string') node.textContent = value;
@@ -72,6 +92,9 @@ if (form) {
     });
     $('#supportRefresh').setAttribute('aria-label', tr('refresh'));
     $('#supportRefresh').title = tr('refresh');
+    $('#supportLanguageToggle').textContent = language === 'ar' ? 'EN' : 'عربي';
+    $('#supportLanguageToggle').setAttribute('aria-label', language === 'ar' ? 'Switch to English' : 'التغيير إلى العربية');
+    $('#supportThemeToggle').setAttribute('aria-label', language === 'ar' ? 'تغيير المظهر' : 'Toggle appearance');
     renderCategories();
     renderSubcategories();
     if (session) loadTickets();
@@ -108,6 +131,8 @@ if (form) {
   function setGate(isSignedIn) {
     $('#supportGuest').hidden = isSignedIn;
     $('#supportWorkspace').hidden = !isSignedIn;
+    $('#supportAuthOpen').hidden = isSignedIn;
+    $('#supportSignedIn').hidden = !isSignedIn;
   }
   async function loadCategories() {
     const { data, error } = await supabase.from('support_categories')
@@ -212,7 +237,50 @@ if (form) {
     }
   }
 
-  $('#supportLogin').addEventListener('click', () => $('#authOpen')?.click());
+  $('#supportLogin').addEventListener('click', openAuthDialog);
+  $('#supportAuthOpen').addEventListener('click', openAuthDialog);
+  $('#supportAuthDialog').addEventListener('click', (event) => { if (event.target.id === 'supportAuthDialog' || event.target.closest('[data-support-close]')) closeAuthDialog(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeAuthDialog(); });
+  $('#supportLanguageToggle').addEventListener('click', () => {
+    const preferences = getPreferences();
+    preferences.language = language === 'ar' ? 'en' : 'ar';
+    savePreferences(preferences);
+    applyLanguage(preferences.language);
+  });
+  $('#supportThemeToggle').addEventListener('click', () => {
+    const preferences = getPreferences();
+    preferences.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    savePreferences(preferences);
+    applyTheme(preferences.theme);
+  });
+  $('#supportAuthForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const identifier = $('#supportAuthIdentifier').value.trim();
+    const password = $('#supportAuthPassword').value;
+    const button = $('#supportAuthSubmit');
+    const message = $('#supportAuthMessage');
+    message.textContent = tr('loggingIn');
+    button.disabled = true;
+    try {
+      let email = identifier;
+      if (!identifier.includes('@')) {
+        const { data: resolvedEmail, error: lookupError } = await supabase.rpc('get_login_email_by_username', { p_username: identifier });
+        if (lookupError) throw lookupError;
+        if (!resolvedEmail) throw new Error('invalid_credentials');
+        email = resolvedEmail;
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      message.textContent = '';
+      $('#supportAuthPassword').value = '';
+      closeAuthDialog();
+    } catch (error) {
+      console.error('Support sign-in:', error);
+      message.textContent = tr('authError');
+    } finally {
+      button.disabled = false;
+    }
+  });
   $('#supportCategory').addEventListener('change', renderSubcategories);
   $('#supportMessage').addEventListener('input', () => { $('#supportMessageCount').textContent = String($('#supportMessage').value.length); });
   $('#supportAttachments').addEventListener('change', () => { showMessage(); renderFiles(); });
@@ -278,6 +346,8 @@ if (form) {
     }
   });
 
+  applyTheme(getPreferences().theme);
+  $('#supportYear').textContent = new Date().getFullYear();
   applyLanguage();
   if (!isSupabaseConfigured || !supabase) {
     setGate(false);

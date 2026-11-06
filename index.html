@@ -24,7 +24,6 @@
   <link rel="stylesheet" href="assets/css/branding.css">
 <link rel="stylesheet" href="assets/css/mobile-responsive.css">
   <link rel="stylesheet" href="assets/css/page-layouts.css">
-  <link rel="stylesheet" href="assets/css/support.css">
 </head>
 
 <body data-page="home">
@@ -41,7 +40,7 @@
       <a href="accounts.html">الحسابات</a>
       <a href="social-services.html">خدمات السوشيال ميديا</a>
       <a href="subscriptions.html">الاشتراكات</a>
-      <a id="supportNav" href="index.html#support">الدعم الفني</a>
+      <a id="supportNav" href="support.html">الدعم الفني</a>
     </nav>
 
     <div class="nav-actions">
@@ -269,87 +268,6 @@
     </div>
   </section>
 
-  <section class="section support-section" id="support">
-    <div class="container">
-      <div class="section-heading support-heading">
-        <span class="section-kicker" data-support-copy="kicker">CUSTOMER CARE</span>
-        <h2 data-support-copy="title">مركز الدعم الفني</h2>
-        <p data-support-copy="subtitle">افتح تذكرة وسنتابع طلبك من حسابك.</p>
-      </div>
-
-      <div class="support-guest support-panel" id="supportGuest" hidden>
-        <div class="support-guest-icon" aria-hidden="true">✦</div>
-        <div>
-          <h3 data-support-copy="loginTitle">الدعم متاح لأصحاب الحسابات</h3>
-          <p data-support-copy="loginText">سجّل الدخول أو أنشئ حسابًا لمتابعة طلبات الدعم.</p>
-        </div>
-        <button class="support-primary" id="supportLogin" type="button" data-support-copy="loginButton">تسجيل الدخول / إنشاء حساب</button>
-      </div>
-
-      <div class="support-workspace" id="supportWorkspace" hidden>
-        <section class="support-panel support-form-panel" aria-labelledby="supportFormTitle">
-          <div class="support-panel-heading">
-            <span class="support-panel-icon" aria-hidden="true">＋</span>
-            <div>
-              <h3 id="supportFormTitle" data-support-copy="formTitle">إنشاء تذكرة جديدة</h3>
-              <p data-support-copy="formText">اكتب تفاصيل المشكلة وسيراجعها فريق الدعم.</p>
-            </div>
-          </div>
-          <form id="supportTicketForm" class="support-form">
-            <div class="support-form-grid">
-              <label>
-                <span data-support-copy="categoryLabel">الفئة</span>
-                <select id="supportCategory" required><option value="" data-support-copy="loadingCategories">جارٍ تحميل الفئات...</option></select>
-              </label>
-              <label>
-                <span data-support-copy="subcategoryLabel">الفئة الفرعية</span>
-                <select id="supportSubcategory" disabled><option value="" data-support-copy="subcategoryOptional">اختياري</option></select>
-              </label>
-              <label class="support-order-field">
-                <span data-support-copy="orderLabel">رقم الطلب (اختياري)</span>
-                <input id="supportOrderId" type="text" maxlength="64" autocomplete="off" data-support-placeholder="orderPlaceholder" placeholder="أدخل رقم الطلب إن وُجد">
-                <small data-support-copy="orderNote">الرقم يُحفظ كمرجع فقط؛ ربطه والتحقق من ملكيته يحتاجان جدول طلبات غير موجود حاليًا.</small>
-              </label>
-              <label>
-                <span data-support-copy="subjectLabel">عنوان التذكرة</span>
-                <input id="supportSubject" type="text" minlength="3" maxlength="200" required data-support-placeholder="subjectPlaceholder" placeholder="اكتب عنوانًا مختصرًا للمشكلة">
-              </label>
-            </div>
-            <label class="support-message-field">
-              <span data-support-copy="messageLabel">تفاصيل المشكلة</span>
-              <textarea id="supportMessage" rows="6" minlength="2" maxlength="10000" required data-support-placeholder="messagePlaceholder" placeholder="اشرح المشكلة بالتفصيل..."></textarea>
-              <small class="support-character-count"><span id="supportMessageCount">0</span> / 10000</small>
-            </label>
-            <label class="support-file-picker">
-              <span class="support-file-icon" aria-hidden="true">⌕</span>
-              <span><b data-support-copy="attachmentLabel">إرفاق ملفات</b><small data-support-copy="attachmentHelp">JPG أو PNG أو PDF، بحد أقصى 5 ملفات و5MB لكل ملف.</small></span>
-              <input id="supportAttachments" type="file" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple>
-            </label>
-            <ul id="supportFileList" class="support-file-list" aria-live="polite"></ul>
-            <div id="supportFormMessage" class="support-form-message" role="status" aria-live="polite"></div>
-            <button class="support-primary support-submit" id="supportSubmit" type="submit">
-              <span data-support-copy="submit">إرسال التذكرة</span><span aria-hidden="true">➤</span>
-            </button>
-          </form>
-        </section>
-
-        <section class="support-panel support-history-panel" aria-labelledby="supportHistoryTitle">
-          <div class="support-panel-heading support-history-heading">
-            <span class="support-panel-icon" aria-hidden="true">▤</span>
-            <div>
-              <h3 id="supportHistoryTitle" data-support-copy="historyTitle">تذاكري</h3>
-              <p data-support-copy="historyText">آخر طلبات الدعم المرتبطة بحسابك.</p>
-            </div>
-            <button id="supportRefresh" class="support-refresh" type="button" aria-label="تحديث التذاكر" title="تحديث">↻</button>
-          </div>
-          <div id="supportTickets" class="support-ticket-list" aria-live="polite">
-            <div class="support-empty"><span class="support-spinner"></span><span data-support-copy="loadingTickets">جارٍ تحميل التذاكر...</span></div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <!-- Footer -->
@@ -365,7 +283,7 @@
       © <span id="year"></span> 7sabatk. جميع الحقوق محفوظة.
     </span>
 
-    <a id="footerSupportLink" href="index.html#support">الدعم الفني</a>
+    <a id="footerSupportLink" href="support.html">الدعم الفني</a>
     <a href="#home" class="back-top">العودة للأعلى ↑</a>
 
   </div>
@@ -653,7 +571,6 @@
 </div>
 
 <script type="module" src="assets/js/app.js"></script>
-<script type="module" src="assets/js/support-customer.js"></script>
 
 
 <!-- كود Cloudflare هنا -->
