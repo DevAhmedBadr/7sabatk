@@ -156,6 +156,9 @@ html[data-theme="light"] .support-message-meta{color:#58717a}
 .support-chat-back-row{display:flex;justify-content:flex-start;margin:0 0 14px}
 .support-chat-back{gap:9px;min-height:42px;padding:8px 15px;background:linear-gradient(120deg,#103641,#0a2935)}
 .support-chat-back span:first-child{font-size:18px;line-height:1}
+body[data-page="support"] .site-header .nav{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.support-chat-back-row{align-items:flex-start;flex-direction:column}
+.support-chat-inbox-back[hidden]{display:none!important}
 .support-message-row{display:flex;align-items:flex-end;gap:10px;width:100%;direction:inherit}
 .support-message-row.is-own{justify-content:flex-end}
 .support-message-avatar{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;overflow:hidden;border:1px solid #1c8990;border-radius:50%;background:linear-gradient(145deg,#153845,#0c202c);color:#92e9e7;font-size:15px;font-weight:800;box-shadow:0 4px 14px #0003}
