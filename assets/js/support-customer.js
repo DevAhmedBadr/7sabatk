@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
-import { getPreferences, savePreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
 
 const $ = (selector) => document.querySelector(selector);
 const form = $('#supportTicketForm');
@@ -94,9 +94,6 @@ if (form) {
     });
     $('#supportRefresh').setAttribute('aria-label', tr('refresh'));
     $('#supportRefresh').title = tr('refresh');
-    $('#supportLanguageToggle').textContent = language === 'ar' ? 'EN' : 'عربي';
-    $('#supportLanguageToggle').setAttribute('aria-label', language === 'ar' ? 'Switch to English' : 'التغيير إلى العربية');
-    $('#supportThemeToggle').setAttribute('aria-label', language === 'ar' ? 'تغيير المظهر' : 'Toggle appearance');
     renderCategories();
     renderSubcategories();
     if (session) loadTickets();
@@ -133,8 +130,6 @@ if (form) {
   function setGate(isSignedIn) {
     $('#supportGuest').hidden = isSignedIn;
     $('#supportWorkspace').hidden = !isSignedIn;
-    $('#supportAuthOpen').hidden = isSignedIn;
-    $('#supportSignedIn').hidden = !isSignedIn;
   }
   async function loadCategories() {
     const { data, error } = await supabase.from('support_categories')
@@ -245,21 +240,8 @@ if (form) {
   }
 
   $('#supportLogin').addEventListener('click', openAuthDialog);
-  $('#supportAuthOpen').addEventListener('click', openAuthDialog);
   $('#supportAuthDialog').addEventListener('click', (event) => { if (event.target.id === 'supportAuthDialog' || event.target.closest('[data-support-close]')) closeAuthDialog(); });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeAuthDialog(); });
-  $('#supportLanguageToggle').addEventListener('click', () => {
-    const preferences = getPreferences();
-    preferences.language = language === 'ar' ? 'en' : 'ar';
-    savePreferences(preferences);
-    applyLanguage(preferences.language);
-  });
-  $('#supportThemeToggle').addEventListener('click', () => {
-    const preferences = getPreferences();
-    preferences.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-    savePreferences(preferences);
-    applyTheme(preferences.theme);
-  });
   $('#supportAuthForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const identifier = $('#supportAuthIdentifier').value.trim();

@@ -150,7 +150,7 @@ html[data-theme="light"] .support-message-meta{color:#58717a}
 .support-staff-link:hover{border-color:#36d4cf;background:linear-gradient(120deg,#14515b,#103845);color:#fff}
 .support-staff-link[hidden]{display:none!important}
 .support-header-login[hidden],.support-signed-in[hidden]{display:none!important}
-.support-home-nav{display:flex;justify-content:flex-start;margin:0 0 12px}
+.support-home-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
 .support-home-link{gap:8px;min-height:42px;padding:8px 15px;background:linear-gradient(120deg,#103641,#0a2935);box-shadow:0 8px 22px #03131d55}
 .support-home-link span:first-child{font-size:18px;line-height:1}
 .support-chat-back-row{display:flex;justify-content:flex-start;margin:0 0 14px}

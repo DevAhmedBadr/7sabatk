@@ -1,13 +1,13 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
-import { getPreferences, savePreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
 
 const $ = (selector) => document.querySelector(selector);
 const ticketId = new URLSearchParams(location.search).get('ticket');
 const supportBadge = 'assets/images/sevenx-support-agent-badge.png';
 const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const copy = {
-  ar: { support: 'الدعم الفني', inbox: 'صندوق الدعم', kicker: 'TICKET CONVERSATION', title: 'محادثة الدعم', loading: 'جارٍ تحميل التذكرة...', error: 'تعذر فتح هذه التذكرة. تأكد من تسجيل الدخول بحساب يملك صلاحية الوصول.', login: 'سجّل الدخول من صفحة الدعم أولاً.', statusLabel: 'الحالة', priorityLabel: 'الأولوية', assignLabel: 'إسناد لموظف', internal: 'ملاحظة داخلية (لا تظهر للعميل)', replyLabel: 'اكتب ردك', attach: 'إرفاق ملفات', fileHint: 'JPG/PNG/PDF · حتى 5 ملفات · 5MB لكل ملف', send: 'إرسال الرد', sending: 'جارٍ إرسال الرد...', sent: 'تم إرسال الرد.', partial: 'تم إرسال الرد لكن تعذر رفع بعض المرفقات.', back: 'العودة إلى مركز الدعم الفني', customer: 'العميل', agent: 'موظف الدعم', admin: 'الإدارة', system: 'النظام', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', none: 'بدون إسناد', updateError: 'تعذر حفظ التغيير.', staffError: 'تعذر تحميل أسماء الموظفين.', attachmentError: 'المرفق غير صالح أو يتجاوز الحجم المسموح.', noMessages: 'لا توجد رسائل.', ticketClosed: 'هذه التذكرة مغلقة. أعد فتحها أو تواصل مع الدعم لإضافة رد.' },
-  en: { support: 'Support', inbox: 'Support inbox', kicker: 'TICKET CONVERSATION', title: 'Support conversation', loading: 'Loading ticket...', error: 'Could not open this ticket. Sign in with an account that has access.', login: 'Sign in from the support page first.', statusLabel: 'Status', priorityLabel: 'Priority', assignLabel: 'Assign to agent', internal: 'Internal note (hidden from customer)', replyLabel: 'Write a reply', attach: 'Attach files', fileHint: 'JPG/PNG/PDF · up to 5 files · 5MB each', send: 'Send reply', sending: 'Sending reply...', sent: 'Reply sent.', partial: 'Reply sent, but some attachments failed to upload.', back: 'Back to support center', customer: 'Customer', agent: 'Support agent', admin: 'Admin', system: 'System', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', none: 'Unassigned', updateError: 'Could not save this change.', staffError: 'Could not load support agents.', attachmentError: 'A file is invalid or exceeds the allowed size.', noMessages: 'No messages.', ticketClosed: 'This ticket is closed. Reopen it or contact support before replying.' }
+  ar: { home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني', kicker: 'TICKET CONVERSATION', title: 'محادثة الدعم', loading: 'جارٍ تحميل التذكرة...', error: 'تعذر فتح هذه التذكرة. تأكد من تسجيل الدخول بحساب يملك صلاحية الوصول.', login: 'سجّل الدخول من صفحة الدعم أولاً.', statusLabel: 'الحالة', priorityLabel: 'الأولوية', assignLabel: 'إسناد لموظف', internal: 'ملاحظة داخلية (لا تظهر للعميل)', replyLabel: 'اكتب ردك', attach: 'إرفاق ملفات', fileHint: 'JPG/PNG/PDF · حتى 5 ملفات · 5MB لكل ملف', send: 'إرسال الرد', sending: 'جارٍ إرسال الرد...', sent: 'تم إرسال الرد.', partial: 'تم إرسال الرد لكن تعذر رفع بعض المرفقات.', back: 'العودة إلى مركز الدعم الفني', customer: 'العميل', agent: 'موظف الدعم', admin: 'الإدارة', system: 'النظام', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', none: 'بدون إسناد', updateError: 'تعذر حفظ التغيير.', staffError: 'تعذر تحميل أسماء الموظفين.', attachmentError: 'المرفق غير صالح أو يتجاوز الحجم المسموح.', noMessages: 'لا توجد رسائل.', ticketClosed: 'هذه التذكرة مغلقة. أعد فتحها أو تواصل مع الدعم لإضافة رد.' },
+  en: { home: 'Home', accounts: 'Accounts', social: 'Social services', subscriptions: 'Subscriptions', support: 'Support', kicker: 'TICKET CONVERSATION', title: 'Support conversation', loading: 'Loading ticket...', error: 'Could not open this ticket. Sign in with an account that has access.', login: 'Sign in from the support page first.', statusLabel: 'Status', priorityLabel: 'Priority', assignLabel: 'Assign to agent', internal: 'Internal note (hidden from customer)', replyLabel: 'Write a reply', attach: 'Attach files', fileHint: 'JPG/PNG/PDF · up to 5 files · 5MB each', send: 'Send reply', sending: 'Sending reply...', sent: 'Reply sent.', partial: 'Reply sent, but some attachments failed to upload.', back: 'Back to support center', customer: 'Customer', agent: 'Support agent', admin: 'Admin', system: 'System', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', none: 'Unassigned', updateError: 'Could not save this change.', staffError: 'Could not load support agents.', attachmentError: 'A file is invalid or exceeds the allowed size.', noMessages: 'No messages.', ticketClosed: 'This ticket is closed. Reopen it or contact support before replying.' }
 };
 let language = resolveLanguage(getPreferences().language);
 let session = null;
@@ -38,8 +38,6 @@ function applyLanguage(next = language) {
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   document.title = `${tr('title')} | 7sabatk`;
   document.querySelectorAll('[data-chat-copy]').forEach((node) => { node.textContent = tr(node.dataset.chatCopy); });
-  $('#chatLanguage').textContent = language === 'ar' ? 'EN' : 'عربي';
-  $('#chatTheme').setAttribute('aria-label', language === 'ar' ? 'تغيير المظهر' : 'Toggle appearance');
   if (currentTicket) renderConversation(currentTicket);
 }
 function formatDate(value) {
@@ -63,7 +61,6 @@ function renderConversation(rows) {
   $('#chatReply').placeholder = ticket.out_status === 'closed' && !staff ? tr('ticketClosed') : '';
   $('#staffControls').hidden = !staff;
   $('#internalToggle').hidden = !staff;
-  $('#chatStaffLink').hidden = !staff;
   if (staff) {
     $('#chatStatusSelect').value = ticket.out_status;
     $('#chatPrioritySelect').value = ticket.out_priority;
@@ -153,8 +150,6 @@ async function updateTicket(field, value) {
   await loadConversation();
 }
 
-$('#chatLanguage').addEventListener('click', () => { const p = getPreferences(); p.language = language === 'ar' ? 'en' : 'ar'; savePreferences(p); applyLanguage(p.language); });
-$('#chatTheme').addEventListener('click', () => { const p = getPreferences(); p.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; savePreferences(p); applyTheme(p.theme); });
 $('#chatStatusSelect').addEventListener('change', (e) => updateTicket('status', e.target.value));
 $('#chatPrioritySelect').addEventListener('change', (e) => updateTicket('priority', e.target.value));
 $('#chatAssignee').addEventListener('change', (e) => updateTicket('assigned_agent_id', e.target.value || null));

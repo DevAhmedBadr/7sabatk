@@ -1,11 +1,11 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
-import { getPreferences, savePreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const text = {
-  ar: { support: 'الدعم الفني', admin: 'لوحة الإدارة', kicker: 'SUPPORT TEAM', title: 'صندوق تذاكر الدعم', subtitle: 'افتح تذكرة لمراجعة المحادثة والرد على العميل.', filter: 'تصفية حسب الحالة', all: 'الكل', refresh: 'تحديث', loading: 'جارٍ تحميل التذاكر...', error: 'تعذر تحميل التذاكر أو لا تملك صلاحية موظف الدعم.', login: 'سجّل الدخول أولاً بحساب موظف دعم فعّال.', none: 'لا توجد تذاكر في هذه الحالة.', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', openChat: 'فتح المحادثة', customer: 'العميل', agent: 'موظف الدعم', adminRole: 'الإدارة' },
-  en: { support: 'Support', admin: 'Admin dashboard', kicker: 'SUPPORT TEAM', title: 'Support inbox', subtitle: 'Open a ticket to review the conversation and reply.', filter: 'Filter by status', all: 'All', refresh: 'Refresh', loading: 'Loading tickets...', error: 'Could not load tickets or this account is not support staff.', login: 'Sign in with an active support account first.', none: 'No tickets in this status.', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', openChat: 'Open conversation', customer: 'Customer', agent: 'Support agent', adminRole: 'Admin' }
+  ar: { home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني', backToSupport: 'العودة إلى مركز الدعم الفني', kicker: 'SUPPORT TEAM', title: 'صندوق تذاكر الدعم', subtitle: 'افتح تذكرة لمراجعة المحادثة والرد على العميل.', filter: 'تصفية حسب الحالة', all: 'الكل', refresh: 'تحديث', loading: 'جارٍ تحميل التذاكر...', error: 'تعذر تحميل التذاكر أو لا تملك صلاحية موظف الدعم.', login: 'سجّل الدخول أولاً بحساب موظف دعم فعّال.', none: 'لا توجد تذاكر في هذه الحالة.', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', openChat: 'فتح المحادثة', customer: 'العميل', agent: 'موظف الدعم', adminRole: 'الإدارة' },
+  en: { home: 'Home', accounts: 'Accounts', social: 'Social services', subscriptions: 'Subscriptions', support: 'Support', backToSupport: 'Back to support center', kicker: 'SUPPORT TEAM', title: 'Support inbox', subtitle: 'Open a ticket to review the conversation and reply.', filter: 'Filter by status', all: 'All', refresh: 'Refresh', loading: 'Loading tickets...', error: 'Could not load tickets or this account is not support staff.', login: 'Sign in with an active support account first.', none: 'No tickets in this status.', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', openChat: 'Open conversation', customer: 'Customer', agent: 'Support agent', adminRole: 'Admin' }
 };
 let language = resolveLanguage(getPreferences().language);
 let tickets = [];
@@ -17,7 +17,6 @@ function applyLanguage() {
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   document.title = `${tr('title')} | 7sabatk`;
   document.querySelectorAll('[data-inbox-copy]').forEach((node) => { node.textContent = tr(node.dataset.inboxCopy); });
-  $('#inboxLanguage').textContent = language === 'ar' ? 'EN' : 'عربي';
   render();
 }
 function render() {
@@ -35,8 +34,6 @@ async function load() {
   tickets = data || [];
   render();
 }
-$('#inboxLanguage').addEventListener('click', () => { const p = getPreferences(); p.language = language === 'ar' ? 'en' : 'ar'; savePreferences(p); language = p.language; applyLanguage(); });
-$('#inboxTheme').addEventListener('click', () => { const p = getPreferences(); p.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; savePreferences(p); applyTheme(p.theme); });
 $('#inboxStatus').addEventListener('change', render);
 $('#inboxRefresh').addEventListener('click', load);
 async function boot() {
@@ -47,8 +44,6 @@ async function boot() {
   if (!session) { $('#inboxError').hidden = false; $('#inboxError').textContent = tr('login'); return; }
   const { data: staff, error } = await supabase.rpc('support_is_staff');
   if (error || !staff) { $('#inboxError').hidden = false; $('#inboxError').textContent = tr('error'); return; }
-  const { data: owner } = await supabase.rpc('support_is_owner');
-  $('#inboxAdminLink').hidden = !owner;
   await load();
   channel = supabase.channel(`support-inbox-${session.user.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, load).subscribe();
   supabase.auth.onAuthStateChange((_event, next) => { if (!next) location.href = 'support.html'; });
