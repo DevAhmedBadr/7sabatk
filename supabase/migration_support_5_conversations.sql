@@ -60,6 +60,67 @@ $$;
 revoke all on function public.support_get_conversation(uuid) from public, anon;
 grant execute on function public.support_get_conversation(uuid) to authenticated;
 
+-- v2 exposes the customer's chosen avatar to participants while deliberately
+-- returning no profile avatar for support staff (the UI uses a local badge).
+create or replace function public.support_get_conversation_v2(p_ticket_id uuid)
+returns table (
+  out_ticket_id uuid,
+  out_ticket_number bigint,
+  out_customer_id uuid,
+  out_subject text,
+  out_status text,
+  out_priority text,
+  out_assigned_agent_id uuid,
+  out_assigned_agent_name text,
+  out_updated_at timestamptz,
+  out_message_id bigint,
+  out_sender_id uuid,
+  out_sender_role text,
+  out_sender_name text,
+  out_sender_avatar_url text,
+  out_message text,
+  out_is_internal boolean,
+  out_message_created_at timestamptz
+)
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid uuid := (select auth.uid());
+  v_ticket public.support_tickets%rowtype;
+begin
+  if v_uid is null or not public.support_user_ok() then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  select * into v_ticket from public.support_tickets t where t.id = p_ticket_id;
+  if not found or (v_ticket.user_id <> v_uid and not public.support_is_staff()) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+
+  return query
+  select v_ticket.id, v_ticket.ticket_number, v_ticket.user_id, v_ticket.subject,
+         v_ticket.status, v_ticket.priority, v_ticket.assigned_agent_id,
+         coalesce(nullif(trim(ap.full_name), ''), nullif(trim(ap.username), '')),
+         v_ticket.updated_at,
+         m.id, m.sender_id, m.sender_role,
+         coalesce(nullif(trim(sp.full_name), ''), nullif(trim(sp.username), ''),
+           case m.sender_role when 'customer' then 'Customer' when 'agent' then 'Support' when 'admin' then 'Admin' else 'System' end),
+         case when m.sender_role = 'customer' then sp.avatar_url else null end,
+         m.message, m.is_internal, m.created_at
+  from public.support_messages m
+  left join public.profiles sp on sp.id = m.sender_id
+  left join public.profiles ap on ap.id = v_ticket.assigned_agent_id
+  where m.ticket_id = v_ticket.id
+    and (public.support_is_staff() or m.is_internal = false)
+  order by m.id;
+end;
+$$;
+
+revoke all on function public.support_get_conversation_v2(uuid) from public, anon;
+grant execute on function public.support_get_conversation_v2(uuid) to authenticated;
+
 create or replace function public.support_mark_ticket_read(p_ticket_id uuid)
 returns void
 language plpgsql

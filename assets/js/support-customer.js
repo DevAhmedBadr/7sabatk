@@ -7,7 +7,7 @@ if (form) {
   const copy = {
     ar: {
       home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني',
-      staffInbox: 'صندوق موظفي الدعم', openConversation: 'فتح المحادثة', unread: 'رسائل جديدة',
+      staffInbox: '▤ صندوق الدعم', openConversation: 'فتح المحادثة', unread: 'رسائل جديدة', backToHome: 'العودة إلى الصفحة الرئيسية',
       kicker: 'CUSTOMER CARE', title: 'مركز الدعم الفني', subtitle: 'افتح تذكرة وسنتابع طلبك من حسابك.',
       loginTitle: 'الدعم متاح لأصحاب الحسابات', loginText: 'سجّل الدخول أو أنشئ حسابًا لمتابعة طلبات الدعم.', loginButton: 'تسجيل الدخول', createAccount: 'إنشاء حساب', signedIn: 'أنت مسجل الدخول',
       authTitle: 'تسجيل الدخول', authText: 'استخدم حسابك الحالي في موقع حساباتك.', identifierLabel: 'البريد الإلكتروني أو اسم المستخدم', passwordLabel: 'كلمة المرور', authError: 'تعذر تسجيل الدخول. تحقق من البيانات وحاول مرة أخرى.', loggingIn: 'جارٍ تسجيل الدخول...', footer: 'جميع الحقوق محفوظة.', backHome: 'العودة للرئيسية',
@@ -30,7 +30,7 @@ if (form) {
     },
     en: {
       home: 'Home', accounts: 'Accounts', social: 'Social services', subscriptions: 'Subscriptions', support: 'Support',
-      staffInbox: 'Support inbox', openConversation: 'Open conversation', unread: 'New messages',
+      staffInbox: '▤ Support inbox', openConversation: 'Open conversation', unread: 'New messages', backToHome: 'Back to the home page',
       kicker: 'CUSTOMER CARE', title: 'Support Center', subtitle: 'Open a ticket and follow your support requests from your account.',
       loginTitle: 'Support is available to account holders', loginText: 'Sign in or create an account to contact support.', loginButton: 'Sign in', createAccount: 'Create account', signedIn: 'You are signed in',
       authTitle: 'Sign in', authText: 'Use your existing 7sabatk account.', identifierLabel: 'Email or username', passwordLabel: 'Password', authError: 'Could not sign in. Check your details and try again.', loggingIn: 'Signing in...', footer: 'All rights reserved.', backHome: 'Back to home',

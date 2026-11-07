@@ -3,10 +3,11 @@ import { getPreferences, savePreferences, applyTheme, resolveLanguage } from './
 
 const $ = (selector) => document.querySelector(selector);
 const ticketId = new URLSearchParams(location.search).get('ticket');
+const supportBadge = 'assets/images/sevenx-support-agent-badge.png';
 const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const copy = {
-  ar: { support: 'الدعم الفني', inbox: 'صندوق الدعم', kicker: 'TICKET CONVERSATION', title: 'محادثة الدعم', loading: 'جارٍ تحميل التذكرة...', error: 'تعذر فتح هذه التذكرة. تأكد من تسجيل الدخول بحساب يملك صلاحية الوصول.', login: 'سجّل الدخول من صفحة الدعم أولاً.', statusLabel: 'الحالة', priorityLabel: 'الأولوية', assignLabel: 'إسناد لموظف', internal: 'ملاحظة داخلية (لا تظهر للعميل)', replyLabel: 'اكتب ردك', attach: 'إرفاق ملفات', fileHint: 'JPG/PNG/PDF · حتى 5 ملفات · 5MB لكل ملف', send: 'إرسال الرد', sending: 'جارٍ إرسال الرد...', sent: 'تم إرسال الرد.', partial: 'تم إرسال الرد لكن تعذر رفع بعض المرفقات.', back: 'العودة للدعم', customer: 'العميل', agent: 'موظف الدعم', admin: 'الإدارة', system: 'النظام', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', none: 'بدون إسناد', updateError: 'تعذر حفظ التغيير.', staffError: 'تعذر تحميل أسماء الموظفين.', attachmentError: 'المرفق غير صالح أو يتجاوز الحجم المسموح.', noMessages: 'لا توجد رسائل.', ticketClosed: 'هذه التذكرة مغلقة. أعد فتحها أو تواصل مع الدعم لإضافة رد.' },
-  en: { support: 'Support', inbox: 'Support inbox', kicker: 'TICKET CONVERSATION', title: 'Support conversation', loading: 'Loading ticket...', error: 'Could not open this ticket. Sign in with an account that has access.', login: 'Sign in from the support page first.', statusLabel: 'Status', priorityLabel: 'Priority', assignLabel: 'Assign to agent', internal: 'Internal note (hidden from customer)', replyLabel: 'Write a reply', attach: 'Attach files', fileHint: 'JPG/PNG/PDF · up to 5 files · 5MB each', send: 'Send reply', sending: 'Sending reply...', sent: 'Reply sent.', partial: 'Reply sent, but some attachments failed to upload.', back: 'Back to support', customer: 'Customer', agent: 'Support agent', admin: 'Admin', system: 'System', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', none: 'Unassigned', updateError: 'Could not save this change.', staffError: 'Could not load support agents.', attachmentError: 'A file is invalid or exceeds the allowed size.', noMessages: 'No messages.', ticketClosed: 'This ticket is closed. Reopen it or contact support before replying.' }
+  ar: { support: 'الدعم الفني', inbox: 'صندوق الدعم', kicker: 'TICKET CONVERSATION', title: 'محادثة الدعم', loading: 'جارٍ تحميل التذكرة...', error: 'تعذر فتح هذه التذكرة. تأكد من تسجيل الدخول بحساب يملك صلاحية الوصول.', login: 'سجّل الدخول من صفحة الدعم أولاً.', statusLabel: 'الحالة', priorityLabel: 'الأولوية', assignLabel: 'إسناد لموظف', internal: 'ملاحظة داخلية (لا تظهر للعميل)', replyLabel: 'اكتب ردك', attach: 'إرفاق ملفات', fileHint: 'JPG/PNG/PDF · حتى 5 ملفات · 5MB لكل ملف', send: 'إرسال الرد', sending: 'جارٍ إرسال الرد...', sent: 'تم إرسال الرد.', partial: 'تم إرسال الرد لكن تعذر رفع بعض المرفقات.', back: 'العودة إلى مركز الدعم الفني', customer: 'العميل', agent: 'موظف الدعم', admin: 'الإدارة', system: 'النظام', open: 'مفتوحة', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', closed: 'مغلقة', low: 'منخفضة', normal: 'عادية', high: 'عالية', urgent: 'عاجلة', none: 'بدون إسناد', updateError: 'تعذر حفظ التغيير.', staffError: 'تعذر تحميل أسماء الموظفين.', attachmentError: 'المرفق غير صالح أو يتجاوز الحجم المسموح.', noMessages: 'لا توجد رسائل.', ticketClosed: 'هذه التذكرة مغلقة. أعد فتحها أو تواصل مع الدعم لإضافة رد.' },
+  en: { support: 'Support', inbox: 'Support inbox', kicker: 'TICKET CONVERSATION', title: 'Support conversation', loading: 'Loading ticket...', error: 'Could not open this ticket. Sign in with an account that has access.', login: 'Sign in from the support page first.', statusLabel: 'Status', priorityLabel: 'Priority', assignLabel: 'Assign to agent', internal: 'Internal note (hidden from customer)', replyLabel: 'Write a reply', attach: 'Attach files', fileHint: 'JPG/PNG/PDF · up to 5 files · 5MB each', send: 'Send reply', sending: 'Sending reply...', sent: 'Reply sent.', partial: 'Reply sent, but some attachments failed to upload.', back: 'Back to support center', customer: 'Customer', agent: 'Support agent', admin: 'Admin', system: 'System', open: 'Open', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', closed: 'Closed', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent', none: 'Unassigned', updateError: 'Could not save this change.', staffError: 'Could not load support agents.', attachmentError: 'A file is invalid or exceeds the allowed size.', noMessages: 'No messages.', ticketClosed: 'This ticket is closed. Reopen it or contact support before replying.' }
 };
 let language = resolveLanguage(getPreferences().language);
 let session = null;
@@ -72,11 +73,21 @@ function renderConversation(rows) {
   if (!rows.length) { list.innerHTML = `<div class="support-empty">${safe(tr('noMessages'))}</div>`; return; }
   list.innerHTML = rows.map((row) => {
     const own = row.out_sender_id === session.user.id;
-    return `<article class="support-message-bubble ${own ? 'is-own' : ''} ${row.out_is_internal ? 'is-internal' : ''}" data-message-id="${safe(row.out_message_id)}">
+    const isSupportSender = row.out_sender_role === 'agent' || row.out_sender_role === 'admin';
+    const avatarUrl = isSupportSender ? supportBadge : row.out_sender_avatar_url;
+    const avatarInitial = (row.out_sender_name || roleLabel(row.out_sender_role)).trim().slice(0, 1) || '7';
+    return `<div class="support-message-row ${own ? 'is-own' : ''} ${isSupportSender ? 'is-support-sender' : 'is-customer-sender'}">
+      <div class="support-message-avatar ${isSupportSender ? 'support-agent-avatar' : ''}" aria-label="${safe(roleLabel(row.out_sender_role))}">${avatarUrl ? `<img src="${safe(avatarUrl)}" alt="${safe(roleLabel(row.out_sender_role))}" loading="lazy" data-avatar-fallback="${safe(avatarInitial)}">` : `<span>${safe(avatarInitial)}</span>`}</div>
+      <article class="support-message-bubble ${own ? 'is-own' : ''} ${row.out_is_internal ? 'is-internal' : ''}" data-message-id="${safe(row.out_message_id)}">
       <div class="support-message-meta"><strong>${safe(own ? (language === 'ar' ? 'أنت' : 'You') : row.out_sender_name || roleLabel(row.out_sender_role))}</strong><span>${safe(formatDate(row.out_message_created_at))}</span>${row.out_is_internal ? `<span class="support-note-tag">${safe(tr('internal'))}</span>` : ''}</div>
       <p>${safe(row.out_message).replace(/\n/g, '<br>')}</p><div class="support-message-attachments" data-attachments-for="${safe(row.out_message_id)}"></div>
-    </article>`;
+      </article></div>`;
   }).join('');
+  list.querySelectorAll('img[data-avatar-fallback]').forEach((image) => image.addEventListener('error', () => {
+    const fallback = document.createElement('span');
+    fallback.textContent = image.dataset.avatarFallback;
+    image.replaceWith(fallback);
+  }, { once: true }));
   list.scrollTop = list.scrollHeight;
   loadAttachmentLinks(rows);
 }
@@ -103,7 +114,7 @@ async function loadConversation() {
   if (loading || !session || !ticketId) return;
   loading = true;
   try {
-    const { data, error } = await supabase.rpc('support_get_conversation', { p_ticket_id: ticketId });
+    const { data, error } = await supabase.rpc('support_get_conversation_v2', { p_ticket_id: ticketId });
     if (error) throw error;
     if (!data?.length) throw new Error('empty_conversation');
     renderConversation(data);
