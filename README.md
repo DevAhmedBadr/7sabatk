@@ -11,8 +11,10 @@ A bilingual Arabic/English storefront for digital accounts owned and listed by t
 - `supabase/migration_marketplace_v2.sql` — additive upgrade for the existing Supabase project.
 - `supabase/functions/admin-users/index.ts` — server-side user administration using the service-role key from Supabase's function environment.
 - `supabase/migration_support_1_schema.sql`, `migration_support_2_security.sql` and `migration_support_3_seed_categories.sql` — the current support schema, secure policies and initial categories. See `supabase/SUPPORT_PHASE2_README.md` for the required order.
+- `supabase/migration_support_4_customer_storage.sql` and `migration_support_5_conversations.sql` — customer attachment policy hardening and safe conversation RPCs. See the phase 4 and phase 5 notes before enabling these flows.
 - `supabase/functions/admin-users/index.ts` and `assets/js/support-admin.js` — owner-only Support Agent management.
 - `support.html`, `assets/js/support-customer.js` and `assets/css/support.css` — standalone customer support center with ticket creation and history.
+- `support-ticket.html` and `support-inbox.html` with `assets/js/support-conversation.js` and `assets/js/support-inbox.js` — secure customer/staff ticket conversations and a scoped staff inbox.
 - `supabase/email-templates/` — branded confirmation and OTP password-reset templates.
 
 ## Upgrade the existing Supabase project

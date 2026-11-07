@@ -7,6 +7,7 @@ if (form) {
   const copy = {
     ar: {
       home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني',
+      staffInbox: 'صندوق موظفي الدعم', openConversation: 'فتح المحادثة', unread: 'رسائل جديدة',
       kicker: 'CUSTOMER CARE', title: 'مركز الدعم الفني', subtitle: 'افتح تذكرة وسنتابع طلبك من حسابك.',
       loginTitle: 'الدعم متاح لأصحاب الحسابات', loginText: 'سجّل الدخول أو أنشئ حسابًا لمتابعة طلبات الدعم.', loginButton: 'تسجيل الدخول', createAccount: 'إنشاء حساب', signedIn: 'أنت مسجل الدخول',
       authTitle: 'تسجيل الدخول', authText: 'استخدم حسابك الحالي في موقع حساباتك.', identifierLabel: 'البريد الإلكتروني أو اسم المستخدم', passwordLabel: 'كلمة المرور', authError: 'تعذر تسجيل الدخول. تحقق من البيانات وحاول مرة أخرى.', loggingIn: 'جارٍ تسجيل الدخول...', footer: 'جميع الحقوق محفوظة.', backHome: 'العودة للرئيسية',
@@ -29,6 +30,7 @@ if (form) {
     },
     en: {
       home: 'Home', accounts: 'Accounts', social: 'Social services', subscriptions: 'Subscriptions', support: 'Support',
+      staffInbox: 'Support inbox', openConversation: 'Open conversation', unread: 'New messages',
       kicker: 'CUSTOMER CARE', title: 'Support Center', subtitle: 'Open a ticket and follow your support requests from your account.',
       loginTitle: 'Support is available to account holders', loginText: 'Sign in or create an account to contact support.', loginButton: 'Sign in', createAccount: 'Create account', signedIn: 'You are signed in',
       authTitle: 'Sign in', authText: 'Use your existing 7sabatk account.', identifierLabel: 'Email or username', passwordLabel: 'Password', authError: 'Could not sign in. Check your details and try again.', loggingIn: 'Signing in...', footer: 'All rights reserved.', backHome: 'Back to home',
@@ -151,7 +153,7 @@ if (form) {
     const list = $('#supportTickets');
     list.innerHTML = `<div class="support-empty"><span class="support-spinner"></span><span>${tr('loadingTickets')}</span></div>`;
     const { data, error } = await supabase.from('support_tickets')
-      .select('id,ticket_number,subject,status,created_at,category_id')
+      .select('id,ticket_number,subject,status,created_at,category_id,last_message_at,last_message_role')
       .eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(10);
     if (error) {
       console.error('Support ticket list:', error);
@@ -163,14 +165,17 @@ if (form) {
       return;
     }
     const categoryMap = new Map(categories.map((item) => [item.id, language === 'ar' ? item.name_ar : item.name_en]));
+    const { data: reads } = await supabase.from('support_ticket_reads').select('ticket_id,last_read_at').eq('user_id', session.user.id);
+    const readMap = new Map((reads || []).map((row) => [row.ticket_id, row.last_read_at]));
     list.innerHTML = data.map((ticket) => {
       const statusText = tr('status')[ticket.status] || ticket.status;
       const categoryText = categoryMap.get(ticket.category_id) || tr('categoryUnknown');
-      return `<article class="support-ticket-card">
+      const unread = ticket.last_message_role && ticket.last_message_role !== 'customer' && ticket.last_message_at && new Date(ticket.last_message_at) > new Date(readMap.get(ticket.id) || 0);
+      return `<a class="support-ticket-card support-ticket-link" href="support-ticket.html?ticket=${encodeURIComponent(ticket.id)}">
         <div class="support-ticket-top"><span class="support-ticket-number">${escapeHtml(tr('ticketPrefix'))}${escapeHtml(ticket.ticket_number)}</span><time class="support-ticket-date" datetime="${escapeHtml(ticket.created_at)}">${escapeHtml(formatDate(ticket.created_at))}</time></div>
         <h4>${escapeHtml(ticket.subject)}</h4>
-        <div class="support-ticket-meta"><span class="support-ticket-category">${escapeHtml(categoryText)}</span><span class="support-status" data-status="${escapeHtml(ticket.status)}">${escapeHtml(statusText)}</span></div>
-      </article>`;
+        <div class="support-ticket-meta"><span class="support-ticket-category">${escapeHtml(categoryText)}</span><span class="support-status" data-status="${escapeHtml(ticket.status)}">${escapeHtml(statusText)}</span>${unread ? `<span class="support-unread">${escapeHtml(tr('unread'))}</span>` : ''}<span class="support-open-conversation">${escapeHtml(tr('openConversation'))} →</span></div>
+      </a>`;
     }).join('');
   }
   async function refreshForSession(nextSession) {
@@ -186,6 +191,8 @@ if (form) {
         showMessage(tr('loginRequired'), 'error');
         return;
       }
+      const { data: isStaff } = await supabase.rpc('support_is_staff');
+      $('#supportStaffNav').hidden = !isStaff;
       await loadCategories();
       await loadTickets();
     } catch (error) {
