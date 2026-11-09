@@ -33,3 +33,4 @@
 @media(max-width:760px){.site-copy-languages{grid-template-columns:1fr}}
 
 .site-text-field small{overflow-wrap:anywhere}.site-text-field textarea{min-height:54px}
+.side-link[hidden]{display:none!important}.site-notification-target-picker{display:flex;align-items:end;gap:10px}.site-notification-target-picker label{flex:1}.site-notification-selected{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.site-notification-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#123f49;color:#8decef}.site-notification-chip button{border:0;background:transparent;color:inherit;font-size:18px;cursor:pointer}.form-message.error{color:#ff9b9b}@media(max-width:600px){.site-notification-target-picker{align-items:stretch;flex-direction:column}}

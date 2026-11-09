@@ -83,3 +83,9 @@ A static source check cannot prove live SMTP delivery, live database-policy beha
 - Homepage category cards are larger and have clearer hover/focus affordances; the main CTA now leads to the category choices.
 
 Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` once in Supabase SQL Editor. This migration preserves existing listings and copies the old description into the Arabic description field.
+
+## Owner announcements
+- Added owner-only in-app notifications to all active users or selected usernames.
+- Added secure SQL authorization and per-user notification read status.
+- Combined announcements with the existing site notification bell.
+- Added migration and activation notes in supabase/SITE_NOTIFICATIONS_README.md.

@@ -93,3 +93,7 @@ Before deploying this version, run `supabase/migration_subscriptions.sql` once i
 
 ### Enable subscriptions in an existing Supabase project
 Run `supabase/migration_subscriptions.sql` once in the Supabase Dashboard → SQL Editor. The migration adds `listings.product_type` with a default of `account`, so existing listings stay classified as accounts. The frontend also has a compatibility fallback that continues showing published legacy listings as accounts until the migration is run.
+
+### Owner announcements
+
+Run supabase/migration_admin_site_notifications.sql once in the existing Supabase SQL Editor before deploying this site update. The owner can then use Admin → إرسال إشعار للمستخدمين to send an in-app announcement to all active accounts or selected usernames. No Edge Function redeployment is required. See supabase/SITE_NOTIFICATIONS_README.md.
