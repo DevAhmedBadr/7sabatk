@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getSiteLanguage } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const form = $('#supportTicketForm');
@@ -54,7 +55,7 @@ if (form) {
     }
   };
 
-  let language = resolveLanguage(getPreferences().language);
+  let language = await getSiteLanguage();
   let session = null;
   let categories = [];
   let subcategories = [];

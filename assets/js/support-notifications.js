@@ -1,10 +1,11 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, resolveLanguage } from './preferences.js';
+import { getSiteLanguage } from './site-language.js';
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = (selector) => document.querySelector(selector);
-const lang = resolveLanguage(getPreferences().language);
-const text = lang === 'ar'
+let lang = resolveLanguage(getPreferences().language);
+let text = lang === 'ar'
   ? { title: 'الإشعارات', empty: 'لا توجد إشعارات.', readAll: 'تحديد الكل كمقروء', ticket_created: 'تذكرة دعم جديدة', new_reply: 'رد جديد من فريق الدعم', customer_reply: 'رد جديد من عميل', status_changed: 'تم تحديث حالة التذكرة', assigned: 'تم إسناد تذكرة إليك', error: 'تعذر تحميل الإشعارات' }
   : { title: 'Notifications', empty: 'No notifications yet.', readAll: 'Mark all as read', ticket_created: 'New support ticket', new_reply: 'New reply from support', customer_reply: 'New customer reply', status_changed: 'Ticket status updated', assigned: 'A ticket was assigned to you', error: 'Could not load notifications' };
 let userId;
@@ -78,6 +79,10 @@ async function markAllRead() {
 }
 
 async function boot() {
+  lang = await getSiteLanguage();
+  text = lang === 'ar'
+    ? { title: 'الإشعارات', empty: 'لا توجد إشعارات.', readAll: 'تحديد الكل كمقروء', ticket_created: 'تذكرة دعم جديدة', new_reply: 'رد جديد من فريق الدعم', customer_reply: 'رد جديد من عميل', status_changed: 'تم تحديث حالة التذكرة', assigned: 'تم إسناد تذكرة إليك', error: 'تعذر تحميل الإشعارات' }
+    : { title: 'Notifications', empty: 'No notifications yet.', readAll: 'Mark all as read', ticket_created: 'New support ticket', new_reply: 'New reply from support', customer_reply: 'New customer reply', status_changed: 'Ticket status updated', assigned: 'A ticket was assigned to you', error: 'Could not load notifications' };
   if (!isSupabaseConfigured || !supabase) return;
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return;

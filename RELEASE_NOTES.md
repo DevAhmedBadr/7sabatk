@@ -89,3 +89,10 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Added secure SQL authorization and per-user notification read status.
 - Combined announcements with the existing site notification bell.
 - Added migration and activation notes in supabase/SITE_NOTIFICATIONS_README.md.
+
+## Global language and site text editor — 2026-11-09
+- Support, support inbox, ticket conversation, notifications, and admin interface now read the configured site language, falling back to the visitor preference when the site uses automatic language.
+- Added English labels for the main admin navigation and key site, notification, support-agent, and category controls.
+- Expanded the Site Settings text editor to discover fixed text and common accessibility/input attributes across all eight main pages, then apply saved per-language copy on those pages.
+- JavaScript-generated wording and database content continue to use their section-specific translations.
+

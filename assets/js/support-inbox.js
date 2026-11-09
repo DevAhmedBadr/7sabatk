@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getSiteLanguage } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -151,6 +152,7 @@ $('#inboxPrev').addEventListener('click', () => { if (page > 1) { page -= 1; loa
 $('#inboxNext').addEventListener('click', () => { if (page < pageCount) { page += 1; load(); } });
 
 async function boot() {
+  language = await getSiteLanguage();
   applyTheme(getPreferences().theme);
   applyLanguage();
   if (!isSupabaseConfigured || !supabase) { $('#inboxError').hidden = false; $('#inboxError').textContent = tr('error'); return; }

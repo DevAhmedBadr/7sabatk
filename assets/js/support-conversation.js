@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
+import { getSiteLanguage } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const ticketId = new URLSearchParams(location.search).get('ticket');
@@ -181,6 +182,7 @@ $('#chatReplyForm').addEventListener('submit', async (event) => {
 });
 
 async function boot() {
+  language = await getSiteLanguage();
   applyTheme(getPreferences().theme);
   applyLanguage();
   if (!isSupabaseConfigured || !supabase) { displayError(tr('error')); return; }
