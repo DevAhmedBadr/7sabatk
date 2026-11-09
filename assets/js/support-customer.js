@@ -4,6 +4,7 @@ import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
 const $ = (selector) => document.querySelector(selector);
 const form = $('#supportTicketForm');
 if (form) {
+  let catalogChannel;
   const copy = {
     ar: {
       home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني',
@@ -190,6 +191,7 @@ if (form) {
       $('#supportStaffNav').hidden = !isStaff;
       await loadCategories();
       await loadTickets();
+      if (!catalogChannel) catalogChannel = supabase.channel(`support-category-catalog-${session.user.id}`).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'support_category_catalog_state', filter: 'singleton=eq.true' }, () => loadCategories().catch((error) => console.warn('Category refresh failed:', error))).subscribe();
     } catch (error) {
       console.error('Support center initialization:', error);
       $('#supportTickets').innerHTML = `<div class="support-empty">${escapeHtml(tr('ticketsError'))}</div>`;

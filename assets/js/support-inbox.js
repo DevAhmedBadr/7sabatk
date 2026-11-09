@@ -162,6 +162,7 @@ async function boot() {
   await load();
   channel = supabase.channel(`support-inbox-${session.user.id}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, load)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'support_category_catalog_state', filter: 'singleton=eq.true' }, () => loadCategories().catch((categoryError) => console.warn('Support categories refresh:', categoryError.message)))
     .subscribe();
   supabase.auth.onAuthStateChange((_event, next) => { if (!next) location.href = 'support.html'; });
 }
