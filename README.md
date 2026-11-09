@@ -15,6 +15,7 @@ A bilingual Arabic/English storefront for digital accounts owned and listed by t
 - `supabase/functions/admin-users/index.ts` and `assets/js/support-admin.js` — owner-only Support Agent management.
 - `support.html`, `assets/js/support-customer.js` and `assets/css/support.css` — standalone customer support center with ticket creation and history.
 - `support-ticket.html` and `support-inbox.html` with `assets/js/support-conversation.js` and `assets/js/support-inbox.js` — secure customer/staff ticket conversations and a scoped staff inbox.
+- `supabase/migration_support_6_dashboard.sql` — staff-only paginated dashboard API with aggregated ticket statistics and searchable customer/ticket fields. See `supabase/SUPPORT_PHASE6_README.md` before enabling the dashboard.
 - `supabase/email-templates/` — branded confirmation and OTP password-reset templates.
 
 ## Upgrade the existing Supabase project

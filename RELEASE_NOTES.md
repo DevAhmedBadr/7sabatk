@@ -1,5 +1,12 @@
 # 7sabatk — Release notes
 
+## Support system phase 6 — staff dashboard
+- Replaced the basic staff inbox with a paginated ticket dashboard and live summary counters.
+- Added search by ticket number, customer name, username, email and order reference, plus status, priority, category and assignment filters.
+- Added a staff-only Supabase RPC for dashboard rows and aggregate counts; customer contact fields are returned only after server-side support-staff authorization.
+- Added `supabase/migration_support_6_dashboard.sql` and setup notes in `supabase/SUPPORT_PHASE6_README.md`.
+- The SQL migration must be run in the existing Supabase project before the updated dashboard is published.
+
 ## Improvements in this package
 
 - Reworked the storefront and admin visual styling with a new marketplace-focused teal/navy visual system and responsive layouts.
