@@ -26,7 +26,7 @@ async function loadUsers() {
   status('جارٍ تحميل أسماء المستخدمين...');
   const { data, error } = await supabase.rpc('list_site_notification_targets');
   if (error) throw error;
-  users = (data || []).filter((user) => user.username).sort((a, b) => user.username.localeCompare(b.username));
+  users = (data || []).filter((user) => user.username).sort((a, b) => a.username.localeCompare(b.username));
   usersLoaded = true;
   renderUsers();
   status(`تم تحميل ${users.length} اسم مستخدم نشط.`);
