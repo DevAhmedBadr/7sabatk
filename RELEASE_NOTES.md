@@ -96,3 +96,8 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Expanded the Site Settings text editor to discover fixed text and common accessibility/input attributes across all eight main pages, then apply saved per-language copy on those pages.
 - JavaScript-generated wording and database content continue to use their section-specific translations.
 
+
+## Navigation labels in Site Settings — 2026-11-09
+- Added explicit Arabic/English fields for the brand name and all header navigation/action labels, and wired them to the shared site header.
+- Support pages now render the English brand as 7sabatk when English is selected.
+

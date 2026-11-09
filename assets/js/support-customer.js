@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
-import { getSiteLanguage } from './site-language.js';
+import { getSiteLanguage, applySiteHeader } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const form = $('#supportTicketForm');
@@ -86,6 +86,7 @@ if (form) {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.title = language === 'ar' ? 'الدعم الفني | 7sabatk' : 'Support Center | 7sabatk';
+    applySiteHeader(language);
     document.querySelectorAll('[data-support-copy]').forEach((node) => {
       const value = tr(node.dataset.supportCopy);
       if (typeof value === 'string') node.textContent = value;

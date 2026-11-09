@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, resolveLanguage } from './preferences.js';
-import { getSiteLanguage } from './site-language.js';
+import { getSiteLanguage, applySiteHeader } from './site-language.js';
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = (selector) => document.querySelector(selector);
@@ -88,6 +88,7 @@ async function boot() {
   if (!session) return;
   userId = session.user.id;
   mount();
+  await applySiteHeader(lang);
   await load();
   const ticketId = new URLSearchParams(location.search).get('ticket');
   if (location.pathname.endsWith('support-ticket.html') && ticketId) {

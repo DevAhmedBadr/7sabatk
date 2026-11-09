@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
-import { getSiteLanguage } from './site-language.js';
+import { getSiteLanguage, applySiteHeader } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -40,6 +40,7 @@ function applyLanguage() {
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   document.title = `${tr('title')} | 7sabatk`;
+  applySiteHeader(language);
   document.querySelectorAll('[data-inbox-copy]').forEach((node) => { node.textContent = tr(node.dataset.inboxCopy); });
   $('#inboxSearch').placeholder = tr('searchPlaceholder');
   fillCategoryOptions();

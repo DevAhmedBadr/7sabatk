@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './backend.js';
 import { getPreferences, applyTheme, resolveLanguage } from './preferences.js';
-import { getSiteLanguage } from './site-language.js';
+import { getSiteLanguage, applySiteHeader } from './site-language.js';
 
 const $ = (selector) => document.querySelector(selector);
 const ticketId = new URLSearchParams(location.search).get('ticket');
@@ -38,6 +38,7 @@ function applyLanguage(next = language) {
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   document.title = `${tr('title')} | 7sabatk`;
+  applySiteHeader(language);
   document.querySelectorAll('[data-chat-copy]').forEach((node) => { node.textContent = tr(node.dataset.chatCopy); });
   if (currentTicket) renderConversation(currentTicket);
 }

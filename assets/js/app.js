@@ -3,6 +3,7 @@ import { translations } from "./site-copy.js";
 import { loadAccounts, loadSubscriptions, loadPublicSettings } from "./data.js";
 import { renderAccounts, renderSubscriptions, showAccountDetails, openDialog, closeDialog } from "./render.js";
 import { getPreferences, savePreferences, applyTheme, getCurrencyRates, resolveLanguage, resolveNumberLocale } from "./preferences.js";
+import { applySiteHeader } from "./site-language.js";
 const $ = s => document.querySelector(s);
 const OWNER_ADMIN_ID = "be398df3-3918-46e1-abc4-59975ffe716b";
 const grid = $("#accountGrid"), search = $("#searchInput"), category = $("#categoryFilter"), sort = $("#sortFilter"), count = $("#resultsCount"), empty = $("#emptyState");
@@ -82,6 +83,7 @@ function applyLanguage() {
     $('#accountOpen').setAttribute('aria-label', t('account'));
     const brand = $$("[data-brand-name]");
     brand.forEach(el => el.textContent = t('brand'));
+    applySiteHeader(language);
     set('.hero .eyebrow', 'heroKicker');
     const h = $('.hero-copy h1');
     h.innerHTML = `${t('hero1')}<br><span>${t('hero2')}</span>`;
