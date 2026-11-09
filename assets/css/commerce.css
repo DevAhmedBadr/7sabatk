@@ -148,4 +148,13 @@ html {
 .subscription-description{color:var(--muted,#9aaabd);line-height:1.8;min-height:3.2em}
 .subscription-card .account-price{font-size:1.35rem;font-weight:800;color:#65e0d5;margin-top:auto}
 .subscription-card .subscription-details{width:100%;justify-content:center}
-@media(max-width:760px){.subscription-grid{grid-template-columns:repeat(1,minmax(0,1fr))}}
+.subscription-toolbar{align-items:stretch;flex-wrap:wrap}
+.subscription-toolbar .search-box{min-width:min(100%,260px)}
+.subscription-toolbar select{min-width:170px}
+.subscription-toolbar .subscription-reset{white-space:nowrap}
+.subscription-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),330px));justify-content:start;align-items:stretch}
+.subscription-card .card-cover{height:180px;overflow:hidden}
+.subscription-card .image-preview-button{height:100%;overflow:hidden}
+.subscription-card .card-cover-image{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.subscriptions-section .empty-state{margin-top:18px;border:1px dashed var(--line);border-radius:18px;background:rgba(10,18,31,.55)}
+@media(max-width:760px){.subscription-grid{grid-template-columns:repeat(1,minmax(0,1fr))}.subscription-toolbar{flex-direction:column}.subscription-toolbar .search-box,.subscription-toolbar select,.subscription-toolbar .subscription-reset{width:100%;min-width:0}.subscription-reset{justify-content:center}}

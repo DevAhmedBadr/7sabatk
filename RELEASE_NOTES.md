@@ -1,5 +1,12 @@
 # 7sabatk — Release notes
 
+## Subscription catalog improvements
+- Added live search across subscription names, platforms, providers and descriptions.
+- Added platform filtering and sorting by newest, price and name, with reset controls.
+- Added result counts and separate empty states for an empty catalog and filters with no matches.
+- Improved responsive filter controls and subscription card sizing so a small catalog does not stretch cards across the page.
+- Localized the new controls and empty states in Arabic and English.
+
 ## Support system phase 6 — staff dashboard
 - Replaced the basic staff inbox with a paginated ticket dashboard and live summary counters.
 - Added search by ticket number, customer name, username, email and order reference, plus status, priority, category and assignment filters.

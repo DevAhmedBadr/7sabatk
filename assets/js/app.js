@@ -7,6 +7,7 @@ import { applySiteHeader } from "./site-language.js";
 const $ = s => document.querySelector(s);
 const OWNER_ADMIN_ID = "be398df3-3918-46e1-abc4-59975ffe716b";
 const grid = $("#accountGrid"), search = $("#searchInput"), category = $("#categoryFilter"), sort = $("#sortFilter"), count = $("#resultsCount"), empty = $("#emptyState");
+const subscriptionSearch = $("#subscriptionSearchInput"), subscriptionCategory = $("#subscriptionCategoryFilter"), subscriptionSort = $("#subscriptionSortFilter");
 let textOverrides = { ar: {}, en: {} };
 let accounts = [], subscriptions = [], preferences = getPreferences(), rates = {
     KWD: 1
@@ -125,6 +126,19 @@ function applyLanguage() {
     sort.options[1].textContent = t('low');
     sort.options[2].textContent = t('high');
     sort.options[3].textContent = t('followersSort');
+    if(subscriptionSearch){
+        subscriptionSearch.placeholder=language==='ar'?'ابحث باسم الاشتراك أو المنصة...':'Search subscriptions by name or platform...';
+        subscriptionSearch.setAttribute('aria-label',language==='ar'?'ابحث في الاشتراكات':'Search subscriptions');
+        subscriptionCategory.setAttribute('aria-label',language==='ar'?'تصفية الاشتراكات حسب المنصة':'Filter subscriptions by platform');
+        subscriptionSort.setAttribute('aria-label',language==='ar'?'ترتيب الاشتراكات':'Sort subscriptions');
+        subscriptionCategory.options[0].textContent=language==='ar'?'كل المنصات':'All platforms';
+        subscriptionSort.options[0].textContent=t('newest');
+        subscriptionSort.options[1].textContent=t('low');
+        subscriptionSort.options[2].textContent=t('high');
+        subscriptionSort.options[3].textContent=language==='ar'?'الاسم: أ–ي':'Name: A–Z';
+        $('#subscriptionReset').textContent=language==='ar'?'إعادة ضبط':'Reset filters';
+        $('#subscriptionEmptyReset').textContent=language==='ar'?'مسح عوامل التصفية':'Clear filters';
+    }
     const about = $('.about-section');
     about.querySelector('.section-kicker').textContent = t('aboutKicker');
     about.querySelector('h2').innerHTML = `<span>${t('brand')}</span><br><span>${t('aboutTitle')}</span>`;
@@ -257,6 +271,16 @@ function fillCategories() {
         category.append(o);
     });
 }
+function fillSubscriptionCategories(){
+    if(!subscriptionCategory)return;
+    const selected=subscriptionCategory.value||'all';
+    subscriptionCategory.innerHTML='';
+    const all=document.createElement('option');all.value='all';all.textContent=language==='ar'?'كل المنصات':'All platforms';subscriptionCategory.append(all);
+    [...new Set(subscriptions.map(item=>item.category).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),language)).forEach(value=>{
+        const option=document.createElement('option');option.value=value;option.textContent=value;subscriptionCategory.append(option);
+    });
+    subscriptionCategory.value=[...subscriptionCategory.options].some(option=>option.value===selected)?selected:'all';
+}
 function filter() {
     const q = search.value.trim().toLocaleLowerCase(language),
     c = category.value;
@@ -281,12 +305,32 @@ function filter() {
 }
 function renderSubscriptionList(){
     const container=$('#subscriptionGrid'); if(!container)return;
-    renderSubscriptions(subscriptions,container,item=>showAccountDetails(item,$('#accountDialog'),{...preferences,numberLocale},rates,publicSettings,fieldDefinitions,language,fieldPlatformStates),{...preferences,numberLocale},rates,language,fieldDefinitions,fieldPlatformStates);
+    const query=subscriptionSearch?.value.trim().toLocaleLowerCase(language)||'';
+    const platform=subscriptionCategory?.value||'all';
+    const order=subscriptionSort?.value||'newest';
+    let visible=subscriptions.filter(item=>{
+        const fields=[item.title,item.name,item.username,item.category,item.platform,item.provider,item.description_ar,item.description_en,item.description].filter(Boolean).join(' ').toLocaleLowerCase(language);
+        return fields.includes(query)&&(platform==='all'||item.category===platform);
+    });
+    if(order==='priceAsc')visible.sort((a,b)=>Number(a.price_kwd??a.price??Infinity)-Number(b.price_kwd??b.price??Infinity));
+    if(order==='priceDesc')visible.sort((a,b)=>Number(b.price_kwd??b.price??0)-Number(a.price_kwd??a.price??0));
+    if(order==='nameAsc')visible.sort((a,b)=>String(a.title||a.name||'').localeCompare(String(b.title||b.name||''),language,{sensitivity:'base'}));
+    if(order==='newest')visible.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    renderSubscriptions(visible,container,item=>showAccountDetails(item,$('#accountDialog'),{...preferences,numberLocale},rates,publicSettings,fieldDefinitions,language,fieldPlatformStates),{...preferences,numberLocale},rates,language,fieldDefinitions,fieldPlatformStates);
     const countEl=$('#subscriptionsCount');
-    if(countEl)countEl.textContent=language==='ar'?`عدد الاشتراكات: ${subscriptions.length}`:`Subscriptions: ${subscriptions.length}`;
-    const emptyEl=$('#subscriptionsEmpty');if(emptyEl)emptyEl.hidden=subscriptions.length>0;
+    if(countEl)countEl.textContent=language==='ar'?`عرض ${new Intl.NumberFormat(numberLocale).format(visible.length)} من ${new Intl.NumberFormat(numberLocale).format(subscriptions.length)} اشتراك`:`Showing ${new Intl.NumberFormat(numberLocale).format(visible.length)} of ${new Intl.NumberFormat(numberLocale).format(subscriptions.length)} subscriptions`;
+    const emptyEl=$('#subscriptionsEmpty');if(emptyEl){emptyEl.hidden=visible.length>0;const noProducts=subscriptions.length===0;$('#subscriptionsEmpty [data-sub-empty]').textContent=noProducts?(language==='ar'?'لا توجد اشتراكات متاحة حاليًا':'No subscriptions available yet'):(language==='ar'?'لا توجد نتائج مطابقة':'No matching subscriptions');$('#subscriptionsEmptyText').textContent=noProducts?(language==='ar'?'ستظهر الاشتراكات هنا عند إضافتها إلى المتجر.':'Subscriptions will appear here once they are added to the store.'):(language==='ar'?'جرّب تغيير كلمات البحث أو عوامل التصفية.':'Try changing your search or filters.');$('#subscriptionEmptyReset').hidden=noProducts;}
 }
 [search, category, sort].forEach(el => el.addEventListener('input', filter));
+if(subscriptionSearch){
+    fillSubscriptionCategories();
+    [subscriptionSearch,subscriptionCategory,subscriptionSort].forEach(el=>el.addEventListener('input',renderSubscriptionList));
+    subscriptionCategory.addEventListener('change',renderSubscriptionList);
+    subscriptionSort.addEventListener('change',renderSubscriptionList);
+    const resetSubscriptionFilters=()=>{subscriptionSearch.value='';subscriptionCategory.value='all';subscriptionSort.value='newest';renderSubscriptionList();};
+    $('#subscriptionReset').addEventListener('click',resetSubscriptionFilters);
+    $('#subscriptionEmptyReset').addEventListener('click',resetSubscriptionFilters);
+}
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeDialog(b.dataset.close)));
 document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
         if (e.target === o)
@@ -741,6 +785,7 @@ async function boot() {
             fieldPlatformStates = [];
         }
         fillCategories();
+        fillSubscriptionCategories();
         filter();
         renderSubscriptionList();
     } catch (error) {

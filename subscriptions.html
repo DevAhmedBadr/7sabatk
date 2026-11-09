@@ -212,10 +212,28 @@
         </div>
         <span class="results-count" id="subscriptionsCount">جارٍ تحميل الاشتراكات...</span>
       </div>
+      <div class="toolbar subscription-toolbar" role="search" aria-label="البحث والتصفية في الاشتراكات">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="subscriptionSearchInput" type="search" placeholder="ابحث باسم الاشتراك أو المنصة..." autocomplete="off" aria-label="ابحث في الاشتراكات">
+        </label>
+        <select id="subscriptionCategoryFilter" aria-label="تصفية الاشتراكات حسب المنصة">
+          <option value="all">كل المنصات</option>
+        </select>
+        <select id="subscriptionSortFilter" aria-label="ترتيب الاشتراكات">
+          <option value="newest">الأحدث أولًا</option>
+          <option value="priceAsc">السعر: الأقل أولًا</option>
+          <option value="priceDesc">السعر: الأعلى أولًا</option>
+          <option value="nameAsc">الاسم: أ–ي</option>
+        </select>
+        <button class="button button-ghost subscription-reset" id="subscriptionReset" type="button">إعادة ضبط</button>
+      </div>
       <div class="subscription-grid" id="subscriptionGrid" aria-live="polite"></div>
       <div class="empty-state" id="subscriptionsEmpty" hidden>
         <div class="empty-icon">▤</div>
         <h3 data-sub-empty>لا توجد اشتراكات متاحة حاليًا</h3>
+        <p id="subscriptionsEmptyText">جرّب تغيير كلمات البحث أو عوامل التصفية.</p>
+        <button class="button button-ghost" id="subscriptionEmptyReset" type="button">مسح عوامل التصفية</button>
       </div>
     </div>
   </section>
