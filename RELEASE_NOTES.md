@@ -123,3 +123,9 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Replaced homepage Arabic messaging with the supplied headline, description, badge, calls to action, and supporting line.
 - Rewrote the About section with the supplied concise description.
 - Updated matching English translations so both language modes keep the same meaning and layout.
+
+## Hero and About visual refinement — 2026-11-11
+- Shortened the homepage headline to two balanced lines and restored the teal-to-blue highlight on the second line.
+- Updated the English headline to match the Arabic layout and meaning.
+- Restored a stronger About heading with the 7sabatk brand and a concise platform descriptor; improved paragraph spacing and readability.
+- Changed the hero badge and indicator from purple to the site's teal identity.

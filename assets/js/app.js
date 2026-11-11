@@ -87,7 +87,7 @@ function applyLanguage() {
     applySiteHeader(language);
     set('.hero .eyebrow', 'heroKicker');
     const h = $('.hero-copy h1');
-    h.textContent = t('heroTitle');
+    h.innerHTML = `${t('hero1')}<br><span>${t('hero2')}</span>`;
     set('.hero-copy>p', 'heroText');
     $('.hero-actions a.button').textContent = t('browse');
     $('.hero-actions a.button').setAttribute('href', '#features');
@@ -143,7 +143,7 @@ function applyLanguage() {
     }
     const about = $('.about-section');
     about.querySelector('.section-kicker').textContent = t('aboutKicker');
-    about.querySelector('h2').textContent = t('aboutTitle');
+    about.querySelector('h2').innerHTML = `<span>${t('brand')}</span><br><span>${t('aboutTitle')}</span>`;
     about.querySelector('.about-copy p').textContent = t('aboutText');
     const contact = $('.contact-panel');
     contact.querySelector('h2').textContent = t('contactTitle');
