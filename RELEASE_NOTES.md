@@ -115,3 +115,6 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Signup confirmation guidance now tells users to check the Spam folder in Arabic and English.
 - Added WhatsApp and Telegram contact actions to the home, accounts, social services, and subscriptions pages, with responsive layout and brand icons.
 - Added an owner-configurable Telegram username in Site Settings; the default contact username is `im_eq1`.
+
+## Catalog page error fix — 2026-11-11
+- Made subscription empty-state text updates conditional on the optional elements being present, preventing the account catalog from throwing when it renders the shared subscription section without the homepage-only helper nodes.
