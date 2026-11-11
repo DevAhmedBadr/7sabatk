@@ -443,7 +443,7 @@ $('#authForm').addEventListener('submit', async e => {
                 email,
                 password,
                 options: {
-                    emailRedirectTo: 'https://devahmedbadr.github.io/7sabatk/',
+                    emailRedirectTo: 'https://7sabatk.sevenxtech.workers.dev/',
                     data: {
                         username
                     }
