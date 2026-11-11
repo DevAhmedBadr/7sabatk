@@ -87,11 +87,13 @@ function applyLanguage() {
     applySiteHeader(language);
     set('.hero .eyebrow', 'heroKicker');
     const h = $('.hero-copy h1');
-    h.innerHTML = `${t('hero1')}<br><span>${t('hero2')}</span>`;
+    h.textContent = t('heroTitle');
     set('.hero-copy>p', 'heroText');
     $('.hero-actions a.button').textContent = t('browse');
     $('.hero-actions a.button').setAttribute('href', '#features');
     $('.hero-actions a.button-ghost').textContent = t('more');
+    const heroNote = $('#heroNoteText');
+    if (heroNote) heroNote.textContent = t('heroNote');
     const f = $('.features-section .section-heading');
     f.querySelector('.section-kicker').textContent = t('featuresKicker');
     f.querySelector('h2').textContent = t('featuresTitle');
@@ -141,7 +143,7 @@ function applyLanguage() {
     }
     const about = $('.about-section');
     about.querySelector('.section-kicker').textContent = t('aboutKicker');
-    about.querySelector('h2').innerHTML = `<span>${t('brand')}</span><br><span>${t('aboutTitle')}</span>`;
+    about.querySelector('h2').textContent = t('aboutTitle');
     about.querySelector('.about-copy p').textContent = t('aboutText');
     const contact = $('.contact-panel');
     contact.querySelector('h2').textContent = t('contactTitle');

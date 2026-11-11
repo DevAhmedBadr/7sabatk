@@ -118,3 +118,8 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 
 ## Catalog page error fix — 2026-11-11
 - Made subscription empty-state text updates conditional on the optional elements being present, preventing the account catalog from throwing when it renders the shared subscription section without the homepage-only helper nodes.
+
+## Homepage and About copy refresh — 2026-11-11
+- Replaced homepage Arabic messaging with the supplied headline, description, badge, calls to action, and supporting line.
+- Rewrote the About section with the supplied concise description.
+- Updated matching English translations so both language modes keep the same meaning and layout.
