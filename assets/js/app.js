@@ -498,7 +498,7 @@ $('#forgotPassword').addEventListener('click', async() => {
     }
     msg.textContent = language === 'ar' ? 'جارٍ إرسال رمز الاستعادة...' : 'Sending recovery code...';
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://devahmedbadr.github.io/7sabatk/'
+        redirectTo: 'https://7sabatk.sevenxtech.workers.dev/'
     });
     if (error) {
         msg.textContent = error.message;
@@ -676,7 +676,7 @@ $('#passwordReset').addEventListener('click', async() => {
         return;
     pendingRecoveryEmail = session.user.email;
     const { error } = await supabase.auth.resetPasswordForEmail(session.user.email, {
-        redirectTo: 'https://devahmedbadr.github.io/7sabatk/'
+        redirectTo: 'https://7sabatk.sevenxtech.workers.dev/'
     });
     $('#profileMessage').textContent = error ? error.message : (language === 'ar' ? 'تم إرسال رمز تغيير كلمة المرور إلى بريدك.' : 'Password reset code sent to your email.');
     if (!error) {
