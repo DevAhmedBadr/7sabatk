@@ -108,3 +108,10 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Added explicit Arabic/English fields for the brand name and all header navigation/action labels, and wired them to the shared site header.
 - Support pages now render the English brand as 7sabatk when English is selected.
 
+
+## Mobile polish and contact channels — 2026-11-11
+- The notification control is mounted in the visible header action area and becomes a compact bell icon on mobile.
+- The account catalog's load-error panel is hidden on narrow phone layouts while the normal no-results state remains available.
+- Signup confirmation guidance now tells users to check the Spam folder in Arabic and English.
+- Added WhatsApp and Telegram contact actions to the home, accounts, social services, and subscriptions pages, with responsive layout and brand icons.
+- Added an owner-configurable Telegram username in Site Settings; the default contact username is `im_eq1`.

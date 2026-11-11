@@ -14,12 +14,12 @@ let ticketsById = {};
 let rows = [];
 
 function mount() {
-  const host = document.querySelector('.nav-links') || document.querySelector('.admin-top');
+  const host = document.querySelector('.nav-actions') || document.querySelector('.nav-links') || document.querySelector('.admin-top');
   if (!host || document.querySelector('#supportNotificationRoot')) return;
   const root = document.createElement('div');
   root.id = 'supportNotificationRoot';
   root.className = 'support-notification-root';
-  root.innerHTML = `<button class="support-notification-toggle" id="supportNotificationToggle" type="button" aria-label="${esc(text.title)}" aria-expanded="false"><span aria-hidden="true">🔔</span><span>${esc(text.title)}</span><b id="supportNotificationCount" hidden></b></button><section class="support-notification-panel" id="supportNotificationPanel" hidden><header><strong>${esc(text.title)}</strong><button type="button" id="supportNotificationReadAll">${esc(text.readAll)}</button></header><div id="supportNotificationList"><p>${esc(text.empty)}</p></div></section>`;
+  root.innerHTML = `<button class="support-notification-toggle" id="supportNotificationToggle" type="button" aria-label="${esc(text.title)}" title="${esc(text.title)}" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span>${esc(text.title)}</span><b id="supportNotificationCount" hidden></b></button><section class="support-notification-panel" id="supportNotificationPanel" hidden><header><strong>${esc(text.title)}</strong><button type="button" id="supportNotificationReadAll">${esc(text.readAll)}</button></header><div id="supportNotificationList"><p>${esc(text.empty)}</p></div></section>`;
   host.append(root);
   $('#supportNotificationToggle').addEventListener('click', () => {
     const panel = $('#supportNotificationPanel');

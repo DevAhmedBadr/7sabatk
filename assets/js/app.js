@@ -146,7 +146,8 @@ function applyLanguage() {
     const contact = $('.contact-panel');
     contact.querySelector('h2').textContent = t('contactTitle');
     contact.querySelector('p').textContent = t('contactText');
-    contact.querySelector('a').textContent = t('contactBtn');
+    $('#contactWhatsappText').textContent = language === 'ar' ? 'تواصل عبر واتساب' : 'Chat on WhatsApp';
+    $('#contactTelegramText').textContent = language === 'ar' ? 'تواصل عبر تيليجرام' : 'Chat on Telegram';
     $('.footer-inner>span').lastChild.textContent = ' ' + t('footer');
     $('#authTitle').textContent = authMode === 'login' ? t('authLogin') : t('authSignup');
     $('#authSubtitle').textContent = authMode === 'login' ? t('welcome') : t('signupWelcome');
@@ -253,12 +254,27 @@ function applySiteSettings() {
         $('#marketplace .container').innerHTML = `<div class="section-heading"><h2>${language === 'ar' ? 'المتجر تحت الصيانة' : 'Store maintenance'}</h2></div>`;
     }
     const contact = $('#contactLink');
-    if (publicSettings.whatsapp_number) {
-        contact.href = `https://wa.me/${publicSettings.whatsapp_number}`;
+    const whatsappNumber = String(publicSettings.whatsapp_number || '').replace(/\D/g, '');
+    if (whatsappNumber) {
+        contact.href = `https://wa.me/${whatsappNumber}`;
         contact.target = '_blank';
         contact.rel = 'noopener';
-    } else if (publicSettings.contact_email)
+    } else if (publicSettings.contact_email) {
         contact.href = `mailto:${publicSettings.contact_email}`;
+        contact.removeAttribute('target');
+        contact.removeAttribute('rel');
+    } else {
+        contact.href = '#contact';
+        contact.removeAttribute('target');
+        contact.removeAttribute('rel');
+    }
+    const telegramContact = $('#telegramContactLink');
+    if (telegramContact) {
+        const username = String(publicSettings.telegram_username || 'im_eq1').trim().replace(/^@+/, '');
+        telegramContact.href = `https://t.me/${encodeURIComponent(username)}`;
+        telegramContact.target = '_blank';
+        telegramContact.rel = 'noopener';
+    }
 }
 function fillCategories() {
     const first = category.options[0];
@@ -456,7 +472,7 @@ $('#authForm').addEventListener('submit', async e => {
                 }
                 throw error;
             }
-            msg.textContent = data.session ? (language === 'ar' ? 'تم إنشاء الحساب.' : 'Account created.') : (language === 'ar' ? 'تم إنشاء الحساب. افتح رسالة التأكيد في بريدك ثم ارجع إلى الموقع.' : 'Account created. Check your email to confirm, then return here.');
+            msg.textContent = data.session ? (language === 'ar' ? 'تم إنشاء الحساب.' : 'Account created.') : (language === 'ar' ? 'تم إنشاء الحساب. افتح رسالة التأكيد في بريدك، وتفقّد مجلد الرسائل غير المرغوب فيها (Spam) إذا لم تجدها، ثم ارجع إلى الموقع.' : 'Account created. Open the confirmation email. If it is missing, check your Spam folder, then return to the site.');
             if (data.session) {
                 closeDialog('authDialog');
                 await refreshAuth();
@@ -791,6 +807,7 @@ async function boot() {
     } catch (error) {
         console.error(error);
         count.textContent = language === 'ar' ? 'تعذر تحميل البيانات' : 'Could not load data';
+        empty.dataset.loadError = 'true';
         empty.hidden = false;
         empty.querySelector('h3').textContent = language === 'ar' ? 'حدث خطأ أثناء تحميل الحسابات' : 'Error loading accounts';
         empty.querySelector('p').textContent = error.message || '';
