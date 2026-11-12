@@ -129,3 +129,12 @@ Before deploying, run `supabase/migration_bilingual_products_and_fields.sql` onc
 - Updated the English headline to match the Arabic layout and meaning.
 - Restored a stronger About heading with the 7sabatk brand and a concise platform descriptor; improved paragraph spacing and readability.
 - Changed the hero badge and indicator from purple to the site's teal identity.
+# Social commerce and wallet
+
+- Replaced the social media “coming soon” panel with TikTok and Instagram service catalogs and platform-specific pages.
+- Added the requested follower, like, view, and share services with bilingual labels and owner-managed prices and quantity limits.
+- Added owner tools for categories, services, order statuses, and manual wallet credits.
+- Added a signed-in customer wallet and multi-item cart. Secure Supabase RPC checkout prices items from the database and atomically deducts the wallet balance.
+- Added `supabase/migration_social_commerce.sql`; apply it in the Supabase SQL Editor before deploying the updated site. Starter service prices are intentionally unset (0) until the owner configures them.
+- Payment gateway top-ups remain a later step; manual owner credits are supported for now.
+

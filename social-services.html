@@ -24,7 +24,8 @@
   <link rel="stylesheet" href="assets/css/branding.css">
 <link rel="stylesheet" href="assets/css/mobile-responsive.css">
   <link rel="stylesheet" href="assets/css/page-layouts.css">
-<link rel="stylesheet" href="assets/css/support-notifications.css"></head>
+  <link rel="stylesheet" href="assets/css/support-notifications.css">
+  <link rel="stylesheet" href="assets/css/social-commerce.css"></head>
 
 <body data-page="social">
 
@@ -192,12 +193,23 @@
     </div>
   </section>
 
-  <!-- Social media services: coming soon -->
-  <section class="section coming-soon-section" id="social-services">
-    <div class="container coming-soon-panel">
-      <span class="section-kicker" data-social-kicker>خدمات السوشيال ميديا</span>
-      <h2 data-social-title>خدمات السوشيال ميديا</h2>
-      <p data-social-soon>قريبًا</p>
+  <section class="section social-store-section" id="social-services">
+    <div class="container">
+      <div class="social-store-heading">
+        <span class="section-kicker" id="socialKicker">خدمات السوشيال ميديا</span>
+        <h1 id="socialTitle">اختر منصتك</h1>
+        <p id="socialIntro">خدمات رقمية واضحة، أسعار محددة، وطلب تتابعه من حسابك.</p>
+      </div>
+      <div id="socialStoreMessage" class="social-store-message" role="status" hidden></div>
+      <div id="socialHub" class="social-category-grid" aria-live="polite"></div>
+      <div id="socialDetail" hidden>
+        <button type="button" class="button button-ghost social-back" id="socialBack">← العودة إلى المنصات</button>
+        <div class="social-platform-banner" id="socialPlatformBanner">
+          <div class="social-platform-mark" id="socialPlatformMark" aria-hidden="true">S</div>
+          <div><span class="section-kicker" id="socialPlatformKicker">SOCIAL SERVICES</span><h2 id="socialPlatformTitle"></h2><p id="socialPlatformDescription"></p></div>
+        </div>
+        <div class="social-service-grid" id="socialServiceGrid" aria-live="polite"></div>
+      </div>
     </div>
   </section>
 
@@ -578,6 +590,8 @@
 </div>
 
 <script type="module" src="assets/js/app.js"></script>
+<script type="module" src="assets/js/social-store.js"></script>
+<script type="module" src="assets/js/wallet-commerce.js"></script>
 
 
 

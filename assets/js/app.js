@@ -110,8 +110,8 @@ function applyLanguage() {
       featureHeading.querySelector('p').textContent=language==='ar'?'اختر بين الحسابات الرقمية وخدمات السوشيال ميديا والاشتراكات الرقمية.':'Explore digital accounts, social media services and digital subscriptions.';
     }
     const serviceLabels = language === 'ar'
-      ? [{title:'الحسابات الرقمية',text:'تصفح الحسابات الرقمية المعروضة للبيع.',href:'accounts.html'},{title:'خدمات السوشيال ميديا',text:'خدمات زيادة المتابعين واللايكات والمشاهدات. قريبًا',href:'social-services.html'},{title:'الاشتراكات الرقمية',text:'اشتراكات Netflix وYouTube وغيرها.',href:'subscriptions.html'}]
-      : [{title:'Digital Accounts',text:'Browse digital accounts listed for sale.',href:'accounts.html'},{title:'Social Media Services',text:'Followers, likes and views services. Coming soon.',href:'social-services.html'},{title:'Digital Subscriptions',text:'Netflix, YouTube and other subscriptions.',href:'subscriptions.html'}];
+      ? [{title:'الحسابات الرقمية',text:'تصفح الحسابات الرقمية المعروضة للبيع.',href:'accounts.html'},{title:'خدمات السوشيال ميديا',text:'خدمات المتابعين والإعجابات والمشاهدات والمشاركات.',href:'social-services.html'},{title:'الاشتراكات الرقمية',text:'اشتراكات Netflix وYouTube وغيرها.',href:'subscriptions.html'}]
+      : [{title:'Digital Accounts',text:'Browse digital accounts listed for sale.',href:'accounts.html'},{title:'Social Media Services',text:'Followers, likes, views and shares services.',href:'social-services.html'},{title:'Digital Subscriptions',text:'Netflix, YouTube and other subscriptions.',href:'subscriptions.html'}];
     cards.forEach((card,i)=>{if(serviceLabels[i]){card.href=serviceLabels[i].href;card.querySelector('h3').textContent=serviceLabels[i].title;card.querySelector('p').textContent=serviceLabels[i].text;}});
     const socialTitle=$('[data-social-title]'), socialKicker=$('[data-social-kicker]'), socialSoon=$('[data-social-soon]');
     if(socialTitle)socialTitle.textContent=language==='ar'?'خدمات السوشيال ميديا':'Social Media Services';
