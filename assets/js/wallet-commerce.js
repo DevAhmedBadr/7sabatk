@@ -15,10 +15,10 @@ function toast(text,error=false){let el=$('#walletCommerceToast');if(!el){el=doc
 function ensureControls(){
  const nav=$('.nav-actions');if(!nav||$('#socialWalletActions'))return;
  const box=document.createElement('div');box.id='socialWalletActions';box.className='wallet-actions';
- box.innerHTML=`<button type="button" class="wallet-button" id="walletBalanceButton">${tr('الرصيد','Balance')} <strong id="walletBalanceValue">…</strong></button><button type="button" class="cart-button" id="walletCartButton">${tr('السلة','Cart')} <span class="cart-count" id="walletCartCount">0</span></button>`;
+ box.innerHTML=`<button type="button" class="wallet-button" id="walletBalanceButton" aria-label="${tr('رصيد المحفظة','Wallet balance')}" title="${tr('رصيد المحفظة','Wallet balance')}"><span class="wallet-label">${tr('الرصيد','Balance')}</span><strong id="walletBalanceValue">…</strong></button><button type="button" class="cart-button" id="walletCartButton" aria-label="${tr('سلة الخدمات','Services cart')}" title="${tr('سلة الخدمات','Services cart')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span class="cart-label">${tr('السلة','Cart')}</span><span class="cart-count" id="walletCartCount">0</span></button>`;
  nav.prepend(box);
- $('#walletBalanceButton').addEventListener('click',()=>{if(!signedIn){$('#authOpen')?.click();return;}openDrawer()});
- $('#walletCartButton').addEventListener('click',()=>{if(!signedIn){$('#authOpen')?.click();return;}openDrawer()});
+ $('#walletBalanceButton').addEventListener('click',async()=>{if(!await refreshSessionState()){$('#authOpen')?.click();return;}openDrawer()});
+ $('#walletCartButton').addEventListener('click',async()=>{if(!await refreshSessionState()){$('#authOpen')?.click();return;}openDrawer()});
 }
 function updateButtons(){const count=$('#walletCartCount');if(count)count.textContent=String(getCart().length);const val=$('#walletBalanceValue');if(val)val.textContent=signedIn?fmt(balance):tr('سجّل الدخول','Sign in');}
 function ensureDrawer(){if(drawer)return drawer;drawer=document.createElement('div');drawer.className='wallet-drawer-backdrop';drawer.hidden=true;drawer.innerHTML=`<section class="wallet-drawer" role="dialog" aria-modal="true" aria-labelledby="walletDrawerTitle"><div class="wallet-drawer-head"><h2 id="walletDrawerTitle">${tr('الرصيد والسلة','Wallet & cart')}</h2><button class="wallet-close" type="button" aria-label="${tr('إغلاق','Close')}">×</button></div><div id="walletDrawerBody"></div></section>`;document.body.append(drawer);drawer.addEventListener('click',e=>{if(e.target===drawer||e.target.closest('.wallet-close'))closeDrawer()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});return drawer;}
@@ -32,6 +32,7 @@ function renderDrawer(){
  $('#walletCheckout')?.addEventListener('click',async event=>{const button=event.currentTarget;button.disabled=true;try{await checkout()}finally{button.disabled=false}});
 }
 async function loadBalance(){if(!isSupabaseConfigured)return;const {data:{session}}=await supabase.auth.getSession();signedIn=!!session;if(!signedIn){balance=0;orderHistory=[];updateButtons();return;}const [wallet,orders]=await Promise.all([supabase.rpc('get_my_wallet_balance'),supabase.from('social_service_orders').select('id,total_kwd,status,created_at').order('created_at',{ascending:false}).limit(10)]);if(wallet.error){console.warn('Wallet balance unavailable. Apply the social-commerce migration.',wallet.error);balance=0;}else balance=Number(wallet.data)||0;if(orders.error)orderHistory=[];else orderHistory=orders.data||[];updateButtons();if(drawer&&!drawer.hidden)renderDrawer();}
+async function refreshSessionState(){if(!isSupabaseConfigured)return false;const {data:{session}}=await supabase.auth.getSession();signedIn=!!session;updateButtons();return signedIn;}
 async function checkout(items=getCart(),clearCart=true){
  const status=$('#walletStatus');if(status){status.className='wallet-status';status.textContent=tr('جارٍ إتمام الطلب…','Processing your order…')}
  const {data,error}=await supabase.rpc('purchase_social_services',{p_items:items.map(i=>({service_id:i.service_id,quantity:i.quantity,target_url:i.target_url}))});
@@ -45,10 +46,10 @@ async function checkout(items=getCart(),clearCart=true){
  return true;
 }
 window.addEventListener('7sabatk:cart-add',async e=>{
- const {item,buyNow}=e.detail||{};if(!item)return;
+ const {item,buyNow,button}=e.detail||{};if(!item)return;
  if(!isSupabaseConfigured){alert(tr('قاعدة البيانات غير مهيأة.','Database is not configured.'));return;}
- if(!signedIn){$('#authOpen')?.click();return;}
- if(buyNow){if(confirm(tr('تأكيد شراء هذه الخدمة وخصم قيمتها من رصيدك؟','Confirm purchase and deduct the amount from your balance?'))){button.disabled=true;try{await checkout([item],false)}finally{button.disabled=false}}return;}
+ if(!await refreshSessionState()){$('#authOpen')?.click();return;}
+ if(buyNow){if(confirm(tr('تأكيد شراء هذه الخدمة وخصم قيمتها من رصيدك؟','Confirm purchase and deduct the amount from your balance?'))){if(button)button.disabled=true;try{await checkout([item],false)}finally{if(button)button.disabled=false}}return;}
  const items=getCart();items.push(item);saveCart(items);openDrawer();
 });
 await getSiteLanguage();

@@ -19,7 +19,8 @@ function renderCategory(category){
 function renderService(service){
   const name=localized(service,'name'), description=localized(service,'description'), price=Number(service.price_per_1000_kwd)||0;
   const priceHtml=price>0?`${money(price)} <small>/ 1,000</small>`:`<span class="social-price-note">${language==='ar'?'السعر قيد الإعداد':'Price to be set'}</span>`;
-  return `<article class="social-service-card" data-service-id="${esc(service.id)}"><h3>${esc(name)}</h3><p>${esc(description || (language==='ar'?'خدمة رقمية يتم طلبها من حسابك.':'A digital service ordered from your account.'))}</p><div class="social-service-price">${priceHtml}</div><form class="social-service-form" data-service-form><label>${language==='ar'?'رابط الحساب أو المحتوى':'Profile or content URL'}<input name="target_url" type="url" required maxlength="2048" placeholder="https://" autocomplete="url"></label><label>${language==='ar'?'الكمية':'Quantity'}<input name="quantity" type="number" required min="${service.min_quantity}" max="${service.max_quantity}" step="${service.quantity_step}" value="${service.min_quantity}"></label><div class="social-service-actions"><button class="button button-ghost" type="button" data-cart ${price<=0?'disabled':''}>${language==='ar'?'أضف للسلة':'Add to cart'}</button><button class="button" type="button" data-buy ${price<=0?'disabled':''}>${language==='ar'?'اشتر الآن':'Buy now'}</button></div></form></article>`;
+  const hint=language==='ar'?'خدمة رقمية يتم طلبها من حسابك.':'A digital service ordered from your account.';
+  return `<article class="social-service-card" data-service-id="${esc(service.id)}"><button class="service-accordion-toggle" data-service-toggle type="button" aria-expanded="false"><span class="service-accordion-title"><strong>${esc(name)}</strong><small>${esc(price>0?`${money(price)} / 1,000`:language==='ar'?'السعر قيد الإعداد':'Price to be set')}</small></span><span class="service-accordion-icon" aria-hidden="true">+</span></button><div class="service-accordion-panel"><div class="service-accordion-inner"><div class="service-accordion-content"><p>${esc(description||hint)}</p><div class="social-service-price">${priceHtml}</div><form class="social-service-form" data-service-form><label>${language==='ar'?'رابط الحساب أو المحتوى':'Profile or content URL'}<input name="target_url" type="url" required maxlength="2048" placeholder="https://" autocomplete="url"></label><label>${language==='ar'?'الكمية':'Quantity'}<input name="quantity" type="number" required min="${service.min_quantity}" max="${service.max_quantity}" step="${service.quantity_step}" value="${service.min_quantity}"></label><div class="social-service-actions"><button class="button button-ghost" type="button" data-cart ${price<=0?'disabled':''}>${language==='ar'?'أضف للسلة':'Add to cart'}</button><button class="button" type="button" data-buy ${price<=0?'disabled':''}>${language==='ar'?'اشتر الآن':'Buy now'}</button></div></form></div></div></div></article>`;
 }
 async function load(){
   language=await getSiteLanguage();
@@ -47,12 +48,14 @@ async function load(){
   if(serviceError){message(isAr?'تعذر تحميل خدمات هذه المنصة.':'Could not load this platform’s services.',true);return;}
   $('#socialServiceGrid').innerHTML=services.length?services.map(renderService).join(''):`<div class="social-store-message">${isAr?'لا توجد خدمات متاحة في هذا القسم بعد.':'There are no active services in this category yet.'}</div>`;
   $('#socialServiceGrid').addEventListener('click', async event=>{
+    const toggle=event.target.closest('[data-service-toggle]');
+    if(toggle){const card=toggle.closest('[data-service-id]');const expanded=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!expanded));card.classList.toggle('expanded',!expanded);return;}
     const button=event.target.closest('[data-cart],[data-buy]');if(!button)return;
     const form=button.closest('[data-service-form]');if(!form.reportValidity())return;
     const card=button.closest('[data-service-id]');const service=services.find(item=>item.id===card.dataset.serviceId);
     const item={service_id:service.id,name_ar:service.name_ar,name_en:service.name_en,price_per_1000_kwd:Number(service.price_per_1000_kwd),min_quantity:service.min_quantity,max_quantity:service.max_quantity,quantity_step:service.quantity_step,quantity:Number(form.elements.quantity.value),target_url:form.elements.target_url.value.trim()};
     if(!item.price_per_1000_kwd){message(isAr?'لم يحدد المالك سعر هذه الخدمة بعد.':'The owner has not set a price for this service yet.',true);return;}
-    window.dispatchEvent(new CustomEvent('7sabatk:cart-add',{detail:{item,buyNow:button.hasAttribute('data-buy')}}));
+    window.dispatchEvent(new CustomEvent('7sabatk:cart-add',{detail:{item,buyNow:button.hasAttribute('data-buy'),button}}));
   });
 }
 $('#socialBack')?.addEventListener('click',()=>location.href='social-services.html');
