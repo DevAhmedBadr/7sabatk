@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from "./backend.js";
 import { translations } from "./site-copy.js";
-import { loadAccounts, loadSubscriptions, loadPublicSettings } from "./data.js";
+import { loadAccounts, loadSubscriptions, loadPublicSettings, getCachedPublicSettings } from "./data.js";
 import { renderAccounts, renderSubscriptions, showAccountDetails, openDialog, closeDialog } from "./render.js";
 import { getPreferences, savePreferences, applyTheme, getCurrencyRates, resolveLanguage, resolveNumberLocale } from "./preferences.js";
 import { applySiteHeader } from "./site-language.js";
@@ -11,7 +11,7 @@ const subscriptionSearch = $("#subscriptionSearchInput"), subscriptionCategory =
 let textOverrides = { ar: {}, en: {} };
 let accounts = [], subscriptions = [], preferences = getPreferences(), rates = {
     KWD: 1
-}, publicSettings = {}, fieldDefinitions = [], fieldPlatformStates = [], session = null, profile = null, language = resolveLanguage(preferences.language), numberLocale = resolveNumberLocale(preferences.numberLocale, language);
+}, publicSettings = getCachedPublicSettings(), fieldDefinitions = [], fieldPlatformStates = [], session = null, profile = null, language = resolveLanguage(publicSettings.default_language || preferences.language), numberLocale = resolveNumberLocale(preferences.numberLocale, language);
 function t(k) {
     if (k === "brand" && publicSettings.site_name) return publicSettings.site_name;
     return textOverrides?.[language]?.[k] ?? translations[language][k] ?? k;
@@ -756,6 +756,19 @@ $('#imageLightbox').addEventListener('click', e => {
 });
 
 async function boot() {
+    // Restore the account state immediately; do not wait for pricing, settings,
+    // or marketplace requests before replacing the temporary login button.
+    if (isSupabaseConfigured) {
+        supabase.auth.onAuthStateChange((event) => {
+            setTimeout(refreshAuth, 0);
+            if (event === 'PASSWORD_RECOVERY') {
+                $('#passwordOtpForm').hidden = true;
+                $('#passwordForm').hidden = false;
+                openDialog('passwordDialog');
+            }
+        });
+        refreshAuth();
+    }
     applyTheme(preferences.theme);
     document.documentElement.classList.toggle('reduce-motion', preferences.reduceMotion);
     document.documentElement.classList.toggle('compact-cards', preferences.compactCards);
@@ -765,8 +778,14 @@ async function boot() {
     $('#numberLocale').value = preferences.numberLocale;
     applyLanguage();
     try {
-        rates = await getCurrencyRates();
-        publicSettings = await loadPublicSettings();
+        const [loadedRates, loadedSettings, loadedAccounts, loadedSubscriptions] = await Promise.all([
+            getCurrencyRates(),
+            loadPublicSettings(),
+            loadAccounts(),
+            loadSubscriptions()
+        ]);
+        rates = loadedRates;
+        publicSettings = loadedSettings;
         textOverrides = {
             ar: publicSettings.site_text_ar && typeof publicSettings.site_text_ar === "object" ? publicSettings.site_text_ar : {},
             en: publicSettings.site_text_en && typeof publicSettings.site_text_en === "object" ? publicSettings.site_text_en : {}
@@ -777,8 +796,8 @@ async function boot() {
             savePreferences(preferences);
         }
         applySiteSettings();
-        accounts = await loadAccounts();
-        subscriptions = await loadSubscriptions();
+        accounts = loadedAccounts;
+        subscriptions = loadedSubscriptions;
         try {
             const [{
                     data: fields,
@@ -813,17 +832,6 @@ async function boot() {
         empty.hidden = false;
         empty.querySelector('h3').textContent = language === 'ar' ? 'حدث خطأ أثناء تحميل الحسابات' : 'Error loading accounts';
         empty.querySelector('p').textContent = error.message || '';
-    }
-    if (isSupabaseConfigured) {
-        await refreshAuth();
-        supabase.auth.onAuthStateChange((event) => {
-            setTimeout(refreshAuth, 0);
-            if (event === 'PASSWORD_RECOVERY') {
-                $('#passwordOtpForm').hidden = true;
-                $('#passwordForm').hidden = false;
-                openDialog('passwordDialog');
-            }
-        });
     }
     if (window.location.hash === '#register') {
         setAuthMode('signup');

@@ -1,9 +1,19 @@
 import { getPreferences, resolveLanguage } from './preferences.js';
-import { loadPublicSettings } from './data.js';
+import { getCachedPublicSettings, loadPublicSettings } from './data.js';
 
 let settingsPromise;
 
 export async function getSiteLanguage() {
+  const cached = getCachedPublicSettings();
+  const cachedLanguage = cached?.default_language;
+  if (cachedLanguage === 'ar' || cachedLanguage === 'en') {
+    document.documentElement.lang = cachedLanguage;
+    document.documentElement.dir = cachedLanguage === 'ar' ? 'rtl' : 'ltr';
+    // The cached language is the last saved site-wide setting; settings refresh
+    // runs in the background through loadPublicSettings.
+    loadPublicSettings();
+    return cachedLanguage;
+  }
   settingsPromise ||= loadPublicSettings().catch(() => ({}));
   const settings = await settingsPromise;
   const configured = settings?.default_language;
@@ -14,8 +24,14 @@ export async function getSiteLanguage() {
 }
 
 export async function applySiteHeader(language) {
+  const cached = getCachedPublicSettings();
+  if (Object.keys(cached).length) applyHeaderSettings(cached, language);
   settingsPromise ||= loadPublicSettings().catch(() => ({}));
   const settings = await settingsPromise;
+  applyHeaderSettings(settings, language);
+}
+
+function applyHeaderSettings(settings, language) {
   const suffix = language === 'ar' ? 'ar' : 'en';
   const defaults = language === 'ar'
     ? { brand: 'موقع حساباتك', home: 'الرئيسية', accounts: 'الحسابات', social: 'خدمات السوشيال ميديا', subscriptions: 'الاشتراكات', support: 'الدعم الفني', notifications: 'الإشعارات', settings: 'الإعدادات', login: 'تسجيل الدخول', account: 'حسابي' }
